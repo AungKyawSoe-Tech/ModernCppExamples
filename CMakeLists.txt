@@ -1,0 +1,84 @@
+cmake_minimum_required(VERSION 3.20)
+project(ModernCppExamples VERSION 1.0 LANGUAGES CXX)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# Add compiler warnings
+if(MSVC)
+    add_compile_options(/W4)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# List of executables to build
+set(EXECUTABLES
+    # Main comprehensive C++ standard examples
+    Cpp11Examples
+    Cpp14Examples
+    Cpp17Examples
+    Cpp20Examples
+    
+    # Existing algorithm and data structure examples
+    BinarySearch
+    Cpp17Concurrency
+    DeleteNode
+    FindCountOfCommonNodes
+    FindFirstCommonNode
+    FindMaxNoOfConsecutiveOnesFromIntArray
+    FindMToLastElement
+    LambdaCaptures
+    SearchAnagramsDictionary
+    SinglyLinkedList
+    Tuples
+    
+    # Feature-specific examples (kept for reference)
+    GenericLambdas
+    StructuredBindings
+    OptionalExamples
+    ConceptsExamples
+    RangesExamples
+)
+
+# Create executable for each source file
+foreach(EXECUTABLE ${EXECUTABLES})
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/${EXECUTABLE}.cpp)
+        add_executable(${EXECUTABLE} src/${EXECUTABLE}.cpp)
+        
+        # Set specific C++ standards for different examples
+        if(${EXECUTABLE} MATCHES "^(Cpp11Examples)$")
+            set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 11)
+        elseif(${EXECUTABLE} MATCHES "^(Cpp14Examples|GenericLambdas)$")
+            set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 14)
+        elseif(${EXECUTABLE} MATCHES "^(Cpp17Examples|StructuredBindings|OptionalExamples|Cpp17Concurrency)$")
+            set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 17)
+        elseif(${EXECUTABLE} MATCHES "^(Cpp20Examples|ConceptsExamples|RangesExamples)$")
+            set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 20)
+        else()
+            # Default to C++20 for other examples
+            set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 20)
+        endif()
+        
+        message(STATUS "Added executable: ${EXECUTABLE}")
+    else()
+        message(WARNING "Source file not found: src/${EXECUTABLE}.cpp")
+    endif()
+endforeach()
+
+# Print build configuration
+message(STATUS "")
+message(STATUS "===========================================")
+message(STATUS "  Modern C++ Examples Build Configuration")
+message(STATUS "===========================================")
+message(STATUS "  CMake version: ${CMAKE_VERSION}")
+message(STATUS "  C++ compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "  Default C++ standard: C++${CMAKE_CXX_STANDARD}")
+message(STATUS "  Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "  Output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+message(STATUS "===========================================")
+message(STATUS "")

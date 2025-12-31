@@ -1,3 +1,4 @@
+/*
 Instructions:
 
 Write a function that returns the maximum number of consecutive 'ones' in an integer array of length N.
@@ -9,6 +10,7 @@ For example, for the following input the function should return 7.
 	010101111011011101111111000000010
 
 This can be written in pseudo-code, Java, or C/C++. Syntax mistakes are not important. 
+*/
 
 // Example program
 #include <iostream>
@@ -31,7 +33,7 @@ int main()
   
     for(const auto& i : cppArray) {
       
-      if(cppArray[i] == 1) {
+      if(i == 1) {  // Fixed: use i directly, not cppArray[i]
           runningMaximumOnes++;
       } else {
          
