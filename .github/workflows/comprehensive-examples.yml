@@ -1,0 +1,100 @@
+name: Test Comprehensive C++ Standard Examples
+
+on:
+  push:
+    paths:
+      - 'src/Cpp11Examples.cpp'
+      - 'src/Cpp14Examples.cpp'
+      - 'src/Cpp17Examples.cpp'
+      - 'src/Cpp20Examples.cpp'
+      - 'CMakeLists.txt'
+      - '.github/workflows/comprehensive-examples.yml'
+  pull_request:
+    paths:
+      - 'src/Cpp11Examples.cpp'
+      - 'src/Cpp14Examples.cpp'
+      - 'src/Cpp17Examples.cpp'
+      - 'src/Cpp20Examples.cpp'
+      - 'CMakeLists.txt'
+  workflow_dispatch:
+
+jobs:
+  test-cpp11:
+    name: Test C++11 Examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++-13
+      
+      - name: Build C++11 Examples
+        run: |
+          mkdir build && cd build
+          CXX=g++-13 cmake ..
+          make Cpp11Examples -j$(nproc)
+      
+      - name: Run C++11 Examples
+        run: ./build/bin/Cpp11Examples
+
+  test-cpp14:
+    name: Test C++14 Examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++-13
+      
+      - name: Build C++14 Examples
+        run: |
+          mkdir build && cd build
+          CXX=g++-13 cmake ..
+          make Cpp14Examples -j$(nproc)
+      
+      - name: Run C++14 Examples
+        run: ./build/bin/Cpp14Examples
+
+  test-cpp17:
+    name: Test C++17 Examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++-13
+      
+      - name: Build C++17 Examples
+        run: |
+          mkdir build && cd build
+          CXX=g++-13 cmake ..
+          make Cpp17Examples -j$(nproc)
+      
+      - name: Run C++17 Examples
+        run: ./build/bin/Cpp17Examples
+
+  test-cpp20:
+    name: Test C++20 Examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++-13
+      
+      - name: Build C++20 Examples
+        run: |
+          mkdir build && cd build
+          CXX=g++-13 cmake ..
+          make Cpp20Examples -j$(nproc)
+      
+      - name: Run C++20 Examples
+        run: ./build/bin/Cpp20Examples
+
+  verify-all-standards:
+    name: Verify All C++ Standards
+    runs-on: ubuntu-latest
+    needs: [test-cpp11, test-cpp14, test-cpp17, test-cpp20]
+    steps:
+      - name: All tests passed
+        run: echo "✅ All C++ standard examples passed successfully!"

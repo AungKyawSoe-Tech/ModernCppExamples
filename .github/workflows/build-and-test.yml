@@ -1,0 +1,140 @@
+name: Build and Test C++ Examples
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [g++-13, clang++-17]
+        build_type: [Release, Debug]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+        
+        # Install specific compiler versions
+        if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
+          sudo apt-get install -y g++-13
+        elif [[ "${{ matrix.compiler }}" == "clang++-17" ]]; then
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 17
+          sudo apt-get install -y clang++-17
+        fi
+    
+    - name: Configure CMake
+      run: |
+        mkdir -p build
+        cd build
+        if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
+          export CXX=g++-13
+          export CC=gcc-13
+        elif [[ "${{ matrix.compiler }}" == "clang++-17" ]]; then
+          export CXX=clang++-17
+          export CC=clang-17
+        fi
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+                 -DCMAKE_CXX_COMPILER=$CXX
+    
+    - name: Build all examples
+      run: |
+        cd build
+        make -j$(nproc)
+    
+    - name: List built executables
+      run: |
+        echo "Built executables:"
+        ls -lh build/bin/
+    
+    - name: Run C++11 Examples
+      run: |
+        echo "=== Running C++11 Examples ==="
+        ./build/bin/Cpp11Examples
+    
+    - name: Run C++14 Examples
+      run: |
+        echo "=== Running C++14 Examples ==="
+        ./build/bin/Cpp14Examples
+    
+    - name: Run C++17 Examples
+      run: |
+        echo "=== Running C++17 Examples ==="
+        ./build/bin/Cpp17Examples
+    
+    - name: Run C++20 Examples
+      run: |
+        echo "=== Running C++20 Examples ==="
+        ./build/bin/Cpp20Examples
+    
+    - name: Run Algorithm Examples
+      run: |
+        echo "=== Running BinarySearch ==="
+        ./build/bin/BinarySearch
+        
+        echo "=== Running Cpp17Concurrency ==="
+        ./build/bin/Cpp17Concurrency
+        
+        echo "=== Running DeleteNode ==="
+        ./build/bin/DeleteNode
+        
+        echo "=== Running FindCountOfCommonNodes ==="
+        ./build/bin/FindCountOfCommonNodes
+        
+        echo "=== Running FindFirstCommonNode ==="
+        ./build/bin/FindFirstCommonNode
+        
+        echo "=== Running FindMaxNoOfConsecutiveOnesFromIntArray ==="
+        ./build/bin/FindMaxNoOfConsecutiveOnesFromIntArray
+        
+        echo "=== Running FindMToLastElement ==="
+        ./build/bin/FindMToLastElement
+        
+        echo "=== Running LambdaCaptures ==="
+        ./build/bin/LambdaCaptures
+        
+        echo "=== Running SearchAnagramsDictionary ==="
+        ./build/bin/SearchAnagramsDictionary
+        
+        echo "=== Running SinglyLinkedList ==="
+        ./build/bin/SinglyLinkedList
+        
+        echo "=== Running Tuples ==="
+        ./build/bin/Tuples
+    
+    - name: Run Feature-Specific Examples
+      run: |
+        echo "=== Running GenericLambdas ==="
+        ./build/bin/GenericLambdas
+        
+        echo "=== Running StructuredBindings ==="
+        ./build/bin/StructuredBindings
+        
+        echo "=== Running OptionalExamples ==="
+        ./build/bin/OptionalExamples
+        
+        echo "=== Running ConceptsExamples ==="
+        ./build/bin/ConceptsExamples
+        
+        echo "=== Running RangesExamples ==="
+        ./build/bin/RangesExamples
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: executables-${{ matrix.compiler }}-${{ matrix.build_type }}
+        path: build/bin/
+        retention-days: 7

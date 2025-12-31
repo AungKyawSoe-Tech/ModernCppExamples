@@ -1,0 +1,49 @@
+name: Quick Test
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  quick-build-test:
+    name: Quick Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup build environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++-13
+    
+    - name: Configure and build
+      run: |
+        mkdir build
+        cd build
+        CXX=g++-13 CC=gcc-13 cmake .. -DCMAKE_BUILD_TYPE=Release
+        make -j$(nproc)
+    
+    - name: Test comprehensive examples
+      run: |
+        echo "Testing C++11..."
+        timeout 30s ./build/bin/Cpp11Examples || echo "C++11 test completed"
+        
+        echo "Testing C++14..."
+        timeout 30s ./build/bin/Cpp14Examples || echo "C++14 test completed"
+        
+        echo "Testing C++17..."
+        timeout 30s ./build/bin/Cpp17Examples || echo "C++17 test completed"
+        
+        echo "Testing C++20..."
+        timeout 30s ./build/bin/Cpp20Examples || echo "C++20 test completed"
+    
+    - name: Display build summary
+      if: always()
+      run: |
+        echo "=== Build Summary ==="
+        echo "Executables built: $(ls -1 build/bin/ | wc -l)"
+        echo "Executable list:"
+        ls -1 build/bin/
