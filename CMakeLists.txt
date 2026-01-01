@@ -43,6 +43,7 @@ set(EXECUTABLES
     MoveSemantics
     VirtualFunctions
     STLContainersNoHeap
+    ARMInstructionSets
     Cpp23Examples
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
