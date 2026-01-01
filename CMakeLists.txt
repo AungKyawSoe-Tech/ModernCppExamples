@@ -41,6 +41,7 @@ set(EXECUTABLES
     ExceptionWithSourceLocation
     ErrorHandlingStroustrup
     MoveSemantics
+    VirtualFunctions
     Cpp23Examples
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
