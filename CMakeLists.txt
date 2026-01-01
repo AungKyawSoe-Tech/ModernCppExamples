@@ -18,6 +18,15 @@ else()
     message(STATUS "Install with: sudo apt-get install libeigen3-dev")
 endif()
 
+# Find Protobuf (optional, for ProtobufExample)
+find_package(Protobuf QUIET)
+if(Protobuf_FOUND)
+    message(STATUS "Protobuf found: ${Protobuf_VERSION}")
+else()
+    message(STATUS "Protobuf not found - ProtobufExample will be skipped")
+    message(STATUS "Install with: sudo apt-get install protobuf-compiler libprotobuf-dev")
+endif()
+
 # Add compiler warnings
 if(MSVC)
     add_compile_options(/W4)
@@ -61,6 +70,10 @@ set(EXECUTABLES
     # Modules are not yet fully supported by CMake's standard add_executable
     # See MarkDownDocuments/Cpp20Modules.md for manual compilation instructions
     # TemplatedCameraModules  # Requires module support
+    
+    # NOTE: Protocol Buffers example requires code generation from .proto files:
+    # Use scripts/build_protobuf.sh or generate manually with protoc
+    # ProtobufExample  # Requires: protoc --cpp_out=. proto/sensor_data.proto
     
     # Existing algorithm and data structure examples
     BinarySearch
@@ -120,6 +133,33 @@ foreach(EXECUTABLE ${EXECUTABLES})
         message(WARNING "Source file not found: src/${EXECUTABLE}.cpp")
     endif()
 endforeach()
+
+# Build ProtobufExample if Protobuf is available
+if(Protobuf_FOUND)
+    # Generate C++ code from .proto files
+    set(PROTO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/proto/sensor_data.proto)
+    protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
+    
+    # Create ProtobufExample executable
+    add_executable(ProtobufExample 
+        src/ProtobufExample.cpp
+        ${PROTO_SRCS}
+        ${PROTO_HDRS}
+    )
+    
+    # Set C++17 standard for ProtobufExample
+    set_target_properties(ProtobufExample PROPERTIES CXX_STANDARD 17)
+    
+    # Link protobuf library
+    target_link_libraries(ProtobufExample protobuf::libprotobuf)
+    
+    # Include generated header directory
+    target_include_directories(ProtobufExample PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    
+    message(STATUS "Added executable: ProtobufExample (with generated protobuf code)")
+else()
+    message(STATUS "Skipping ProtobufExample (Protobuf not found)")
+endif()
 
 # Print build configuration
 message(STATUS "")

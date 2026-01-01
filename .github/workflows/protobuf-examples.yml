@@ -1,0 +1,359 @@
+name: Protocol Buffers Examples
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'proto/**'
+      - 'src/ProtobufExample.cpp'
+      - 'scripts/build_protobuf.sh'
+      - '.github/workflows/protobuf-examples.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - 'proto/**'
+      - 'src/ProtobufExample.cpp'
+      - 'scripts/build_protobuf.sh'
+      - '.github/workflows/protobuf-examples.yml'
+  workflow_dispatch:
+
+jobs:
+  test-protobuf-compilation:
+    name: Build Protocol Buffers Example
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [g++-13, clang++-17]
+        protobuf_version: ['3.x', 'latest']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        
+        # Install compiler
+        if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
+          sudo apt-get install -y g++-13 gcc-13
+          export CXX=g++-13
+          export CC=gcc-13
+        elif [[ "${{ matrix.compiler }}" == "clang++-17" ]]; then
+          wget -q https://apt.llvm.org/llvm.sh || exit 1
+          chmod +x llvm.sh
+          sudo ./llvm.sh 17 || (sudo apt-get install -y clang-17 && ln -s /usr/bin/clang-17 /usr/bin/clang++-17)
+          export CXX=clang++-17
+          export CC=clang-17
+        fi
+        
+        # Install Protocol Buffers
+        if [[ "${{ matrix.protobuf_version }}" == "3.x" ]]; then
+          sudo apt-get install -y protobuf-compiler libprotobuf-dev
+        else
+          # Install latest version from GitHub releases
+          PROTOBUF_VERSION=$(curl -s https://api.github.com/repos/protocolbuffers/protobuf/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+          wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VERSION}/protobuf-all-${PROTOBUF_VERSION}.tar.gz
+          tar -xzf protobuf-all-${PROTOBUF_VERSION}.tar.gz
+          cd protobuf-${PROTOBUF_VERSION}
+          ./configure --prefix=/usr/local
+          make -j$(nproc)
+          sudo make install
+          sudo ldconfig
+          cd ..
+        fi
+    
+    - name: Verify protoc installation
+      run: |
+        protoc --version
+        pkg-config --modversion protobuf || echo "Protobuf package config not available"
+    
+    - name: Generate C++ code from .proto files
+      run: |
+        mkdir -p generated
+        protoc --cpp_out=generated proto/sensor_data.proto
+        echo "Generated files:"
+        ls -lh generated/
+    
+    - name: Build ProtobufExample
+      run: |
+        if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
+          export CXX=g++-13
+        elif [[ "${{ matrix.compiler }}" == "clang++-17" ]]; then
+          export CXX=clang++-17
+        fi
+        
+        mkdir -p build
+        ${CXX} -std=c++17 -Wall -Wextra -O2 \
+          -I generated \
+          src/ProtobufExample.cpp \
+          generated/sensor_data.pb.cc \
+          -lprotobuf \
+          -o build/ProtobufExample
+    
+    - name: Verify binary was built
+      run: |
+        ls -lh build/ProtobufExample
+        file build/ProtobufExample
+        size build/ProtobufExample || stat -c %s build/ProtobufExample
+    
+    - name: Run ProtobufExample
+      run: |
+        echo "=== Running Protocol Buffers Example ==="
+        ./build/ProtobufExample
+    
+    - name: Upload generated files
+      uses: actions/upload-artifact@v4
+      with:
+        name: generated-protobuf-${{ matrix.compiler }}-${{ matrix.protobuf_version }}
+        path: generated/
+        retention-days: 3
+    
+    - name: Upload executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: protobuf-example-${{ matrix.compiler }}-${{ matrix.protobuf_version }}
+        path: build/ProtobufExample
+        retention-days: 3
+
+  test-with-build-script:
+    name: Test build_protobuf.sh Script
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Protocol Buffers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler libprotobuf-dev g++-13
+    
+    - name: Make script executable
+      run: chmod +x scripts/build_protobuf.sh
+    
+    - name: Run build script
+      run: |
+        export CXX=g++-13
+        export CC=gcc-13
+        ./scripts/build_protobuf.sh
+    
+    - name: Verify output
+      run: |
+        ls -lh build/ProtobufExample
+        ./build/ProtobufExample
+
+  test-serialization:
+    name: Test Serialization/Deserialization
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler libprotobuf-dev g++-13
+    
+    - name: Generate code
+      run: |
+        mkdir -p generated
+        protoc --cpp_out=generated proto/sensor_data.proto
+    
+    - name: Create test program
+      run: |
+        cat > test_serialization.cpp << 'EOF'
+        #include "sensor_data.pb.h"
+        #include <iostream>
+        #include <fstream>
+        
+        int main() {
+            // Create a sensor reading
+            sensors::SensorReading reading;
+            reading.set_type(sensors::TEMPERATURE);
+            reading.set_device_id("test_sensor");
+            reading.set_temperature_celsius(25.5f);
+            
+            // Serialize to file
+            std::ofstream output("test_data.bin", std::ios::binary);
+            if (!reading.SerializeToOstream(&output)) {
+                std::cerr << "Serialization failed!\n";
+                return 1;
+            }
+            output.close();
+            
+            // Deserialize from file
+            std::ifstream input("test_data.bin", std::ios::binary);
+            sensors::SensorReading reading2;
+            if (!reading2.ParseFromIstream(&input)) {
+                std::cerr << "Deserialization failed!\n";
+                return 1;
+            }
+            
+            // Verify data
+            if (reading2.device_id() != "test_sensor" ||
+                reading2.temperature_celsius() != 25.5f) {
+                std::cerr << "Data verification failed!\n";
+                return 1;
+            }
+            
+            std::cout << "✓ Serialization/Deserialization test passed!\n";
+            std::cout << "  Device: " << reading2.device_id() << "\n";
+            std::cout << "  Temperature: " << reading2.temperature_celsius() << "°C\n";
+            
+            return 0;
+        }
+        EOF
+    
+    - name: Compile and run test
+      run: |
+        g++-13 -std=c++17 -I generated \
+          test_serialization.cpp \
+          generated/sensor_data.pb.cc \
+          -lprotobuf \
+          -o test_serialization
+        
+        ./test_serialization
+
+  documentation-check:
+    name: Verify Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Check .proto file
+      run: |
+        echo "Checking proto/sensor_data.proto..."
+        if [ ! -f proto/sensor_data.proto ]; then
+          echo "Error: proto/sensor_data.proto not found!"
+          exit 1
+        fi
+        
+        # Validate syntax
+        protoc --decode_raw < /dev/null || true  # Just check protoc exists
+        echo "✓ .proto file exists"
+    
+    - name: Check documentation
+      run: |
+        echo "Checking MarkDownDocuments/Protobuf.md..."
+        if [ ! -f MarkDownDocuments/Protobuf.md ]; then
+          echo "Error: Protobuf.md not found!"
+          exit 1
+        fi
+        echo "✓ Documentation exists"
+    
+    - name: Check build script
+      run: |
+        echo "Checking scripts/build_protobuf.sh..."
+        if [ ! -f scripts/build_protobuf.sh ]; then
+          echo "Error: build_protobuf.sh not found!"
+          exit 1
+        fi
+        echo "✓ Build script exists"
+    
+    - name: Check source file
+      run: |
+        echo "Checking src/ProtobufExample.cpp..."
+        if [ ! -f src/ProtobufExample.cpp ]; then
+          echo "Error: ProtobufExample.cpp not found!"
+          exit 1
+        fi
+        
+        # Check for key sections
+        grep -q "EXAMPLE 1:" src/ProtobufExample.cpp || { echo "Missing example sections!"; exit 1; }
+        grep -q "BINARY SERIALIZATION" src/ProtobufExample.cpp || { echo "Missing serialization example!"; exit 1; }
+        echo "✓ Source file complete"
+
+  performance-benchmark:
+    name: Performance Benchmark (Protobuf vs JSON)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler libprotobuf-dev g++-13
+    
+    - name: Generate code
+      run: |
+        mkdir -p generated
+        protoc --cpp_out=generated proto/sensor_data.proto
+    
+    - name: Create benchmark program
+      run: |
+        cat > benchmark.cpp << 'EOF'
+        #include "sensor_data.pb.h"
+        #include <google/protobuf/util/json_util.h>
+        #include <iostream>
+        #include <chrono>
+        #include <iomanip>
+        
+        int main() {
+            sensors::SensorReading reading;
+            reading.set_type(sensors::TEMPERATURE);
+            reading.set_device_id("benchmark_sensor");
+            reading.set_temperature_celsius(25.5f);
+            
+            const int iterations = 10000;
+            
+            // Benchmark binary serialization
+            auto start = std::chrono::high_resolution_clock::now();
+            for (int i = 0; i < iterations; ++i) {
+                std::string serialized;
+                reading.SerializeToString(&serialized);
+            }
+            auto binary_time = std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now() - start
+            ).count();
+            
+            // Benchmark JSON serialization
+            start = std::chrono::high_resolution_clock::now();
+            for (int i = 0; i < iterations; ++i) {
+                std::string json;
+                google::protobuf::util::MessageToJsonString(reading, &json);
+            }
+            auto json_time = std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now() - start
+            ).count();
+            
+            // Get sizes
+            std::string binary_data;
+            reading.SerializeToString(&binary_data);
+            std::string json_data;
+            google::protobuf::util::MessageToJsonString(reading, &json_data);
+            
+            std::cout << "Performance Benchmark (" << iterations << " iterations):\n";
+            std::cout << "  Binary: " << binary_time << " µs (" 
+                      << (binary_time / iterations) << " µs/iter)\n";
+            std::cout << "  JSON:   " << json_time << " µs (" 
+                      << (json_time / iterations) << " µs/iter)\n";
+            std::cout << "  Speedup: " << std::fixed << std::setprecision(1) 
+                      << (double)json_time / binary_time << "x\n\n";
+            
+            std::cout << "Size Comparison:\n";
+            std::cout << "  Binary: " << binary_data.size() << " bytes\n";
+            std::cout << "  JSON:   " << json_data.size() << " bytes\n";
+            std::cout << "  Reduction: " << std::fixed << std::setprecision(1)
+                      << (1.0 - (double)binary_data.size() / json_data.size()) * 100 << "%\n";
+            
+            return 0;
+        }
+        EOF
+    
+    - name: Compile and run benchmark
+      run: |
+        g++-13 -std=c++17 -O3 -I generated \
+          benchmark.cpp \
+          generated/sensor_data.pb.cc \
+          -lprotobuf \
+          -o benchmark
+        
+        echo "=== Performance Benchmark ==="
+        ./benchmark

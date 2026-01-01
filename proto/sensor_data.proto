@@ -1,0 +1,85 @@
+// ===================================================================
+// Protocol Buffer Definition for Sensor Data
+// ===================================================================
+// This demonstrates protobuf usage for embedded systems and IoT devices
+// where efficient serialization and cross-platform compatibility are crucial.
+
+syntax = "proto3";
+
+package sensors;
+
+// Sensor types enumeration
+enum SensorType {
+  SENSOR_TYPE_UNKNOWN = 0;
+  TEMPERATURE = 1;
+  HUMIDITY = 2;
+  PRESSURE = 3;
+  ACCELEROMETER = 4;
+  GYROSCOPE = 5;
+  GPS = 6;
+}
+
+// Timestamp message
+message Timestamp {
+  int64 seconds = 1;       // Seconds since epoch
+  int32 nanoseconds = 2;   // Nanoseconds component
+}
+
+// GPS coordinates
+message GpsCoordinates {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude = 3;
+}
+
+// 3D vector for accelerometer/gyroscope data
+message Vector3D {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+// Individual sensor reading
+message SensorReading {
+  SensorType type = 1;
+  Timestamp timestamp = 2;
+  string device_id = 3;
+  
+  // One of these will be set based on sensor type
+  oneof measurement {
+    float temperature_celsius = 10;
+    float humidity_percent = 11;
+    float pressure_hpa = 12;
+    Vector3D acceleration = 13;
+    Vector3D angular_velocity = 14;
+    GpsCoordinates gps_position = 15;
+  }
+  
+  // Optional metadata
+  map<string, string> metadata = 20;
+}
+
+// Batch of sensor readings
+message SensorBatch {
+  repeated SensorReading readings = 1;
+  string batch_id = 2;
+  Timestamp batch_timestamp = 3;
+}
+
+// Device configuration
+message DeviceConfig {
+  string device_id = 1;
+  repeated SensorType enabled_sensors = 2;
+  int32 sampling_rate_hz = 3;
+  bool low_power_mode = 4;
+}
+
+// Device status report
+message DeviceStatus {
+  string device_id = 1;
+  Timestamp timestamp = 2;
+  float battery_percent = 3;
+  int32 uptime_seconds = 4;
+  int32 total_readings = 5;
+  bool is_connected = 6;
+}

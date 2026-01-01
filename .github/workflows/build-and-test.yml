@@ -23,7 +23,8 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential libeigen3-dev
+        sudo apt-get install -y cmake build-essential libeigen3-dev \
+          protobuf-compiler libprotobuf-dev
         
         # Install specific compiler versions
         if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
@@ -192,6 +193,15 @@ jobs:
           ./build/bin/EigenSensorFusion
         else
           echo "EigenSensorFusion not built (Eigen3 may not be available)"
+        fi
+    
+    - name: Run Protocol Buffers Example
+      run: |
+        echo "=== Running Protocol Buffers Example ==="
+        if [ -f ./build/bin/ProtobufExample ]; then
+          ./build/bin/ProtobufExample
+        else
+          echo "ProtobufExample not built (Protobuf may not be available)"
         fi
     
     - name: Upload build artifacts
