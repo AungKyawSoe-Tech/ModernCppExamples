@@ -36,6 +36,15 @@ else()
     message(STATUS "Install with: sudo apt-get install nlohmann-json3-dev")
 endif()
 
+# Find CURL (optional, for RestApiExample)
+find_package(CURL QUIET)
+if(CURL_FOUND)
+    message(STATUS "CURL found: ${CURL_VERSION_STRING}")
+else()
+    message(STATUS "CURL not found - RestApiExample will be skipped")
+    message(STATUS "Install with: sudo apt-get install libcurl4-openssl-dev (Linux) or vcpkg install curl (Windows)")
+endif()
+
 # Add compiler warnings
 if(MSVC)
     add_compile_options(/W4)
@@ -183,6 +192,28 @@ if(nlohmann_json_FOUND)
     message(STATUS "Added executable: NlohmannJsonExample")
 else()
     message(STATUS "Skipping NlohmannJsonExample (nlohmann_json not found)")
+endif()
+
+# Build RestApiExample if both CURL and nlohmann_json are available
+if(CURL_FOUND AND nlohmann_json_FOUND)
+    add_executable(RestApiExample src/RestApiExample.cpp)
+    
+    # Set C++17 standard for RestApiExample
+    set_target_properties(RestApiExample PROPERTIES CXX_STANDARD 17)
+    
+    # Link CURL and nlohmann_json libraries
+    target_link_libraries(RestApiExample 
+        CURL::libcurl 
+        nlohmann_json::nlohmann_json)
+    
+    message(STATUS "Added executable: RestApiExample")
+else()
+    if(NOT CURL_FOUND)
+        message(STATUS "Skipping RestApiExample (CURL not found)")
+    endif()
+    if(NOT nlohmann_json_FOUND)
+        message(STATUS "Skipping RestApiExample (nlohmann_json not found)")
+    endif()
 endif()
 
 # Print build configuration
