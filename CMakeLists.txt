@@ -34,6 +34,8 @@ set(EXECUTABLES
     AsioAndModernCppConcurrency
     EventDrivenProgramming_Lambdas
     EventDrivenProgramming_Inheritance
+    EmbeddedSystemsProgramming
+    EmbeddedSystemsAvoid
     
     # Existing algorithm and data structure examples
     BinarySearch

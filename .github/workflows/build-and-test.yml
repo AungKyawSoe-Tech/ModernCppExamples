@@ -119,6 +119,16 @@ jobs:
         echo "=== Running Event-Driven Programming (Inheritance) ==="
         ./build/bin/EventDrivenProgramming_Inheritance
     
+    - name: Run Embedded Systems Programming
+      run: |
+        echo "=== Running Embedded Systems Programming ==="
+        ./build/bin/EmbeddedSystemsProgramming
+    
+    - name: Run Embedded Systems (Why Avoid)
+      run: |
+        echo "=== Running Embedded Systems (Why Avoid) ==="
+        ./build/bin/EmbeddedSystemsAvoid
+    
     - name: Run ASIO and Modern C++ Concurrency Example
       run: |
         echo "=== Running ASIO vs Modern C++ Concurrency ==="
