@@ -109,6 +109,16 @@ jobs:
         echo "=== Running Polymorphism and RTTI ==="
         ./build/bin/PolymorphismRTTI
     
+    - name: Run Event-Driven Programming (Lambdas)
+      run: |
+        echo "=== Running Event-Driven Programming (Lambdas) ==="
+        ./build/bin/EventDrivenProgramming_Lambdas
+    
+    - name: Run Event-Driven Programming (Inheritance)
+      run: |
+        echo "=== Running Event-Driven Programming (Inheritance) ==="
+        ./build/bin/EventDrivenProgramming_Inheritance
+    
     - name: Run ASIO and Modern C++ Concurrency Example
       run: |
         echo "=== Running ASIO vs Modern C++ Concurrency ==="

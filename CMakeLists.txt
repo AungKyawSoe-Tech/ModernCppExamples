@@ -32,6 +32,8 @@ set(EXECUTABLES
     DependencyInjection
     PolymorphismRTTI
     AsioAndModernCppConcurrency
+    EventDrivenProgramming_Lambdas
+    EventDrivenProgramming_Inheritance
     
     # Existing algorithm and data structure examples
     BinarySearch
