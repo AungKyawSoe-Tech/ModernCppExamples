@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential
+        sudo apt-get install -y cmake build-essential libeigen3-dev
         
         # Install specific compiler versions
         if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
@@ -185,6 +185,15 @@ jobs:
         
         echo "=== Running RangesExamples ==="
         ./build/bin/RangesExamples
+    
+    - name: Run Eigen Sensor Fusion Example
+      run: |
+        echo "=== Running Eigen Sensor Fusion and Particle Filter ==="
+        if [ -f ./build/bin/EigenSensorFusion ]; then
+          ./build/bin/EigenSensorFusion
+        else
+          echo "EigenSensorFusion not built (Eigen3 may not be available)"
+        fi
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4

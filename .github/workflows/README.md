@@ -98,6 +98,62 @@ This directory contains GitHub Actions workflows for building and testing the Mo
 
 ---
 
+### 5. Eigen Examples (`eigen-examples.yml`)
+**Trigger:** Changes to EigenSensorFusion.cpp or CMakeLists.txt, manual dispatch
+
+**Purpose:** Build and test Eigen-based sensor fusion and particle filter examples
+
+**Matrix Strategy:**
+- Operating Systems: Ubuntu, macOS
+- Build Types: Release, Debug
+- Eigen Versions: 3.3.9, 3.4.0
+
+**Jobs:**
+- `test-eigen-sensor-fusion` - Build and run on Linux/macOS with different build types
+- `test-eigen-versions` - Test compatibility with multiple Eigen versions
+- `test-manual-compilation` - Test direct g++ compilation without CMake
+- `performance-benchmark` - Measure execution time and memory usage
+- `documentation-check` - Verify code documentation and structure
+- `cross-compiler-test` - Cross-compile for ARM embedded systems
+- `summary` - Display comprehensive test summary
+
+**Features:**
+- Multi-platform testing (Linux, macOS)
+- Eigen version compatibility testing
+- Multiple optimization levels (-O0, -O2, -O3 -march=native)
+- Performance profiling with `/usr/bin/time`
+- ARM cross-compilation for embedded systems
+- Automatic Eigen3 installation verification
+
+**Algorithms Tested:**
+- Kalman Filter - GPS/IMU sensor fusion
+- Complementary Filter - Accelerometer/Gyroscope fusion
+- Particle Filter - Monte Carlo localization (500 particles)
+- Extended Kalman Filter - Nonlinear sensor fusion
+- Complete Sensor Fusion Pipeline - Multi-rate sensor integration
+
+**Build Instructions Included:**
+```bash
+# CMake method
+mkdir build && cd build
+cmake ..
+make EigenSensorFusion
+
+# Direct compilation
+g++ -std=c++17 -O3 -march=native -I/usr/include/eigen3 \
+    src/EigenSensorFusion.cpp -o EigenSensorFusion
+
+# ARM cross-compilation
+arm-linux-gnueabihf-g++ -std=c++17 -O2 -I/usr/include/eigen3 \
+    src/EigenSensorFusion.cpp -o EigenSensorFusion_arm
+```
+
+**Usage:**
+- Automatically runs when Eigen files are modified
+- Manual trigger: Go to Actions → Build and Test Eigen Examples → Run workflow
+
+---
+
 ## Status Badges
 
 Add these to your README.md:
@@ -107,6 +163,7 @@ Add these to your README.md:
 ![Comprehensive Examples](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Test%20Comprehensive%20C++%20Standard%20Examples/badge.svg)
 ![Quick Test](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Quick%20Test/badge.svg)
 ![Pybind11 Examples](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Build%20and%20Test%20Pybind11%20Examples/badge.svg)
+![Eigen Examples](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Build%20and%20Test%20Eigen%20Examples/badge.svg)
 ```
 
 Replace `YOUR_USERNAME` with your GitHub username.
@@ -150,6 +207,14 @@ Build artifacts are uploaded and retained for 7 days:
 - `pybind11-module-ubuntu-latest-py3.X`
 - `pybind11-module-macos-latest-py3.X`
 - `pybind11-module-windows-latest-py3.X`
+
+**Eigen Examples:**
+- `EigenSensorFusion-ubuntu-latest-Release`
+- `EigenSensorFusion-ubuntu-latest-Debug`
+- `EigenSensorFusion-macos-latest-Release`
+- `EigenSensorFusion-macos-latest-Debug`
+- `EigenSensorFusion-arm` (ARM cross-compiled)
+- `performance-log` (Performance benchmark results)
 
 Download from: Actions → Workflow Run → Artifacts section
 
@@ -218,6 +283,29 @@ python test_pybind.py
 
 # Test import
 python -c "import pybind_example as pe; print(pe.add(5, 3))"
+```
+
+### Eigen Examples
+```bash
+# Install Eigen3
+sudo apt-get install -y libeigen3-dev  # Ubuntu/Debian
+brew install eigen                      # macOS
+
+# Build with CMake
+mkdir build && cd build
+cmake ..
+make EigenSensorFusion
+
+# Run
+./bin/EigenSensorFusion
+
+# Or compile directly
+g++ -std=c++17 -O3 -march=native -I/usr/include/eigen3 \
+    src/EigenSensorFusion.cpp -o EigenSensorFusion
+./EigenSensorFusion
+
+# Performance benchmark
+/usr/bin/time -v ./bin/EigenSensorFusion
 ```
 
 ---

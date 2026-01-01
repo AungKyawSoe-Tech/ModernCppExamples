@@ -9,6 +9,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# Find Eigen3 (optional, for EigenSensorFusion example)
+find_package(Eigen3 QUIET)
+if(EIGEN3_FOUND)
+    message(STATUS "Eigen3 found: ${EIGEN3_VERSION}")
+else()
+    message(STATUS "Eigen3 not found - EigenSensorFusion will be skipped")
+    message(STATUS "Install with: sudo apt-get install libeigen3-dev")
+endif()
+
 # Add compiler warnings
 if(MSVC)
     add_compile_options(/W4)
@@ -45,6 +54,7 @@ set(EXECUTABLES
     STLContainersNoHeap
     ARMInstructionSets
     Cpp23Examples
+    EigenSensorFusion
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
     # Modules are not yet fully supported by CMake's standard add_executable
@@ -75,6 +85,12 @@ set(EXECUTABLES
 # Create executable for each source file
 foreach(EXECUTABLE ${EXECUTABLES})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/${EXECUTABLE}.cpp)
+        # Skip EigenSensorFusion if Eigen3 not found
+        if(${EXECUTABLE} STREQUAL "EigenSensorFusion" AND NOT EIGEN3_FOUND)
+            message(STATUS "Skipping ${EXECUTABLE} (Eigen3 not found)")
+            continue()
+        endif()
+        
         add_executable(${EXECUTABLE} src/${EXECUTABLE}.cpp)
         
         # Set specific C++ standards for different examples
@@ -91,6 +107,11 @@ foreach(EXECUTABLE ${EXECUTABLES})
         else()
             # Default to C++20 for other examples
             set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 20)
+        endif()
+        
+        # Link Eigen3 for EigenSensorFusion
+        if(${EXECUTABLE} STREQUAL "EigenSensorFusion" AND EIGEN3_FOUND)
+            target_link_libraries(${EXECUTABLE} Eigen3::Eigen)
         endif()
         
         message(STATUS "Added executable: ${EXECUTABLE}")
