@@ -27,6 +27,15 @@ else()
     message(STATUS "Install with: sudo apt-get install protobuf-compiler libprotobuf-dev")
 endif()
 
+# Find nlohmann_json (optional, for NlohmannJsonExample)
+find_package(nlohmann_json QUIET)
+if(nlohmann_json_FOUND)
+    message(STATUS "nlohmann_json found: ${nlohmann_json_VERSION}")
+else()
+    message(STATUS "nlohmann_json not found - NlohmannJsonExample will be skipped")
+    message(STATUS "Install with: sudo apt-get install nlohmann-json3-dev")
+endif()
+
 # Add compiler warnings
 if(MSVC)
     add_compile_options(/W4)
@@ -159,6 +168,21 @@ if(Protobuf_FOUND)
     message(STATUS "Added executable: ProtobufExample (with generated protobuf code)")
 else()
     message(STATUS "Skipping ProtobufExample (Protobuf not found)")
+endif()
+
+# Build NlohmannJsonExample if nlohmann_json is available
+if(nlohmann_json_FOUND)
+    add_executable(NlohmannJsonExample src/NlohmannJsonExample.cpp)
+    
+    # Set C++17 standard for NlohmannJsonExample
+    set_target_properties(NlohmannJsonExample PROPERTIES CXX_STANDARD 17)
+    
+    # Link nlohmann_json library
+    target_link_libraries(NlohmannJsonExample nlohmann_json::nlohmann_json)
+    
+    message(STATUS "Added executable: NlohmannJsonExample")
+else()
+    message(STATUS "Skipping NlohmannJsonExample (nlohmann_json not found)")
 endif()
 
 # Print build configuration

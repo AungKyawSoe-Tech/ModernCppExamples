@@ -24,7 +24,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y cmake build-essential libeigen3-dev \
-          protobuf-compiler libprotobuf-dev
+          protobuf-compiler libprotobuf-dev nlohmann-json3-dev
         
         # Install specific compiler versions
         if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
@@ -202,6 +202,15 @@ jobs:
           ./build/bin/ProtobufExample
         else
           echo "ProtobufExample not built (Protobuf may not be available)"
+        fi
+    
+    - name: Run Nlohmann JSON Example
+      run: |
+        echo "=== Running Nlohmann JSON Example ==="
+        if [ -f ./build/bin/NlohmannJsonExample ]; then
+          ./build/bin/NlohmannJsonExample
+        else
+          echo "NlohmannJsonExample not built (nlohmann_json may not be available)"
         fi
     
     - name: Upload build artifacts
