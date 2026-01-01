@@ -24,6 +24,9 @@ set(EXECUTABLES
     Cpp17Examples
     Cpp20Examples
     
+    # Special member functions example
+    RuleOf3_5_0
+    
     # Existing algorithm and data structure examples
     BinarySearch
     Cpp17Concurrency

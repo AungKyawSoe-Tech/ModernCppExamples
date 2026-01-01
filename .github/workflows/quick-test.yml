@@ -28,6 +28,9 @@ jobs:
     
     - name: Test comprehensive examples
       run: |
+        echo "Testing Rule of 3/5/0..."
+        timeout 30s ./build/bin/RuleOf3_5_0 || echo "Rule of 3/5/0 test completed"
+        
         echo "Testing C++11..."
         timeout 30s ./build/bin/Cpp11Examples || echo "C++11 test completed"
         

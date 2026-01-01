@@ -79,6 +79,11 @@ jobs:
         echo "=== Running C++20 Examples ==="
         ./build/bin/Cpp20Examples
     
+    - name: Run Special Member Functions Example
+      run: |
+        echo "=== Running Rule of 3/5/0 ==="
+        ./build/bin/RuleOf3_5_0
+    
     - name: Run Algorithm Examples
       run: |
         echo "=== Running BinarySearch ==="
