@@ -42,6 +42,7 @@
 #include <iomanip>
 #include <vector>
 #include <map>
+#include <set>
 #include <nlohmann/json.hpp>
 
 // For convenience
@@ -477,8 +478,18 @@ void example_sax_parsing() {
             return true;
         }
         
+        bool number_unsigned(json::number_unsigned_t val) {
+            std::cout << "  Event: unsigned = " << val << "\n";
+            return true;
+        }
+        
         bool number_float(json::number_float_t val, const std::string&) {
             std::cout << "  Event: float = " << val << "\n";
+            return true;
+        }
+        
+        bool binary(json::binary_t& val) {
+            std::cout << "  Event: binary (" << val.size() << " bytes)\n";
             return true;
         }
         
