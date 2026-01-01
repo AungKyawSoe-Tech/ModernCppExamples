@@ -89,6 +89,11 @@ jobs:
         echo "=== Running Object Slicing and Smart Pointers ==="
         ./build/bin/ObjectSlicingSmartPtr
     
+    - name: Run Object Slicing Prevention with C++20
+      run: |
+        echo "=== Running Object Slicing Prevention (C++20) ==="
+        ./build/bin/ObjectSlicingCpp20
+    
     - name: Run Algorithm Examples
       run: |
         echo "=== Running BinarySearch ==="

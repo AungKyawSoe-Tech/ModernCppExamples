@@ -27,6 +27,7 @@ set(EXECUTABLES
     # Special member functions and smart pointer examples
     RuleOf3_5_0
     ObjectSlicingSmartPtr
+    ObjectSlicingCpp20
     
     # Existing algorithm and data structure examples
     BinarySearch
