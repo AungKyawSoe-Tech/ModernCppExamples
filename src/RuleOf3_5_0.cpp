@@ -427,7 +427,308 @@ void example_default_and_delete() {
 }
 
 // ===================================================================
-// 7. COPY-AND-SWAP IDIOM
+// 6. EXPLICIT KEYWORD - PREVENTING IMPLICIT CONVERSIONS
+// ===================================================================
+// The explicit keyword prevents implicit type conversions that could
+// lead to unexpected behavior or resource management issues
+
+// BAD: Without explicit - allows implicit conversions
+class ImplicitBuffer {
+private:
+    std::unique_ptr<int[]> data;
+    size_t size;
+    
+public:
+    // Constructor without explicit - DANGEROUS!
+    ImplicitBuffer(size_t s) : data(std::make_unique<int[]>(s)), size(s) {
+        std::cout << "ImplicitBuffer: Allocated " << size << " ints" << std::endl;
+    }
+    
+    size_t getSize() const { return size; }
+};
+
+// GOOD: With explicit - prevents implicit conversions
+class ExplicitBuffer {
+private:
+    std::unique_ptr<int[]> data;
+    size_t size;
+    
+public:
+    // Constructor with explicit - SAFE!
+    explicit ExplicitBuffer(size_t s) : data(std::make_unique<int[]>(s)), size(s) {
+        std::cout << "ExplicitBuffer: Allocated " << size << " ints" << std::endl;
+    }
+    
+    size_t getSize() const { return size; }
+};
+
+// Example with conversion operators
+class SmartInt {
+private:
+    int value;
+    
+public:
+    explicit SmartInt(int v) : value(v) {}
+    
+    // C++11: explicit conversion operator
+    explicit operator int() const { return value; }
+    
+    // Implicit conversion would be dangerous for bool
+    explicit operator bool() const { return value != 0; }
+};
+
+void processBuffer(const ExplicitBuffer& buf) {
+    std::cout << "  Processing buffer of size: " << buf.getSize() << std::endl;
+}
+
+void processImplicitBuffer(const ImplicitBuffer& buf) {
+    std::cout << "  Processing implicit buffer of size: " << buf.getSize() << std::endl;
+}
+
+void example_explicit_keyword() {
+    std::cout << "\n=== EXPLICIT KEYWORD ===" << std::endl;
+    std::cout << "Prevents dangerous implicit conversions\n" << std::endl;
+    
+    // Without explicit - COMPILES BUT DANGEROUS!
+    std::cout << "Without explicit keyword:" << std::endl;
+    ImplicitBuffer buf1(10);  // OK: Direct initialization
+    
+    // DANGEROUS: Implicit conversion from int to ImplicitBuffer!
+    processImplicitBuffer(100);  // Creates temporary ImplicitBuffer(100) - wasteful!
+    
+    // Can even do this nonsense:
+    ImplicitBuffer buf2 = 50;  // Implicit conversion - looks like int assignment!
+    std::cout << "  Created buffer with = 50 (confusing!)" << std::endl;
+    
+    std::cout << "\nWith explicit keyword:" << std::endl;
+    ExplicitBuffer buf3(10);  // OK: Direct initialization
+    
+    // processBuffer(100);  // ERROR: Cannot implicitly convert int to ExplicitBuffer
+    // ExplicitBuffer buf4 = 50;  // ERROR: Cannot use copy initialization
+    
+    std::cout << "  ✓ Must use direct initialization: ExplicitBuffer(100)" << std::endl;
+    processBuffer(ExplicitBuffer(100));  // OK: Explicit construction
+    
+    // Explicit conversion operators (C++11)
+    std::cout << "\nExplicit conversion operators:" << std::endl;
+    SmartInt smart(42);
+    
+    // int x = smart;  // ERROR: Cannot implicitly convert to int
+    int x = static_cast<int>(smart);  // OK: Explicit cast required
+    std::cout << "  Explicit cast to int: " << x << std::endl;
+    
+    // if (smart) { }  // OK: Contextual conversion to bool allowed
+    std::cout << "  ✓ Contextual bool conversion works in if/while statements" << std::endl;
+    
+    std::cout << "\n💡 MODERN C++ BEST PRACTICES:" << std::endl;
+    std::cout << "  ✓ ALWAYS use explicit for single-parameter constructors" << std::endl;
+    std::cout << "  ✓ Use explicit for conversion operators (except bool)" << std::endl;
+    std::cout << "  ✓ Prevents accidental temporary object creation" << std::endl;
+    std::cout << "  ✓ Prevents resource allocation surprises" << std::endl;
+    std::cout << "  ✓ Makes code intent crystal clear" << std::endl;
+    
+    std::cout << "\n⚠️  WHEN IMPLICIT IS OK:" << std::endl;
+    std::cout << "  • String literals to std::string: std::string s = \"hello\";" << std::endl;
+    std::cout << "  • Initializer lists: std::vector<int> v = {1, 2, 3};" << std::endl;
+    std::cout << "  • Copy/move constructors (never explicit)" << std::endl;
+}
+
+// ===================================================================
+// 7. POLICY-BASED DESIGN - PARAMETERIZED RESOURCE MANAGEMENT
+// ===================================================================
+// Modern C++ technique: Use template parameters to customize behavior
+// without runtime overhead or virtual functions
+
+// Policy 1: Deletion Strategies
+struct ArrayDelete {
+    template<typename T>
+    void operator()(T* ptr) const {
+        delete[] ptr;
+        std::cout << "    ArrayDelete: delete[] called" << std::endl;
+    }
+};
+
+struct SingleDelete {
+    template<typename T>
+    void operator()(T* ptr) const {
+        delete ptr;
+        std::cout << "    SingleDelete: delete called" << std::endl;
+    }
+};
+
+struct NoOpDelete {
+    template<typename T>
+    void operator()(T*) const {
+        std::cout << "    NoOpDelete: no deletion (externally managed)" << std::endl;
+    }
+};
+
+// Policy 2: Copy Strategies
+struct DeepCopy {
+    template<typename T>
+    static T* copy(const T* src, size_t size) {
+        std::cout << "    DeepCopy: allocating and copying " << size << " elements" << std::endl;
+        T* dest = new T[size];
+        std::copy(src, src + size, dest);
+        return dest;
+    }
+};
+
+struct ShallowCopy {
+    template<typename T>
+    static T* copy(const T* src, size_t) {
+        std::cout << "    ShallowCopy: returning same pointer (reference counting)" << std::endl;
+        return const_cast<T*>(src);  // Warning: For demo only!
+    }
+};
+
+// Policy 3: Thread Safety
+struct NoThreadSafety {
+    void lock() const { /* no-op */ }
+    void unlock() const { /* no-op */ }
+};
+
+struct BasicThreadSafety {
+    void lock() const { 
+        std::cout << "    BasicThreadSafety: acquiring lock" << std::endl;
+    }
+    void unlock() const { 
+        std::cout << "    BasicThreadSafety: releasing lock" << std::endl;
+    }
+};
+
+// Policy-based Resource Manager
+template<
+    typename T,
+    typename DeletePolicy = ArrayDelete,
+    typename CopyPolicy = DeepCopy,
+    typename ThreadPolicy = NoThreadSafety
+>
+class PolicyBasedBuffer {
+private:
+    T* data_;
+    size_t size_;
+    DeletePolicy deleter_;
+    ThreadPolicy thread_policy_;
+    
+public:
+    // Constructor
+    PolicyBasedBuffer(size_t s) : data_(new T[s]), size_(s) {
+        std::cout << "  PolicyBasedBuffer: Constructor (size=" << size_ << ")" << std::endl;
+    }
+    
+    // Destructor
+    ~PolicyBasedBuffer() {
+        std::cout << "  PolicyBasedBuffer: Destructor" << std::endl;
+        thread_policy_.lock();
+        deleter_(data_);
+        thread_policy_.unlock();
+    }
+    
+    // Copy constructor (uses CopyPolicy)
+    PolicyBasedBuffer(const PolicyBasedBuffer& other) 
+        : data_(CopyPolicy::copy(other.data_, other.size_)), 
+          size_(other.size_) {
+        std::cout << "  PolicyBasedBuffer: Copy constructor" << std::endl;
+    }
+    
+    // Copy assignment
+    PolicyBasedBuffer& operator=(const PolicyBasedBuffer& other) {
+        if (this != &other) {
+            std::cout << "  PolicyBasedBuffer: Copy assignment" << std::endl;
+            thread_policy_.lock();
+            deleter_(data_);
+            data_ = CopyPolicy::copy(other.data_, other.size_);
+            size_ = other.size_;
+            thread_policy_.unlock();
+        }
+        return *this;
+    }
+    
+    // Move constructor
+    PolicyBasedBuffer(PolicyBasedBuffer&& other) noexcept
+        : data_(other.data_), size_(other.size_) {
+        other.data_ = nullptr;
+        other.size_ = 0;
+        std::cout << "  PolicyBasedBuffer: Move constructor" << std::endl;
+    }
+    
+    // Move assignment
+    PolicyBasedBuffer& operator=(PolicyBasedBuffer&& other) noexcept {
+        if (this != &other) {
+            std::cout << "  PolicyBasedBuffer: Move assignment" << std::endl;
+            thread_policy_.lock();
+            deleter_(data_);
+            data_ = other.data_;
+            size_ = other.size_;
+            other.data_ = nullptr;
+            other.size_ = 0;
+            thread_policy_.unlock();
+        }
+        return *this;
+    }
+    
+    size_t size() const { return size_; }
+    T* data() { return data_; }
+};
+
+// Type aliases for common configurations
+template<typename T>
+using ArrayBuffer = PolicyBasedBuffer<T, ArrayDelete, DeepCopy, NoThreadSafety>;
+
+template<typename T>
+using ThreadSafeBuffer = PolicyBasedBuffer<T, ArrayDelete, DeepCopy, BasicThreadSafety>;
+
+template<typename T>
+using SingleObjectBuffer = PolicyBasedBuffer<T, SingleDelete, DeepCopy, NoThreadSafety>;
+
+void example_policy_based_design() {
+    std::cout << "\n=== POLICY-BASED DESIGN ===" << std::endl;
+    std::cout << "Parameterize behavior with template policies\n" << std::endl;
+    
+    std::cout << "1. Standard array buffer (ArrayDelete + DeepCopy):" << std::endl;
+    {
+        ArrayBuffer<int> buf1(10);
+        std::cout << "   Copying..." << std::endl;
+        ArrayBuffer<int> buf2 = buf1;
+        std::cout << "   Moving..." << std::endl;
+        ArrayBuffer<int> buf3 = std::move(buf1);
+        std::cout << "   Cleanup:" << std::endl;
+    }
+    
+    std::cout << "\n2. Thread-safe buffer (with BasicThreadSafety):" << std::endl;
+    {
+        ThreadSafeBuffer<int> buf(5);
+        std::cout << "   Cleanup with thread safety:" << std::endl;
+    }
+    
+    std::cout << "\n3. Custom policy combination (NoOpDelete for externally managed):" << std::endl;
+    {
+        PolicyBasedBuffer<int, NoOpDelete, DeepCopy, NoThreadSafety> buf(3);
+        std::cout << "   Cleanup (no actual deletion):" << std::endl;
+    }
+    
+    std::cout << "\n💡 ADVANTAGES OF POLICY-BASED DESIGN:" << std::endl;
+    std::cout << "  ✓ Zero runtime overhead (compile-time selection)" << std::endl;
+    std::cout << "  ✓ No virtual functions or vtables needed" << std::endl;
+    std::cout << "  ✓ Highly composable and reusable" << std::endl;
+    std::cout << "  ✓ Type-safe customization" << std::endl;
+    std::cout << "  ✓ Optimized for each configuration" << std::endl;
+    
+    std::cout << "\n📚 REAL-WORLD USES:" << std::endl;
+    std::cout << "  • std::unique_ptr<T, Deleter> - Custom deleters" << std::endl;
+    std::cout << "  • STL containers with Allocator - Custom allocators" << std::endl;
+    std::cout << "  • Thread-safety policies in concurrent code" << std::endl;
+    std::cout << "  • Logging/tracing policies" << std::endl;
+    std::cout << "  • Different storage strategies (stack vs heap)" << std::endl;
+    
+    std::cout << "\n🎯 MODERN C++ ALTERNATIVE:" << std::endl;
+    std::cout << "  Use std::unique_ptr<T, Deleter> for most cases:" << std::endl;
+    std::cout << "    auto ptr = std::unique_ptr<int[], ArrayDelete>(new int[10]);" << std::endl;
+}
+
+// ===================================================================
+// 8. COPY-AND-SWAP IDIOM
 // ===================================================================
 // An elegant way to implement assignment operators
 
@@ -524,6 +825,8 @@ int main() {
     example_modern_cpp_relevance();
     example_comparison();
     example_default_and_delete();
+    example_explicit_keyword();
+    example_policy_based_design();
     example_copy_and_swap();
     
     std::cout << "\n================================================================" << std::endl;
