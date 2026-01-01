@@ -39,6 +39,7 @@ set(EXECUTABLES
     TemplatedCameraInterface
     ErrorHandling
     ExceptionWithSourceLocation
+    ErrorHandlingStroustrup
     Cpp23Examples
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
