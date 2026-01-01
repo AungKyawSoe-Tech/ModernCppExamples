@@ -94,6 +94,16 @@ jobs:
         echo "=== Running Object Slicing Prevention (C++20) ==="
         ./build/bin/ObjectSlicingCpp20
     
+    - name: Run Inheritance Types Example
+      run: |
+        echo "=== Running Inheritance Types (Public/Private/Protected) ==="
+        ./build/bin/InheritanceTypes
+    
+    - name: Run Dependency Injection Example
+      run: |
+        echo "=== Running Dependency Injection Patterns ==="
+        ./build/bin/DependencyInjection
+    
     - name: Run Algorithm Examples
       run: |
         echo "=== Running BinarySearch ==="

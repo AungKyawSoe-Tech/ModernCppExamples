@@ -28,6 +28,8 @@ set(EXECUTABLES
     RuleOf3_5_0
     ObjectSlicingSmartPtr
     ObjectSlicingCpp20
+    InheritanceTypes
+    DependencyInjection
     
     # Existing algorithm and data structure examples
     BinarySearch
