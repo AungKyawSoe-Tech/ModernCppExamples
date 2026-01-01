@@ -104,6 +104,16 @@ jobs:
         echo "=== Running Dependency Injection Patterns ==="
         ./build/bin/DependencyInjection
     
+    - name: Run Polymorphism and RTTI Example
+      run: |
+        echo "=== Running Polymorphism and RTTI ==="
+        ./build/bin/PolymorphismRTTI
+    
+    - name: Run ASIO and Modern C++ Concurrency Example
+      run: |
+        echo "=== Running ASIO vs Modern C++ Concurrency ==="
+        ./build/bin/AsioAndModernCppConcurrency
+    
     - name: Run Algorithm Examples
       run: |
         echo "=== Running BinarySearch ==="

@@ -30,6 +30,8 @@ set(EXECUTABLES
     ObjectSlicingCpp20
     InheritanceTypes
     DependencyInjection
+    PolymorphismRTTI
+    AsioAndModernCppConcurrency
     
     # Existing algorithm and data structure examples
     BinarySearch
