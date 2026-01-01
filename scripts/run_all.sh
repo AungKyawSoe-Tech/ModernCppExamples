@@ -6,10 +6,10 @@ echo "  Running All Modern C++ Examples"
 echo "==========================================="
 echo ""
 
-binPath="build/bin"
+binPath="../build/bin"
 
 if [ ! -d "$binPath" ]; then
-    echo "Error: Build directory not found. Please run build.sh first."
+    echo "Error: Build directory not found. Please run scripts/build.sh first."
     exit 1
 fi
 

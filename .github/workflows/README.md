@@ -75,7 +75,7 @@ This directory contains GitHub Actions workflows for building and testing the Mo
 **Jobs:**
 - `test-pybind11` - Build extension module and run tests on all platforms/versions
 - `test-pybind11-minimal` - Test basic functionality without NumPy dependency
-- `verify-build-script` - Test the build_pybind.sh script
+- `verify-build-script` - Test the scripts/build_pybind.sh script
 - `documentation-check` - Verify documentation completeness
 - `summary` - Display test summary
 
@@ -275,8 +275,8 @@ c++ -O3 -Wall -shared -std=c++17 -fPIC \
     -o pybind_example$(python3-config --extension-suffix)
 
 # Or use the build script
-chmod +x build_pybind.sh
-./build_pybind.sh
+chmod +x scripts/build_pybind.sh
+./scripts/build_pybind.sh
 
 # Run tests
 python test_pybind.py

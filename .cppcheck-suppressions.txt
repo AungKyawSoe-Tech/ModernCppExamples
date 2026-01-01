@@ -1,0 +1,15 @@
+# Cppcheck Suppressions
+# Format: [error id]:[filename]:[line]
+# Use * as wildcard
+
+# Suppress intentional issues in ResourceLeaks.cpp (demonstrates old C++ problems)
+memleak:src/ResourceLeaks.cpp
+doubleFree:src/ResourceLeaks.cpp
+mismatchAllocDealloc:src/ResourceLeaks.cpp
+
+# Suppress warnings for external/third-party code
+*:build/*
+*:cmake-build-*/*
+
+# Suppress specific warnings
+unmatchedSuppression

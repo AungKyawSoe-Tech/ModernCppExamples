@@ -10,7 +10,7 @@
    - Imports the camera module
    - Demonstrates module usage
 
-3. **[build_modules.sh](../build_modules.sh)** - Linux/macOS build script
+3. **[build_modules.sh](../scripts/build_modules.sh)** - Linux/macOS build script
 4. **[build_modules.ps1](../build_modules.ps1)** - Windows PowerShell build script
 
 ## Quick Start
@@ -34,8 +34,8 @@ TemplatedCameraModules.exe
 
 ```bash
 # Run the bash build script
-chmod +x build_modules.sh
-./build_modules.sh
+chmod +x scripts/build_modules.sh
+./scripts/build_modules.sh
 ```
 
 Or manually:

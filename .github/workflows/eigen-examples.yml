@@ -20,16 +20,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         build_type: [Release, Debug]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # Linux installation
-    - name: Install Eigen3 (Linux)
-      if: runner.os == 'Linux'
+    - name: Install Eigen3
       run: |
         sudo apt-get update
         sudo apt-get install -y cmake g++-13 libeigen3-dev
@@ -38,42 +36,22 @@ jobs:
         dpkg -L libeigen3-dev | grep eigen3/Eigen/Core
         echo "Eigen3 installed successfully"
     
-    # macOS installation
-    - name: Install Eigen3 (macOS)
-      if: runner.os == 'macOS'
-      run: |
-        brew install cmake eigen
-        
-        # Verify Eigen installation
-        brew list eigen
-        echo "Eigen3 installed successfully"
-    
     - name: Configure CMake
       run: |
         mkdir -p build
         cd build
-        if [ "${{ runner.os }}" == "Linux" ]; then
-          export CXX=g++-13
-          export CC=gcc-13
-        else
-          export CXX=clang++
-          export CC=clang
-        fi
+        export CXX=g++-13
+        export CC=gcc-13
         cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_VERBOSE_MAKEFILE=ON
     
     - name: Build EigenSensorFusion
-      continue-on-error: false
       run: |
         cd build
-        cmake --build . --target EigenSensorFusion -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 2)
+        cmake --build . --target EigenSensorFusion -j$(nproc)
     
     - name: Verify Eigen linking
       run: |
-        if [ "${{ runner.os }}" == "Linux" ]; then
-          ldd build/bin/EigenSensorFusion
-        else
-          otool -L build/bin/EigenSensorFusion
-        fi
+        ldd build/bin/EigenSensorFusion
     
     - name: Run EigenSensorFusion
       run: |

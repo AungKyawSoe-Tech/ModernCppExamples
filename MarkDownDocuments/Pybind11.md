@@ -50,10 +50,10 @@ conda install -c conda-forge pybind11
 
 ```bash
 # Make the build script executable
-chmod +x build_pybind.sh
+chmod +x scripts/build_pybind.sh
 
 # Build and test
-./build_pybind.sh
+./scripts/build_pybind.sh
 ```
 
 ### Manual Build

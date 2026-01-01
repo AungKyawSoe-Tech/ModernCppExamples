@@ -5,13 +5,13 @@ on:
     paths:
       - 'src/Pybind11Example.cpp'
       - 'test_pybind.py'
-      - 'build_pybind.sh'
+      - 'scripts/build_pybind.sh'
       - '.github/workflows/pybind11-examples.yml'
   pull_request:
     paths:
       - 'src/Pybind11Example.cpp'
       - 'test_pybind.py'
-      - 'build_pybind.sh'
+      - 'scripts/build_pybind.sh'
   workflow_dispatch:
 
 jobs:
@@ -179,7 +179,7 @@ jobs:
       run: |
         export CXX=g++-13
         export CC=gcc-13
-        ./build_pybind.sh
+        ./scripts/build_pybind.sh
     
     - name: Verify build artifacts
       run: |
@@ -199,7 +199,7 @@ jobs:
         test -f MarkDownDocuments/Pybind11.md && echo "✓ Pybind11.md exists"
         test -f src/Pybind11Example.cpp && echo "✓ Pybind11Example.cpp exists"
         test -f test_pybind.py && echo "✓ test_pybind.py exists"
-        test -f build_pybind.sh && echo "✓ build_pybind.sh exists"
+        test -f scripts/build_pybind.sh && echo "✓ build_pybind.sh exists"
     
     - name: Verify documentation completeness
       run: |
