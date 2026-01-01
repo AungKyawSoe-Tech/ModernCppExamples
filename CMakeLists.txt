@@ -36,6 +36,12 @@ set(EXECUTABLES
     EventDrivenProgramming_Inheritance
     EmbeddedSystemsProgramming
     EmbeddedSystemsAvoid
+    TemplatedCameraInterface
+    
+    # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
+    # Modules are not yet fully supported by CMake's standard add_executable
+    # See MarkDownDocuments/Cpp20Modules.md for manual compilation instructions
+    # TemplatedCameraModules  # Requires module support
     
     # Existing algorithm and data structure examples
     BinarySearch
