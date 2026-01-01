@@ -54,33 +54,35 @@
 void example_create_sensor_reading() {
     std::cout << "=== Example 1: Creating Sensor Reading ===\n";
     
-    std::cout << R"(
-// Create a temperature sensor reading
-sensors::SensorReading reading;
-
-// Set basic fields
-reading.set_type(sensors::TEMPERATURE);
-reading.set_device_id("sensor_001");
-
-// Set timestamp (current time)
-auto* timestamp = reading.mutable_timestamp();
-auto now = std::chrono::system_clock::now();
-auto epoch = now.time_since_epoch();
-timestamp->set_seconds(std::chrono::duration_cast<std::chrono::seconds>(epoch).count());
-timestamp->set_nanoseconds(0);
-
-// Set temperature measurement (using oneof field)
-reading.set_temperature_celsius(23.5f);
-
-// Add metadata
-(*reading.mutable_metadata())["location"] = "office";
-(*reading.mutable_metadata())["calibrated"] = "true";
-
-std::cout << "Created sensor reading:\n";
-std::cout << "  Device: " << reading.device_id() << "\n";
-std::cout << "  Type: " << reading.type() << "\n";
-std::cout << "  Temperature: " << reading.temperature_celsius() << "°C\n";
-)";
+    // Create a temperature sensor reading
+    sensors::SensorReading reading;
+    
+    // Set basic fields
+    reading.set_type(sensors::TEMPERATURE);
+    reading.set_device_id("sensor_001");
+    
+    // Set timestamp (current time)
+    auto* timestamp = reading.mutable_timestamp();
+    auto now = std::chrono::system_clock::now();
+    auto epoch = now.time_since_epoch();
+    timestamp->set_seconds(std::chrono::duration_cast<std::chrono::seconds>(epoch).count());
+    timestamp->set_nanoseconds(0);
+    
+    // Set temperature measurement (using oneof field)
+    reading.set_temperature_celsius(23.5f);
+    
+    // Add metadata
+    (*reading.mutable_metadata())["location"] = "office";
+    (*reading.mutable_metadata())["calibrated"] = "true";
+    
+    std::cout << "Created sensor reading:\n";
+    std::cout << "  Device: " << reading.device_id() << "\n";
+    std::cout << "  Type: " << reading.type() << "\n";
+    std::cout << "  Temperature: " << reading.temperature_celsius() << "°C\n";
+    std::cout << "  Metadata:\n";
+    for (const auto& [key, value] : reading.metadata()) {
+        std::cout << "    " << key << " = " << value << "\n";
+    }
     
     std::cout << "\nKey features demonstrated:\n";
     std::cout << "  ✅ Simple field setters (set_xxx)\n";
@@ -96,37 +98,43 @@ std::cout << "  Temperature: " << reading.temperature_celsius() << "°C\n";
 void example_binary_serialization() {
     std::cout << "=== Example 2: Binary Serialization ===\n";
     
-    std::cout << R"(
-sensors::SensorReading reading;
-reading.set_type(sensors::TEMPERATURE);
-reading.set_device_id("sensor_001");
-reading.set_temperature_celsius(23.5f);
-
-// Method 1: Serialize to string
-std::string serialized;
-if (!reading.SerializeToString(&serialized)) {
-    std::cerr << "Failed to serialize!\n";
-    return;
-}
-
-std::cout << "Serialized size: " << serialized.size() << " bytes\n";
-
-// Method 2: Serialize to file
-std::ofstream output("sensor_data.bin", std::ios::binary);
-if (!reading.SerializeToOstream(&output)) {
-    std::cerr << "Failed to write to file!\n";
-    return;
-}
-output.close();
-
-// Method 3: Serialize to byte array (for embedded systems)
-size_t size = reading.ByteSizeLong();
-std::vector<uint8_t> buffer(size);
-if (!reading.SerializeToArray(buffer.data(), size)) {
-    std::cerr << "Failed to serialize to array!\n";
-    return;
-}
-)";
+    sensors::SensorReading reading;
+    reading.set_type(sensors::TEMPERATURE);
+    reading.set_device_id("sensor_001");
+    reading.set_temperature_celsius(23.5f);
+    
+    // Method 1: Serialize to string
+    std::string serialized;
+    if (!reading.SerializeToString(&serialized)) {
+        std::cerr << "Failed to serialize!\n";
+        return;
+    }
+    
+    std::cout << "Serialized size: " << serialized.size() << " bytes\n";
+    std::cout << "Binary data (hex): ";
+    for (size_t i = 0; i < std::min(serialized.size(), size_t(20)); ++i) {
+        printf("%02x ", (unsigned char)serialized[i]);
+    }
+    if (serialized.size() > 20) std::cout << "...";
+    std::cout << "\n";
+    
+    // Method 2: Serialize to file
+    std::ofstream output("sensor_data.bin", std::ios::binary);
+    if (!reading.SerializeToOstream(&output)) {
+        std::cerr << "Failed to write to file!\n";
+        return;
+    }
+    output.close();
+    std::cout << "✓ Written to sensor_data.bin\n";
+    
+    // Method 3: Serialize to byte array (for embedded systems)
+    size_t size = reading.ByteSizeLong();
+    std::vector<uint8_t> buffer(size);
+    if (!reading.SerializeToArray(buffer.data(), size)) {
+        std::cerr << "Failed to serialize to array!\n";
+        return;
+    }
+    std::cout << "✓ Serialized to byte array (" << size << " bytes)\n";
     
     std::cout << "\nSerialization methods:\n";
     std::cout << "  1. SerializeToString() - for std::string storage\n";
@@ -142,36 +150,49 @@ if (!reading.SerializeToArray(buffer.data(), size)) {
 void example_binary_deserialization() {
     std::cout << "=== Example 3: Binary Deserialization ===\n";
     
-    std::cout << R"(
-// Method 1: Deserialize from string
-std::string serialized_data = /* ... from network or storage ... */;
-
-sensors::SensorReading reading;
-if (!reading.ParseFromString(serialized_data)) {
-    std::cerr << "Failed to parse!\n";
-    return;
-}
-
-// Method 2: Deserialize from file
-std::ifstream input("sensor_data.bin", std::ios::binary);
-if (!reading.ParseFromIstream(&input)) {
-    std::cerr << "Failed to read from file!\n";
-    return;
-}
-
-// Method 3: Deserialize from byte array
-std::vector<uint8_t> buffer = /* ... from sensor ... */;
-if (!reading.ParseFromArray(buffer.data(), buffer.size())) {
-    std::cerr << "Failed to parse from array!\n";
-    return;
-}
-
-// Access deserialized data
-std::cout << "Device: " << reading.device_id() << "\n";
-if (reading.has_temperature_celsius()) {
-    std::cout << "Temperature: " << reading.temperature_celsius() << "°C\n";
-}
-)";
+    // First, create and serialize a message
+    sensors::SensorReading original;
+    original.set_type(sensors::HUMIDITY);
+    original.set_device_id("sensor_002");
+    original.set_humidity_percent(65.3f);
+    
+    std::string serialized_data;
+    original.SerializeToString(&serialized_data);
+    std::cout << "Original message serialized (" << serialized_data.size() << " bytes)\n";
+    
+    // Method 1: Deserialize from string
+    sensors::SensorReading reading;
+    if (!reading.ParseFromString(serialized_data)) {
+        std::cerr << "Failed to parse!\n";
+        return;
+    }
+    std::cout << "✓ Deserialized from string:\n";
+    std::cout << "  Device: " << reading.device_id() << "\n";
+    std::cout << "  Humidity: " << reading.humidity_percent() << "%\n";
+    
+    // Method 2: Deserialize from file
+    std::ifstream input("sensor_data.bin", std::ios::binary);
+    sensors::SensorReading reading2;
+    if (input.good() && reading2.ParseFromIstream(&input)) {
+        std::cout << "✓ Deserialized from file:\n";
+        std::cout << "  Device: " << reading2.device_id() << "\n";
+        std::cout << "  Temperature: " << reading2.temperature_celsius() << "°C\n";
+    }
+    input.close();
+    
+    // Method 3: Deserialize from byte array
+    std::vector<uint8_t> buffer(serialized_data.begin(), serialized_data.end());
+    sensors::SensorReading reading3;
+    if (!reading3.ParseFromArray(buffer.data(), buffer.size())) {
+        std::cerr << "Failed to parse from array!\n";
+        return;
+    }
+    std::cout << "✓ Deserialized from byte array: " << reading3.device_id() << "\n";
+    
+    // Demonstrate field checking
+    if (reading3.has_humidity_percent()) {
+        std::cout << "  Has humidity field: " << reading3.humidity_percent() << "%\n";
+    }
     
     std::cout << "\nDeserialization methods:\n";
     std::cout << "  1. ParseFromString() - from std::string\n";
@@ -240,34 +261,36 @@ if (status.ok()) {
 void example_repeated_fields() {
     std::cout << "=== Example 5: Repeated Fields (Batch Processing) ===\n";
     
-    std::cout << R"(
-sensors::SensorBatch batch;
-batch.set_batch_id("batch_001");
-
-// Add multiple sensor readings
-for (int i = 0; i < 10; ++i) {
-    auto* reading = batch.add_readings();  // Add new reading
-    reading->set_type(sensors::TEMPERATURE);
-    reading->set_device_id("sensor_" + std::to_string(i));
-    reading->set_temperature_celsius(20.0f + i * 0.5f);
-}
-
-// Iterate over readings
-std::cout << "Batch contains " << batch.readings_size() << " readings:\n";
-for (const auto& reading : batch.readings()) {
-    std::cout << "  " << reading.device_id() 
-              << ": " << reading.temperature_celsius() << "°C\n";
-}
-
-// Access by index
-if (batch.readings_size() > 0) {
-    const auto& first = batch.readings(0);
-    std::cout << "First reading: " << first.device_id() << "\n";
-}
-
-// Clear all readings
-batch.clear_readings();
-)";
+    sensors::SensorBatch batch;
+    batch.set_batch_id("batch_001");
+    
+    // Add multiple sensor readings
+    for (int i = 0; i < 10; ++i) {
+        auto* reading = batch.add_readings();  // Add new reading
+        reading->set_type(sensors::TEMPERATURE);
+        reading->set_device_id("sensor_" + std::to_string(i));
+        reading->set_temperature_celsius(20.0f + i * 0.5f);
+    }
+    
+    // Iterate over readings
+    std::cout << "Batch contains " << batch.readings_size() << " readings:\n";
+    for (const auto& reading : batch.readings()) {
+        std::cout << "  " << reading.device_id() 
+                  << ": " << reading.temperature_celsius() << "°C\n";
+    }
+    
+    // Access by index
+    if (batch.readings_size() > 0) {
+        const auto& first = batch.readings(0);
+        std::cout << "\nFirst reading: " << first.device_id() << "\n";
+    }
+    
+    // Serialize the batch
+    std::string batch_data;
+    batch.SerializeToString(&batch_data);
+    std::cout << "Batch serialized: " << batch_data.size() << " bytes for " 
+              << batch.readings_size() << " readings\n";
+    std::cout << "Average: " << (batch_data.size() / batch.readings_size()) << " bytes/reading\n";
     
     std::cout << "\nRepeated field methods:\n";
     std::cout << "  • add_xxx() - append new element\n";
