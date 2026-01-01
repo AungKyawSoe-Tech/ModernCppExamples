@@ -40,6 +40,7 @@ set(EXECUTABLES
     ErrorHandling
     ExceptionWithSourceLocation
     ErrorHandlingStroustrup
+    MoveSemantics
     Cpp23Examples
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
@@ -82,6 +83,8 @@ foreach(EXECUTABLE ${EXECUTABLES})
             set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 17)
         elseif(${EXECUTABLE} MATCHES "^(Cpp20Examples|ConceptsExamples|RangesExamples)$")
             set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 20)
+        elseif(${EXECUTABLE} MATCHES "^(Cpp23Examples)$")
+            set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 23)
         else()
             # Default to C++20 for other examples
             set_target_properties(${EXECUTABLE} PROPERTIES CXX_STANDARD 20)

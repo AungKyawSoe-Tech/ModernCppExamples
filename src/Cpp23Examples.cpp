@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <utility>  // for std::to_underlying, std::unreachable
 #include <cmath>
 #include <cstdint>
 #include <array>
@@ -190,7 +191,7 @@ void demonstrate_to_underlying() {
     
     // Memory-mapped register access
     MemoryRegister status = MemoryRegister::STATUS_REG;
-    uint32_t* status_ptr = reinterpret_cast<uint32_t*>(std::to_underlying(status));
+    // Example: volatile uint32_t* status_ptr = reinterpret_cast<volatile uint32_t*>(std::to_underlying(status));
     std::cout << "Status register address: 0x" << std::hex << std::to_underlying(status) << std::dec << std::endl;
     
     // Array indexing with enum
@@ -328,7 +329,8 @@ enum class DeviceState : uint8_t {
 }
 
 uint32_t process_command(uint8_t cmd) {
-    if (cmd >= 0 && cmd <= 3) {
+    // Note: cmd >= 0 always true for unsigned type, kept for documentation
+    if (cmd <= 3) {
         return cmd * 100;  // Valid command processing
     }
     
@@ -379,6 +381,7 @@ void demonstrate_size_literals() {
     std::cout << "\nBuffer allocations:" << std::endl;
     std::cout << "  UART buffer: " << BUFFER_SIZE << " bytes" << std::endl;
     std::cout << "  Vector size: " << buffer.size() << " elements" << std::endl;
+    std::cout << "  Array capacity: " << uart_buffer.size() << " bytes" << std::endl;
     
     // No warning with uz suffix
     if (buffer.size() > 3uz) {
@@ -403,12 +406,24 @@ private:
     std::array<T, Rows * Cols> data;
     
 public:
-    // C++23: Multi-dimensional operator[]
+    // C++23: Multi-dimensional subscript operator
+    // Note: Requires GCC 14+, Clang 17+, or MSVC 2022 17.8+
+    #if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L
     constexpr T& operator[](size_t row, size_t col) {
         return data[row * Cols + col];
     }
     
     constexpr const T& operator[](size_t row, size_t col) const {
+        return data[row * Cols + col];
+    }
+    #endif
+    
+    // Fallback: Traditional at() function for older compilers
+    constexpr T& at(size_t row, size_t col) {
+        return data[row * Cols + col];
+    }
+    
+    constexpr const T& at(size_t row, size_t col) const {
         return data[row * Cols + col];
     }
     
@@ -419,6 +434,9 @@ public:
 
 void demonstrate_multidim_subscript() {
     std::cout << "\n=== 8. MULTIDIMENSIONAL SUBSCRIPT OPERATOR ===" << std::endl;
+    
+    #if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L
+    std::cout << "✅ Multi-dimensional operator[] supported!" << std::endl;
     std::cout << "Direct matrix[row, col] syntax" << std::endl;
     
     Matrix<uint16_t, 3, 3> sensor_data;
@@ -443,11 +461,43 @@ void demonstrate_multidim_subscript() {
         std::cout << std::endl;
     }
     
-    std::cout << "\n💡 Before C++23:" << std::endl;
-    std::cout << "   matrix[row][col]      // Traditional" << std::endl;
-    std::cout << "   matrix.at(row, col)   // Member function" << std::endl;
-    std::cout << "\n💡 C++23:" << std::endl;
+    std::cout << "\n💡 C++23 syntax:" << std::endl;
     std::cout << "   matrix[row, col]      // Direct syntax!" << std::endl;
+    
+    #else
+    
+    std::cout << "⚠️  Multi-dimensional operator[] requires GCC 14+, Clang 17+, or MSVC 17.8+" << std::endl;
+    std::cout << "Using fallback at(row, col) method for demonstration" << std::endl;
+    
+    Matrix<uint16_t, 3, 3> sensor_data;
+    
+    // Fallback: Use at() method
+    sensor_data.at(0, 0) = 100;
+    sensor_data.at(0, 1) = 150;
+    sensor_data.at(0, 2) = 200;
+    sensor_data.at(1, 0) = 250;
+    sensor_data.at(1, 1) = 300;
+    sensor_data.at(1, 2) = 350;
+    sensor_data.at(2, 0) = 400;
+    sensor_data.at(2, 1) = 450;
+    sensor_data.at(2, 2) = 500;
+    
+    std::cout << "\n3x3 Sensor data matrix (using at() method):" << std::endl;
+    for (size_t row = 0; row < 3; ++row) {
+        std::cout << "  ";
+        for (size_t col = 0; col < 3; ++col) {
+            std::cout << sensor_data.at(row, col) << "\t";
+        }
+        std::cout << std::endl;
+    }
+    
+    std::cout << "\n💡 Before C++23:" << std::endl;
+    std::cout << "   matrix[row][col]      // Traditional double subscript" << std::endl;
+    std::cout << "   matrix.at(row, col)   // Member function" << std::endl;
+    std::cout << "\n💡 C++23 (when compiler supports):" << std::endl;
+    std::cout << "   matrix[row, col]      // Direct multi-dimensional syntax!" << std::endl;
+    
+    #endif
 }
 
 // ===================================================================
