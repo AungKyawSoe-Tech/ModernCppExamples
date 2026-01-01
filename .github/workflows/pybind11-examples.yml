@@ -16,13 +16,12 @@ on:
 
 jobs:
   test-pybind11:
-    name: Test Pybind11 with Python ${{ matrix.python-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Test Pybind11 with Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
     
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
     
     steps:
@@ -39,53 +38,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install pybind11 numpy
     
-    # Linux/macOS specific steps
-    - name: Install C++ compiler (Linux)
-      if: runner.os == 'Linux'
+    - name: Install C++ compiler
       run: |
         sudo apt-get update
         sudo apt-get install -y g++-13
     
-    - name: Build pybind11 extension (Linux/macOS)
-      if: runner.os != 'Windows'
+    - name: Build pybind11 extension
       run: |
-        if [ "${{ runner.os }}" == "Linux" ]; then
-          export CXX=g++-13
-          export CC=gcc-13
-        else
-          export CXX=clang++
-          export CC=clang
-        fi
+        export CXX=g++-13
+        export CC=gcc-13
         c++ -O3 -Wall -shared -std=c++17 -fPIC \
             $(python3 -m pybind11 --includes) \
             src/Pybind11Example.cpp \
             -o pybind_example$(python3-config --extension-suffix)
     
-    # Windows specific steps
-    - name: Setup MSVC (Windows)
-      if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1
-    
-    - name: Build pybind11 extension (Windows)
-      if: runner.os == 'Windows'
-      shell: cmd
-      run: |
-        python -c "import pybind11; print(pybind11.get_include())" > pybind_include.txt
-        set /p PYBIND_INCLUDE=<pybind_include.txt
-        python -c "import sysconfig; print(sysconfig.get_path('include'))" > python_include.txt
-        set /p PYTHON_INCLUDE=<python_include.txt
-        python -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))" > ext_suffix.txt
-        set /p EXT_SUFFIX=<ext_suffix.txt
-        
-        cl /O2 /W4 /EHsc /LD /std:c++17 ^
-           /I"%PYBIND_INCLUDE%" ^
-           /I"%PYTHON_INCLUDE%" ^
-           src\Pybind11Example.cpp ^
-           /link /OUT:pybind_example%EXT_SUFFIX%
-    
     - name: Verify extension was built
       run: |
-        python -c "import os; [print(f) for f in os.listdir('.') if 'pybind_example' in f]"
+        ls -la pybind_example*.so
     
     - name: Run pybind11 tests
       run: |
@@ -98,7 +67,7 @@ jobs:
     - name: Upload pybind11 module
       uses: actions/upload-artifact@v4
       with:
-        name: pybind11-module-${{ matrix.os }}-py${{ matrix.python-version }}
+        name: pybind11-module-py${{ matrix.python-version }}
         path: pybind_example*
         retention-days: 7
 

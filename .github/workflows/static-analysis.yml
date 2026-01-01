@@ -220,47 +220,45 @@ jobs:
     - name: Create SBOM (Software Bill of Materials)
       run: |
         mkdir -p reports
-        
         echo "Generating Software Bill of Materials (SBOM)..."
-        cat > reports/sbom.txt << 'EOF'
-========================================
-Software Bill of Materials (SBOM)
-========================================
-Project: Modern C++ Examples
-Date: $(date)
-
-Third-Party Dependencies:
-----------------------------------------
-
-1. Eigen3
-   - Version: 3.3.9+
-   - License: MPL2 (Mozilla Public License 2.0)
-   - Usage: Linear algebra, sensor fusion
-   - Source: https://eigen.tuxfamily.org
-   - IP Risk: LOW
-   - Security: Actively maintained
-
-2. pybind11
-   - Version: 2.10+
-   - License: BSD-style
-   - Usage: Python/C++ interoperability
-   - Source: https://github.com/pybind/pybind11
-   - IP Risk: LOW
-   - Security: Actively maintained
-
-Standard Library Usage:
-----------------------------------------
-- C++ Standard Library (C++11/14/17/20/23)
-- License: Compiler-specific (GCC, Clang, MSVC)
-- IP Risk: NONE (standard library)
-
-========================================
-IP Compliance Status: PASS
-Security Status: No known vulnerabilities
-License Compatibility: All permissive licenses
-========================================
-EOF
+        cat > reports/sbom.txt <<EOF
+        ========================================
+        Software Bill of Materials (SBOM)
+        ========================================
+        Project: Modern C++ Examples
+        Date: $(date)
         
+        Third-Party Dependencies:
+        ----------------------------------------
+        
+        1. Eigen3
+           - Version: 3.3.9+
+           - License: MPL2 (Mozilla Public License 2.0)
+           - Usage: Linear algebra, sensor fusion
+           - Source: https://eigen.tuxfamily.org
+           - IP Risk: LOW
+           - Security: Actively maintained
+        
+        2. pybind11
+           - Version: 2.10+
+           - License: BSD-style
+           - Usage: Python/C++ interoperability
+           - Source: https://github.com/pybind/pybind11
+           - IP Risk: LOW
+           - Security: Actively maintained
+        
+        Standard Library Usage:
+        ----------------------------------------
+        - C++ Standard Library (C++11/14/17/20/23)
+        - License: Compiler-specific (GCC, Clang, MSVC)
+        - IP Risk: NONE (standard library)
+        
+        ========================================
+        IP Compliance Status: PASS
+        Security Status: No known vulnerabilities
+        License Compatibility: All permissive licenses
+        ========================================
+        EOF
         cat reports/sbom.txt
     
     - name: Check for GPL/AGPL contamination
