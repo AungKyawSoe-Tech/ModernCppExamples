@@ -84,6 +84,11 @@ jobs:
         echo "=== Running Rule of 3/5/0 ==="
         ./build/bin/RuleOf3_5_0
     
+    - name: Run Object Slicing and Smart Pointers Example
+      run: |
+        echo "=== Running Object Slicing and Smart Pointers ==="
+        ./build/bin/ObjectSlicingSmartPtr
+    
     - name: Run Algorithm Examples
       run: |
         echo "=== Running BinarySearch ==="
