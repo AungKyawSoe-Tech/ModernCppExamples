@@ -42,6 +42,7 @@ set(EXECUTABLES
     ErrorHandlingStroustrup
     MoveSemantics
     VirtualFunctions
+    STLContainersNoHeap
     Cpp23Examples
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
