@@ -63,6 +63,41 @@ This directory contains GitHub Actions workflows for building and testing the Mo
 
 ---
 
+### 4. Pybind11 Examples (`pybind11-examples.yml`)
+**Trigger:** Changes to Pybind11Example.cpp, test_pybind.py, or build script, manual dispatch
+
+**Purpose:** Build and test C++/Python interoperability examples
+
+**Matrix Strategy:**
+- Operating Systems: Ubuntu, macOS, Windows
+- Python Versions: 3.8, 3.9, 3.10, 3.11, 3.12
+
+**Jobs:**
+- `test-pybind11` - Build extension module and run tests on all platforms/versions
+- `test-pybind11-minimal` - Test basic functionality without NumPy dependency
+- `verify-build-script` - Test the build_pybind.sh script
+- `documentation-check` - Verify documentation completeness
+- `summary` - Display test summary
+
+**Features:**
+- Cross-platform testing (Linux, macOS, Windows)
+- Multiple Python version support (3.8-3.12)
+- Tests with and without NumPy
+- Builds Python extension modules
+- Upload artifacts for each platform/version
+- Comprehensive documentation verification
+
+**Usage:**
+- Automatically runs when pybind11 files are modified
+- Manual trigger: Go to Actions → Build and Test Pybind11 Examples → Run workflow
+
+**Build Instructions Included:**
+- Linux/macOS: Uses GCC/Clang with pybind11 includes
+- Windows: Uses MSVC with proper Python library linking
+- Build script verification for reproducible builds
+
+---
+
 ## Status Badges
 
 Add these to your README.md:
@@ -71,6 +106,7 @@ Add these to your README.md:
 ![Build and Test](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Build%20and%20Test/badge.svg)
 ![Comprehensive Examples](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Test%20Comprehensive%20C++%20Standard%20Examples/badge.svg)
 ![Quick Test](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Quick%20Test/badge.svg)
+![Pybind11 Examples](https://github.com/YOUR_USERNAME/ModernCppExamples/workflows/Build%20and%20Test%20Pybind11%20Examples/badge.svg)
 ```
 
 Replace `YOUR_USERNAME` with your GitHub username.
@@ -102,11 +138,18 @@ Replace `YOUR_USERNAME` with your GitHub username.
 
 ## Artifacts
 
-Build artifacts (executables) are uploaded and retained for 7 days:
+Build artifacts are uploaded and retained for 7 days:
+
+**C++ Executables:**
 - `executables-g++-13-Release`
 - `executables-g++-13-Debug`
 - `executables-clang++-17-Release`
 - `executables-clang++-17-Debug`
+
+**Pybind11 Modules:**
+- `pybind11-module-ubuntu-latest-py3.X`
+- `pybind11-module-macos-latest-py3.X`
+- `pybind11-module-windows-latest-py3.X`
 
 Download from: Actions → Workflow Run → Artifacts section
 
@@ -137,6 +180,7 @@ sudo apt-get install -y g++-13  # For GCC
 
 To test what the workflows do locally:
 
+### C++ Examples
 ```bash
 # Install same dependencies
 sudo apt-get update
@@ -152,6 +196,28 @@ make -j$(nproc)
 ./bin/Cpp14Examples
 ./bin/Cpp17Examples
 ./bin/Cpp20Examples
+```
+
+### Pybind11 Examples
+```bash
+# Install Python dependencies
+pip install pybind11 numpy
+
+# Build (Linux/macOS)
+c++ -O3 -Wall -shared -std=c++17 -fPIC \
+    $(python3 -m pybind11 --includes) \
+    src/Pybind11Example.cpp \
+    -o pybind_example$(python3-config --extension-suffix)
+
+# Or use the build script
+chmod +x build_pybind.sh
+./build_pybind.sh
+
+# Run tests
+python test_pybind.py
+
+# Test import
+python -c "import pybind_example as pe; print(pe.add(5, 3))"
 ```
 
 ---

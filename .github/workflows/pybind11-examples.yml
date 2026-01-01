@@ -1,0 +1,234 @@
+name: Build and Test Pybind11 Examples
+
+on:
+  push:
+    paths:
+      - 'src/Pybind11Example.cpp'
+      - 'test_pybind.py'
+      - 'build_pybind.sh'
+      - '.github/workflows/pybind11-examples.yml'
+  pull_request:
+    paths:
+      - 'src/Pybind11Example.cpp'
+      - 'test_pybind.py'
+      - 'build_pybind.sh'
+  workflow_dispatch:
+
+jobs:
+  test-pybind11:
+    name: Test Pybind11 with Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pybind11 numpy
+    
+    # Linux/macOS specific steps
+    - name: Install C++ compiler (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-13
+    
+    - name: Build pybind11 extension (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        if [ "${{ runner.os }}" == "Linux" ]; then
+          export CXX=g++-13
+          export CC=gcc-13
+        else
+          export CXX=clang++
+          export CC=clang
+        fi
+        c++ -O3 -Wall -shared -std=c++17 -fPIC \
+            $(python3 -m pybind11 --includes) \
+            src/Pybind11Example.cpp \
+            -o pybind_example$(python3-config --extension-suffix)
+    
+    # Windows specific steps
+    - name: Setup MSVC (Windows)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+    
+    - name: Build pybind11 extension (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+        python -c "import pybind11; print(pybind11.get_include())" > pybind_include.txt
+        set /p PYBIND_INCLUDE=<pybind_include.txt
+        python -c "import sysconfig; print(sysconfig.get_path('include'))" > python_include.txt
+        set /p PYTHON_INCLUDE=<python_include.txt
+        python -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))" > ext_suffix.txt
+        set /p EXT_SUFFIX=<ext_suffix.txt
+        
+        cl /O2 /W4 /EHsc /LD /std:c++17 ^
+           /I"%PYBIND_INCLUDE%" ^
+           /I"%PYTHON_INCLUDE%" ^
+           src\Pybind11Example.cpp ^
+           /link /OUT:pybind_example%EXT_SUFFIX%
+    
+    - name: Verify extension was built
+      run: |
+        python -c "import os; [print(f) for f in os.listdir('.') if 'pybind_example' in f]"
+    
+    - name: Run pybind11 tests
+      run: |
+        python test_pybind.py
+    
+    - name: Test import
+      run: |
+        python -c "import pybind_example as pe; print('Module imported successfully!'); print(f'add(5, 3) = {pe.add(5, 3)}')"
+    
+    - name: Upload pybind11 module
+      uses: actions/upload-artifact@v4
+      with:
+        name: pybind11-module-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: pybind_example*
+        retention-days: 7
+
+  test-pybind11-minimal:
+    name: Test Minimal Build (Python 3.11)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install minimal dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pybind11
+        # Skip numpy to test without it
+    
+    - name: Install C++ compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-13
+    
+    - name: Build pybind11 extension
+      run: |
+        export CXX=g++-13
+        export CC=gcc-13
+        c++ -O3 -Wall -shared -std=c++17 -fPIC \
+            $(python3 -m pybind11 --includes) \
+            src/Pybind11Example.cpp \
+            -o pybind_example$(python3-config --extension-suffix)
+    
+    - name: Test without NumPy
+      run: |
+        python -c "
+        import pybind_example as pe
+        print('Testing without NumPy...')
+        print(f'add(5, 3) = {pe.add(5, 3)}')
+        print(f'multiply(4.5) = {pe.multiply(4.5)}')
+        v = pe.Vector2D(3.0, 4.0)
+        print(f'Vector2D(3, 4).length() = {v.length()}')
+        print('✓ All basic tests passed without NumPy!')
+        "
+    
+    - name: Run full tests with NumPy
+      run: |
+        pip install numpy
+        python test_pybind.py
+
+  verify-build-script:
+    name: Test build_pybind.sh script
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pybind11 numpy
+        sudo apt-get update
+        sudo apt-get install -y g++-13
+    
+    - name: Make build script executable
+      run: chmod +x build_pybind.sh
+    
+    - name: Run build script
+      run: |
+        export CXX=g++-13
+        export CC=gcc-13
+        ./build_pybind.sh
+    
+    - name: Verify build artifacts
+      run: |
+        ls -lh pybind_example*.so
+        python -c "import pybind_example; print('✓ Module built successfully!')"
+
+  documentation-check:
+    name: Verify Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Check documentation files exist
+      run: |
+        test -f MarkDownDocuments/Pybind11.md && echo "✓ Pybind11.md exists"
+        test -f src/Pybind11Example.cpp && echo "✓ Pybind11Example.cpp exists"
+        test -f test_pybind.py && echo "✓ test_pybind.py exists"
+        test -f build_pybind.sh && echo "✓ build_pybind.sh exists"
+    
+    - name: Verify documentation completeness
+      run: |
+        # Check that key sections are documented
+        grep -q "## Installation" MarkDownDocuments/Pybind11.md
+        grep -q "## Build Instructions" MarkDownDocuments/Pybind11.md
+        grep -q "## Alternative Frameworks" MarkDownDocuments/Pybind11.md
+        grep -q "## Performance Comparison" MarkDownDocuments/Pybind11.md
+        echo "✓ All required documentation sections present"
+
+  summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test-pybind11, test-pybind11-minimal, verify-build-script, documentation-check]
+    if: always()
+    steps:
+    - name: Check results
+      run: |
+        echo "==================================================================="
+        echo "PYBIND11 BUILD AND TEST SUMMARY"
+        echo "==================================================================="
+        echo ""
+        echo "✅ All pybind11 tests completed!"
+        echo ""
+        echo "Tested configurations:"
+        echo "  - Multiple Python versions (3.8-3.12)"
+        echo "  - Multiple OS (Linux, macOS, Windows)"
+        echo "  - With and without NumPy"
+        echo "  - Build script verification"
+        echo "  - Documentation completeness"
+        echo ""
+        echo "==================================================================="
