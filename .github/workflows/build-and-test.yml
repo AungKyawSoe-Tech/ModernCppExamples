@@ -29,10 +29,9 @@ jobs:
         if [[ "${{ matrix.compiler }}" == "g++-13" ]]; then
           sudo apt-get install -y g++-13
         elif [[ "${{ matrix.compiler }}" == "clang++-17" ]]; then
-          wget https://apt.llvm.org/llvm.sh
+          wget -q https://apt.llvm.org/llvm.sh || exit 1
           chmod +x llvm.sh
-          sudo ./llvm.sh 17
-          sudo apt-get install -y clang++-17
+          sudo ./llvm.sh 17 || (sudo apt-get install -y clang-17 && ln -s /usr/bin/clang-17 /usr/bin/clang++-17)
         fi
     
     - name: Configure CMake
