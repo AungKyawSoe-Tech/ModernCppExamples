@@ -39,6 +39,7 @@ set(EXECUTABLES
     TemplatedCameraInterface
     ErrorHandling
     ExceptionWithSourceLocation
+    Cpp23Examples
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
     # Modules are not yet fully supported by CMake's standard add_executable
