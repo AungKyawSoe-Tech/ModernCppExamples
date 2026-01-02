@@ -108,7 +108,7 @@ set(EXECUTABLES
     LambdaCaptures
     SearchAnagramsDictionary
     SinglyLinkedList
-    Tuples
+    TuplesAndStructuredBindings
     
     # Feature-specific examples (kept for reference)
     GenericLambdas
