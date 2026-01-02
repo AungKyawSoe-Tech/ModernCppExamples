@@ -274,6 +274,10 @@ message(STATUS "Added executable: FuturePromiseAsync")
 add_executable(NVIIdiomTemplateMethod src/NVIIdiomTemplateMethod.cpp)
 message(STATUS "Added executable: NVIIdiomTemplateMethod")
 
+# ROMability (demonstrates ROM placement with constexpr, consteval, constinit)
+add_executable(ROMability src/ROMability.cpp)
+message(STATUS "Added executable: ROMability")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
