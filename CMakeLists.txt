@@ -224,6 +224,30 @@ else()
     endif()
 endif()
 
+# AdvancedExceptionHandling (requires no external dependencies)
+add_executable(AdvancedExceptionHandling src/AdvancedExceptionHandling.cpp)
+set_target_properties(AdvancedExceptionHandling PROPERTIES CXX_STANDARD 17)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # Link dl library for backtrace functions on Linux
+    target_link_libraries(AdvancedExceptionHandling dl)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Link dbghelp for stack trace on Windows
+    target_link_libraries(AdvancedExceptionHandling dbghelp)
+endif()
+message(STATUS "Added executable: AdvancedExceptionHandling")
+
+# MultiThreadedMicroservices (requires pthread on Linux)
+add_executable(MultiThreadedMicroservices src/MultiThreadedMicroservices.cpp)
+set_target_properties(MultiThreadedMicroservices PROPERTIES CXX_STANDARD 17)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # Link pthread and dl libraries on Linux
+    target_link_libraries(MultiThreadedMicroservices pthread dl)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Link dbghelp for stack trace on Windows
+    target_link_libraries(MultiThreadedMicroservices dbghelp)
+endif()
+message(STATUS "Added executable: MultiThreadedMicroservices")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
