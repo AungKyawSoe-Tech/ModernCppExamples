@@ -110,6 +110,7 @@ set(EXECUTABLES
     SinglyLinkedList
     TuplesAndStructuredBindings
     SystemInteractionAndParsing
+    FunctionalSafetyISO26262
     
     # Feature-specific examples (kept for reference)
     GenericLambdas
