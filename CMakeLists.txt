@@ -109,6 +109,7 @@ set(EXECUTABLES
     SearchAnagramsDictionary
     SinglyLinkedList
     TuplesAndStructuredBindings
+    SystemInteractionAndParsing
     
     # Feature-specific examples (kept for reference)
     GenericLambdas
