@@ -257,6 +257,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 message(STATUS "Added executable: ConfigLoaderAndChecker")
 
+# FragileBaseClass (demonstrates the fragile base class problem)
+add_executable(FragileBaseClass src/FragileBaseClass.cpp)
+message(STATUS "Added executable: FragileBaseClass")
+
+# DiamondProblem (demonstrates the diamond problem and virtual inheritance solution)
+add_executable(DiamondProblem src/DiamondProblem.cpp)
+message(STATUS "Added executable: DiamondProblem")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
