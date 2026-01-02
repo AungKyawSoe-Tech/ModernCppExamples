@@ -265,6 +265,11 @@ message(STATUS "Added executable: FragileBaseClass")
 add_executable(DiamondProblem src/DiamondProblem.cpp)
 message(STATUS "Added executable: DiamondProblem")
 
+# FuturePromiseAsync (demonstrates future, promise, async, packaged_task and ASIO relationship)
+add_executable(FuturePromiseAsync src/FuturePromiseAsync.cpp)
+target_link_libraries(FuturePromiseAsync PRIVATE pthread)
+message(STATUS "Added executable: FuturePromiseAsync")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
