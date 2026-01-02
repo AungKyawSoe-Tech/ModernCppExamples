@@ -270,6 +270,10 @@ add_executable(FuturePromiseAsync src/FuturePromiseAsync.cpp)
 target_link_libraries(FuturePromiseAsync PRIVATE pthread)
 message(STATUS "Added executable: FuturePromiseAsync")
 
+# NVIIdiomTemplateMethod (demonstrates Non-Virtual Interface idiom and Template Method pattern)
+add_executable(NVIIdiomTemplateMethod src/NVIIdiomTemplateMethod.cpp)
+message(STATUS "Added executable: NVIIdiomTemplateMethod")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
