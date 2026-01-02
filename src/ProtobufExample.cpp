@@ -202,11 +202,255 @@ void example_binary_deserialization() {
 }
 
 // ===================================================================
-// EXAMPLE 4: JSON CONVERSION
+// EXAMPLE 4: ADVANCED FILE SERIALIZATION
+// ===================================================================
+
+void example_file_serialization() {
+    std::cout << "=== Example 4: Advanced File Serialization ===\n";
+    
+    // Example 4a: Writing multiple messages to a file with length prefixes
+    std::cout << "\n[4a] Writing multiple sensor readings to file:\n";
+    
+    const char* multi_file = "sensor_readings_multi.bin";
+    std::ofstream output(multi_file, std::ios::binary);
+    
+    if (!output) {
+        std::cerr << "Failed to open file for writing!\n";
+        return;
+    }
+    
+    // Create multiple sensor readings
+    std::vector<sensors::SensorReading> readings;
+    
+    // Reading 1: Temperature
+    sensors::SensorReading temp_reading;
+    temp_reading.set_type(sensors::TEMPERATURE);
+    temp_reading.set_device_id("sensor_001");
+    temp_reading.set_temperature_celsius(22.5f);
+    readings.push_back(temp_reading);
+    
+    // Reading 2: Humidity
+    sensors::SensorReading humidity_reading;
+    humidity_reading.set_type(sensors::HUMIDITY);
+    humidity_reading.set_device_id("sensor_002");
+    humidity_reading.set_humidity_percent(67.8f);
+    readings.push_back(humidity_reading);
+    
+    // Reading 3: Pressure
+    sensors::SensorReading pressure_reading;
+    pressure_reading.set_type(sensors::PRESSURE);
+    pressure_reading.set_device_id("sensor_003");
+    pressure_reading.set_pressure_hpa(1013.25f);
+    readings.push_back(pressure_reading);
+    
+    // Write each message with length prefix (for proper deserialization)
+    for (const auto& reading : readings) {
+        // Serialize to string first
+        std::string serialized;
+        if (!reading.SerializeToString(&serialized)) {
+            std::cerr << "Failed to serialize reading!\n";
+            continue;
+        }
+        
+        // Write length prefix (4 bytes)
+        uint32_t size = serialized.size();
+        output.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        
+        // Write the actual message
+        output.write(serialized.data(), serialized.size());
+        
+        std::cout << "  ✓ Written " << reading.device_id() 
+                  << " (" << size << " bytes)\n";
+    }
+    
+    output.close();
+    std::cout << "✓ Successfully wrote " << readings.size() 
+              << " readings to " << multi_file << "\n";
+    
+    // Example 4b: Reading multiple messages from file
+    std::cout << "\n[4b] Reading multiple messages from file:\n";
+    
+    std::ifstream input(multi_file, std::ios::binary);
+    if (!input) {
+        std::cerr << "Failed to open file for reading!\n";
+        return;
+    }
+    
+    int count = 0;
+    while (input.good()) {
+        // Read length prefix
+        uint32_t size;
+        input.read(reinterpret_cast<char*>(&size), sizeof(size));
+        
+        if (input.eof()) break;
+        if (!input.good()) {
+            std::cerr << "Error reading length prefix!\n";
+            break;
+        }
+        
+        // Read the message data
+        std::vector<char> buffer(size);
+        input.read(buffer.data(), size);
+        
+        if (!input.good() && !input.eof()) {
+            std::cerr << "Error reading message data!\n";
+            break;
+        }
+        
+        // Parse the message
+        sensors::SensorReading reading;
+        if (!reading.ParseFromArray(buffer.data(), size)) {
+            std::cerr << "Failed to parse message!\n";
+            continue;
+        }
+        
+        count++;
+        std::cout << "  Reading #" << count << ": "
+                  << reading.device_id() << " - ";
+        
+        // Display based on type
+        if (reading.has_temperature_celsius()) {
+            std::cout << reading.temperature_celsius() << "°C";
+        } else if (reading.has_humidity_percent()) {
+            std::cout << reading.humidity_percent() << "%";
+        } else if (reading.has_pressure_hpa()) {
+            std::cout << reading.pressure_hpa() << " hPa";
+        }
+        std::cout << "\n";
+    }
+    
+    input.close();
+    std::cout << "✓ Successfully read " << count << " readings from file\n";
+    
+    // Example 4c: Using delimited I/O (WriteDelimitedToOstream)
+    std::cout << "\n[4c] Using Google's delimited I/O utilities:\n";
+    std::cout << R"code(
+// For writing multiple messages (requires google/protobuf/io/coded_stream.h):
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+std::ofstream output("data.bin", std::ios::binary);
+google::protobuf::io::OstreamOutputStream ostream(&output);
+google::protobuf::io::CodedOutputStream coded_output(&ostream);
+
+// Write each message with length prefix
+for (const auto& reading : readings) {
+    coded_output.WriteVarint32(reading.ByteSizeLong());
+    reading.SerializeToCodedStream(&coded_output);
+}
+
+// For reading:
+std::ifstream input("data.bin", std::ios::binary);
+google::protobuf::io::IstreamInputStream istream(&input);
+google::protobuf::io::CodedInputStream coded_input(&istream);
+
+uint32_t size;
+while (coded_input.ReadVarint32(&size)) {
+    auto limit = coded_input.PushLimit(size);
+    sensors::SensorReading reading;
+    reading.ParseFromCodedStream(&coded_input);
+    coded_input.PopLimit(limit);
+}
+)code" << "\n";
+    
+    std::cout << "File I/O Best Practices:\n";
+    std::cout << "  1. Always write length prefix for multiple messages\n";
+    std::cout << "  2. Use binary mode (std::ios::binary) for files\n";
+    std::cout << "  3. Check file operations (input.good(), output.good())\n";
+    std::cout << "  4. Use CodedStream for efficient varint encoding\n";
+    std::cout << "  5. Handle EOF and errors gracefully\n";
+    std::cout << "  6. Close files explicitly or use RAII\n\n";
+}
+
+// ===================================================================
+// EXAMPLE 5: FILE FORMAT STRATEGIES
+// ===================================================================
+
+void example_file_formats() {
+    std::cout << "=== Example 5: File Format Strategies ===\n\n";
+    
+    std::cout << "Strategy 1: Single Message per File\n";
+    std::cout << "  Use case: Configuration files, snapshots\n";
+    std::cout << "  ✅ Simple: just SerializeToOstream() / ParseFromIstream()\n";
+    std::cout << "  ✅ Easy to inspect and replace\n";
+    std::cout << "  ❌ Many files for multiple messages\n";
+    std::cout << R"code(
+  sensors::SensorReading reading;
+  // ... populate reading ...
+  
+  std::ofstream out("config.bin", std::ios::binary);
+  reading.SerializeToOstream(&out);
+  out.close();
+  
+  std::ifstream in("config.bin", std::ios::binary);
+  reading.ParseFromIstream(&in);
+)code" << "\n\n";
+    
+    std::cout << "Strategy 2: Multiple Messages with Length Prefixes\n";
+    std::cout << "  Use case: Log files, sensor data streams\n";
+    std::cout << "  ✅ Efficient for sequential access\n";
+    std::cout << "  ✅ Single file for all data\n";
+    std::cout << "  ❌ No random access\n";
+    std::cout << "  See Example 4b above for implementation\n\n";
+    
+    std::cout << "Strategy 3: Container Message (Repeated Fields)\n";
+    std::cout << "  Use case: Batched data, complete datasets\n";
+    std::cout << "  ✅ Single SerializeToOstream() call\n";
+    std::cout << "  ✅ Entire dataset in memory\n";
+    std::cout << "  ❌ Must load everything at once\n";
+    std::cout << R"code(
+  // Define in .proto:
+  // message SensorDataBatch {
+  //   repeated SensorReading readings = 1;
+  // }
+  
+  sensors::SensorDataBatch batch;
+  batch.add_readings()->CopyFrom(reading1);
+  batch.add_readings()->CopyFrom(reading2);
+  batch.add_readings()->CopyFrom(reading3);
+  
+  std::ofstream out("batch.bin", std::ios::binary);
+  batch.SerializeToOstream(&out);
+)code" << "\n\n";
+    
+    std::cout << "Strategy 4: Text Format (for debugging)\n";
+    std::cout << "  Use case: Debug logs, human inspection\n";
+    std::cout << "  ✅ Human-readable\n";
+    std::cout << "  ✅ Easy to debug\n";
+    std::cout << "  ❌ Much larger file size\n";
+    std::cout << "  ❌ Slower parsing\n";
+    std::cout << R"code(
+  #include <google/protobuf/text_format.h>
+  
+  sensors::SensorReading reading;
+  // ... populate ...
+  
+  std::ofstream out("data.txt");
+  std::string text;
+  google::protobuf::TextFormat::PrintToString(reading, &text);
+  out << text;
+  
+  // Read back:
+  std::ifstream in("data.txt");
+  std::string content((std::istreambuf_iterator<char>(in)),
+                      std::istreambuf_iterator<char>());
+  google::protobuf::TextFormat::ParseFromString(content, &reading);
+)code" << "\n\n";
+    
+    std::cout << "Recommendation by use case:\n";
+    std::cout << "  • Configuration files → Strategy 1 (single message)\n";
+    std::cout << "  • Sensor data logs → Strategy 2 (length prefixes)\n";
+    std::cout << "  • Database dumps → Strategy 3 (container message)\n";
+    std::cout << "  • Debug output → Strategy 4 (text format)\n";
+    std::cout << "  • Embedded logging → Strategy 2 (append to file)\n\n";
+}
+
+// ===================================================================
+// EXAMPLE 6: JSON CONVERSION
 // ===================================================================
 
 void example_json_conversion() {
-    std::cout << "=== Example 4: JSON Conversion (Protobuf v3) ===\n";
+    std::cout << "=== Example 6: JSON Conversion (Protobuf v3) ===\n";
     
     std::cout << R"code(
 #include <google/protobuf/util/json_util.h>
@@ -255,11 +499,11 @@ if (status.ok()) {
 }
 
 // ===================================================================
-// EXAMPLE 5: REPEATED FIELDS AND BATCHING
+// EXAMPLE 7: REPEATED FIELDS AND BATCHING
 // ===================================================================
 
 void example_repeated_fields() {
-    std::cout << "=== Example 5: Repeated Fields (Batch Processing) ===\n";
+    std::cout << "=== Example 7: Repeated Fields (Batch Processing) ===\n";
     
     sensors::SensorBatch batch;
     batch.set_batch_id("batch_001");
@@ -353,11 +597,11 @@ if (size <= buffer.size()) {
 }
 
 // ===================================================================
-// EXAMPLE 7: EMBEDDED SYSTEMS BEST PRACTICES
+// EXAMPLE 9: EMBEDDED SYSTEMS CONSIDERATIONS
 // ===================================================================
 
 void example_embedded_systems() {
-    std::cout << "=== Example 7: Embedded Systems Best Practices ===\n";
+    std::cout << "=== Example 9: Embedded Systems Best Practices ===\n";
     
     std::cout << R"(
 // 1. Use fixed-size buffers to avoid dynamic allocation
@@ -537,6 +781,8 @@ int main() {
     example_create_sensor_reading();
     example_binary_serialization();
     example_binary_deserialization();
+    example_file_serialization();
+    example_file_formats();
     example_json_conversion();
     example_repeated_fields();
     example_performance();
