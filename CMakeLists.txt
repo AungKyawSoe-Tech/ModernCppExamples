@@ -111,6 +111,7 @@ set(EXECUTABLES
     TuplesAndStructuredBindings
     SystemInteractionAndParsing
     FunctionalSafetyISO26262
+    AsioMultipleContexts
     
     # Feature-specific examples (kept for reference)
     GenericLambdas
