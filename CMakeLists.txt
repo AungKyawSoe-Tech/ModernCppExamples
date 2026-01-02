@@ -99,7 +99,7 @@ set(EXECUTABLES
     # Existing algorithm and data structure examples
     BinarySearch
     Cpp17Concurrency
-    DeleteNode
+    InsertAndDeleteNodes
     FindCountOfCommonNodes
     FindFirstCommonNode
     FindMaxNoOfConsecutiveOnesFromIntArray
