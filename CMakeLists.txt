@@ -83,6 +83,9 @@ set(EXECUTABLES
     Cpp23Examples
     EigenSensorFusion
     ResourceLeaks
+    CppWrappingCLibrary
+    CreatingCApiFromCpp
+    PerfectForwardingAndRequires
     
     # NOTE: C++20 modules (TemplatedCameraModules) require special compilation:
     # Modules are not yet fully supported by CMake's standard add_executable
