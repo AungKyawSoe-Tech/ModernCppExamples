@@ -1691,7 +1691,355 @@ void demonstrate_file_locking() {
 }
 
 // ===================================================================
-// SECTION 16: SECURITY CONSIDERATIONS
+// SECTION 16: RACE CONDITIONS - PROBLEM AND SOLUTION
+// ===================================================================
+
+// Simulated device hotplug manager - WITHOUT proper synchronization (BROKEN!)
+class BrokenDeviceManager {
+private:
+    std::map<std::string, std::string> devices;  // device_id -> status
+    int device_count = 0;
+    
+public:
+    // Called by multiple threads - NO MUTEX!
+    void add_device(const std::string& device_id) {
+        // RACE CONDITION: Multiple threads can read/write simultaneously
+        if (devices.find(device_id) == devices.end()) {
+            std::this_thread::sleep_for(std::chrono::microseconds(100));  // Simulate processing
+            devices[device_id] = "active";
+            device_count++;
+        }
+    }
+    
+    void remove_device(const std::string& device_id) {
+        // RACE CONDITION: Map modification without synchronization
+        if (devices.find(device_id) != devices.end()) {
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            devices.erase(device_id);
+            device_count--;
+        }
+    }
+    
+    void process_script_output(const std::string& script_output) {
+        // RACE CONDITION: Reading and updating shared state
+        std::istringstream iss(script_output);
+        std::string line;
+        while (std::getline(iss, line)) {
+            if (line.find("ADD:") == 0) {
+                std::string device = line.substr(4);
+                devices[device] = "pending";
+            }
+        }
+    }
+    
+    int get_count() const {
+        return device_count;  // RACE CONDITION: Reading without lock
+    }
+    
+    std::map<std::string, std::string> get_devices() const {
+        return devices;  // RACE CONDITION: Copying map without lock
+    }
+};
+
+// Fixed version - WITH proper synchronization
+class SafeDeviceManager {
+private:
+    std::map<std::string, std::string> devices;
+    int device_count = 0;
+    mutable std::mutex mtx;  // Protects all shared state
+    std::ofstream log_file;
+    
+public:
+    SafeDeviceManager() : log_file("/tmp/device_manager.log", std::ios::app) {}
+    
+    void add_device(const std::string& device_id) {
+        std::lock_guard<std::mutex> lock(mtx);  // FIXED: Automatic locking
+        
+        if (devices.find(device_id) == devices.end()) {
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            devices[device_id] = "active";
+            device_count++;
+            
+            if (log_file.is_open()) {
+                log_file << "[ADD] " << device_id << std::endl;
+            }
+        }
+    }
+    
+    void remove_device(const std::string& device_id) {
+        std::lock_guard<std::mutex> lock(mtx);  // FIXED: Protected
+        
+        if (devices.find(device_id) != devices.end()) {
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            devices.erase(device_id);
+            device_count--;
+            
+            if (log_file.is_open()) {
+                log_file << "[REMOVE] " << device_id << std::endl;
+            }
+        }
+    }
+    
+    void process_script_output(const std::string& script_output) {
+        std::lock_guard<std::mutex> lock(mtx);  // FIXED: Protected
+        
+        std::istringstream iss(script_output);
+        std::string line;
+        while (std::getline(iss, line)) {
+            if (line.find("ADD:") == 0) {
+                std::string device = line.substr(4);
+                devices[device] = "pending";
+            }
+        }
+    }
+    
+    int get_count() const {
+        std::lock_guard<std::mutex> lock(mtx);  // FIXED: Protected read
+        return device_count;
+    }
+    
+    std::map<std::string, std::string> get_devices() const {
+        std::lock_guard<std::mutex> lock(mtx);  // FIXED: Protected copy
+        return devices;
+    }
+    
+    ~SafeDeviceManager() {
+        if (log_file.is_open()) {
+            log_file.close();
+        }
+    }
+};
+
+// Simulate hotplug events by calling external scripts
+void simulate_hotplug_script(int event_id) {
+    // Create a temporary script that simulates device detection
+    std::error_code ec;
+    fs::path temp_dir = fs::temp_directory_path(ec);
+    fs::path script_path = temp_dir / ("hotplug_" + std::to_string(event_id) + ".sh");
+    
+    std::ofstream script(script_path);
+    script << "#!/bin/bash\n";
+    script << "echo 'ADD:device_" << event_id << "'\n";
+    script << "sleep 0.01\n";
+    script << "echo 'STATUS:online'\n";
+    script.close();
+    
+    fs::permissions(script_path, fs::perms::owner_all, fs::perm_options::add, ec);
+}
+
+void demonstrate_race_condition() {
+    std::cout << "\n=== 16. RACE CONDITIONS - PROBLEM AND SOLUTION ===" << std::endl;
+    
+    // 16.1 Demonstrate the BROKEN version
+    std::cout << "\n16.1 ❌ BROKEN: Race condition without mutex:" << std::endl;
+    {
+        BrokenDeviceManager broken_mgr;
+        std::vector<std::thread> threads;
+        
+        std::cout << "   Launching 20 threads to add devices..." << std::endl;
+        
+        // Multiple threads adding same devices
+        for (int i = 0; i < 20; ++i) {
+            threads.emplace_back([&broken_mgr, i]() {
+                for (int j = 0; j < 10; ++j) {
+                    std::string device_id = "dev_" + std::to_string(j);
+                    broken_mgr.add_device(device_id);
+                }
+            });
+        }
+        
+        for (auto& t : threads) {
+            t.join();
+        }
+        
+        int final_count = broken_mgr.get_count();
+        auto devices = broken_mgr.get_devices();
+        
+        std::cout << "   Expected: 10 unique devices" << std::endl;
+        std::cout << "   Device count variable: " << final_count << std::endl;
+        std::cout << "   Actual devices in map: " << devices.size() << std::endl;
+        
+        if (final_count != 10 || devices.size() != 10) {
+            std::cout << "   ⚠️  RACE CONDITION DETECTED!" << std::endl;
+            std::cout << "   ⚠️  Count mismatch due to concurrent access" << std::endl;
+        } else {
+            std::cout << "   ℹ️  (Race condition may not always show - timing dependent)" << std::endl;
+        }
+    }
+    
+    // 16.2 Demonstrate the FIXED version
+    std::cout << "\n16.2 ✅ FIXED: With mutex protection:" << std::endl;
+    {
+        SafeDeviceManager safe_mgr;
+        std::vector<std::thread> threads;
+        
+        std::cout << "   Launching 20 threads to add devices..." << std::endl;
+        
+        for (int i = 0; i < 20; ++i) {
+            threads.emplace_back([&safe_mgr, i]() {
+                for (int j = 0; j < 10; ++j) {
+                    std::string device_id = "dev_" + std::to_string(j);
+                    safe_mgr.add_device(device_id);
+                }
+            });
+        }
+        
+        for (auto& t : threads) {
+            t.join();
+        }
+        
+        int final_count = safe_mgr.get_count();
+        auto devices = safe_mgr.get_devices();
+        
+        std::cout << "   Expected: 10 unique devices" << std::endl;
+        std::cout << "   Device count: " << final_count << std::endl;
+        std::cout << "   Devices in map: " << devices.size() << std::endl;
+        
+        if (final_count == 10 && devices.size() == 10) {
+            std::cout << "   ✅ CORRECT: Mutex prevented race condition!" << std::endl;
+        }
+    }
+    
+    // 16.3 Real-world scenario: File updates from multiple sources
+    std::cout << "\n16.3 Race condition with file I/O and scripts:" << std::endl;
+    {
+        std::error_code ec;
+        fs::path temp_dir = fs::temp_directory_path(ec);
+        fs::path shared_file = temp_dir / "device_registry.txt";
+        
+        // BROKEN: Multiple threads writing to file without coordination
+        std::cout << "   ❌ Without file locking:" << std::endl;
+        {
+            // Clear file
+            std::ofstream(shared_file).close();
+            
+            std::vector<std::thread> writers;
+            
+            for (int i = 0; i < 5; ++i) {
+                writers.emplace_back([&shared_file, i]() {
+                    for (int j = 0; j < 3; ++j) {
+                        // RACE CONDITION: Multiple threads writing simultaneously
+                        std::ofstream ofs(shared_file, std::ios::app);
+                        ofs << "Thread_" << i << "_entry_" << j << "\n";
+                        ofs.close();
+                        std::this_thread::sleep_for(std::chrono::microseconds(100));
+                    }
+                });
+            }
+            
+            for (auto& t : writers) {
+                t.join();
+            }
+            
+            // Count lines
+            std::ifstream ifs(shared_file);
+            int line_count = 0;
+            std::string line;
+            while (std::getline(ifs, line)) {
+                if (!line.empty()) line_count++;
+            }
+            
+            std::cout << "      Expected 15 lines, got: " << line_count << std::endl;
+            if (line_count != 15) {
+                std::cout << "      ⚠️  Some writes may have been lost!" << std::endl;
+            }
+        }
+        
+        // FIXED: With mutex protection
+        std::cout << "   ✅ With mutex protection:" << std::endl;
+        {
+            // Clear file
+            std::ofstream(shared_file).close();
+            
+            std::mutex file_mtx;
+            std::vector<std::thread> writers;
+            
+            for (int i = 0; i < 5; ++i) {
+                writers.emplace_back([&shared_file, &file_mtx, i]() {
+                    for (int j = 0; j < 3; ++j) {
+                        std::lock_guard<std::mutex> lock(file_mtx);  // FIXED!
+                        std::ofstream ofs(shared_file, std::ios::app);
+                        ofs << "Thread_" << i << "_entry_" << j << "\n";
+                        ofs.close();
+                        std::this_thread::sleep_for(std::chrono::microseconds(100));
+                    }
+                });
+            }
+            
+            for (auto& t : writers) {
+                t.join();
+            }
+            
+            // Count lines
+            std::ifstream ifs(shared_file);
+            int line_count = 0;
+            std::string line;
+            while (std::getline(ifs, line)) {
+                if (!line.empty()) line_count++;
+            }
+            
+            std::cout << "      Expected 15 lines, got: " << line_count << std::endl;
+            if (line_count == 15) {
+                std::cout << "      ✅ All writes preserved!" << std::endl;
+            }
+        }
+        
+        fs::remove(shared_file, ec);
+    }
+    
+    // 16.4 Simulating hotplug events with script execution
+    std::cout << "\n16.4 Hotplug simulation (scripts + threads):" << std::endl;
+    {
+        SafeDeviceManager mgr;
+        std::vector<std::thread> hotplug_threads;
+        
+        std::cout << "   Simulating 3 concurrent hotplug events..." << std::endl;
+        
+        for (int i = 0; i < 3; ++i) {
+            hotplug_threads.emplace_back([&mgr, i]() {
+                // Simulate calling udev script or hotplug handler
+                std::string script_output = "ADD:usb_device_" + std::to_string(i) + "\n";
+                script_output += "ADD:usb_port_" + std::to_string(i) + "\n";
+                
+                mgr.process_script_output(script_output);
+                
+                // Simulate device becoming active
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                mgr.add_device("usb_device_" + std::to_string(i));
+                mgr.add_device("usb_port_" + std::to_string(i));
+            });
+        }
+        
+        for (auto& t : hotplug_threads) {
+            t.join();
+        }
+        
+        auto devices = mgr.get_devices();
+        std::cout << "   Total devices registered: " << devices.size() << std::endl;
+        std::cout << "   Devices:" << std::endl;
+        for (const auto& [id, status] : devices) {
+            std::cout << "      " << id << " -> " << status << std::endl;
+        }
+        std::cout << "   ✅ All hotplug events handled safely" << std::endl;
+    }
+    
+    std::cout << "\n💡 Common race condition scenarios:" << std::endl;
+    std::cout << "   1. Multiple threads modifying shared container" << std::endl;
+    std::cout << "   2. Check-then-act pattern without atomicity" << std::endl;
+    std::cout << "   3. Reading and writing without synchronization" << std::endl;
+    std::cout << "   4. File I/O from multiple threads/processes" << std::endl;
+    std::cout << "   5. Scripts updating shared resources" << std::endl;
+    
+    std::cout << "\n💡 Solutions:" << std::endl;
+    std::cout << "   • Use std::mutex with lock_guard/unique_lock" << std::endl;
+    std::cout << "   • Use std::atomic for simple counters" << std::endl;
+    std::cout << "   • Use file locks for inter-process sync" << std::endl;
+    std::cout << "   • Protect ALL access to shared data" << std::endl;
+    std::cout << "   • Keep critical sections small" << std::endl;
+}
+
+// ===================================================================
+// SECTION 17: SECURITY CONSIDERATIONS
 // ===================================================================
 
 void explain_security_considerations() {
@@ -1744,7 +2092,7 @@ void explain_security_considerations() {
 }
 
 // ===================================================================
-// SECTION 17: CROSS-PLATFORM CONSIDERATIONS
+// SECTION 18: CROSS-PLATFORM CONSIDERATIONS
 // ===================================================================
 
 void explain_cross_platform() {
@@ -1785,7 +2133,7 @@ void explain_cross_platform() {
 }
 
 // ===================================================================
-// SECTION 18: BEST PRACTICES SUMMARY
+// SECTION 19: BEST PRACTICES SUMMARY
 // ===================================================================
 
 void explain_best_practices() {
@@ -1870,6 +2218,7 @@ int main() {
         demonstrate_mutex_and_lock_guard();
         demonstrate_unique_lock();
         demonstrate_file_locking();
+        demonstrate_race_condition();
         explain_security_considerations();
         explain_cross_platform();
         explain_best_practices();
@@ -1917,6 +2266,7 @@ int main() {
         std::cout << "   • std::shared_mutex (reader-writer locks)" << std::endl;
         std::cout << "   • std::condition_variable (wait/notify)" << std::endl;
         std::cout << "   • OS-level file locking (flock)" << std::endl;
+        std::cout << "   • Race condition examples and fixes" << std::endl;
         
         std::cout << "\n⚠️ SECURITY REMINDERS:" << std::endl;
         std::cout << "   • Never pass unsanitized user input to shell" << std::endl;
