@@ -112,6 +112,7 @@ set(EXECUTABLES
     SystemInteractionAndParsing
     FunctionalSafetyISO26262
     AsioMultipleContexts
+    ThreadPoolExamples
     
     # Feature-specific examples (kept for reference)
     GenericLambdas
