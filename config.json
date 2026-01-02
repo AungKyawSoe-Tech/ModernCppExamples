@@ -1,0 +1,11 @@
+{
+  "demoTime": 100,
+  "server_host": "production.server.com",
+  "server_port": 9090,
+  "debug_mode": false,
+  "max_connections": 200,
+  "allowed_ips": ["10.0.0.1", "10.0.0.2"],
+  "admin_password": "mypassword",
+  "new_feature": "enabled",
+  "api_endpoint": "/api/v2"
+}

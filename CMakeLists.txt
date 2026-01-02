@@ -248,6 +248,15 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 message(STATUS "Added executable: MultiThreadedMicroservices")
 
+# ConfigLoaderAndChecker (requires C++17 filesystem)
+add_executable(ConfigLoaderAndChecker src/ConfigLoaderAndChecker.cpp)
+set_target_properties(ConfigLoaderAndChecker PROPERTIES CXX_STANDARD 17)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # Link pthread for background monitoring thread
+    target_link_libraries(ConfigLoaderAndChecker pthread)
+endif()
+message(STATUS "Added executable: ConfigLoaderAndChecker")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
