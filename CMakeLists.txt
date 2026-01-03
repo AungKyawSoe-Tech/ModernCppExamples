@@ -77,7 +77,7 @@ set(EXECUTABLES
     ExceptionWithSourceLocation
     ErrorHandlingStroustrup
     MoveSemantics
-    VirtualFunctions
+    RuntimePolymorphism
     VirtualFunctionsInTemplates
     STLContainersNoHeap
     ARMInstructionSets
