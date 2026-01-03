@@ -78,6 +78,7 @@ set(EXECUTABLES
     ErrorHandlingStroustrup
     MoveSemantics
     VirtualFunctions
+    VirtualFunctionsInTemplates
     STLContainersNoHeap
     ARMInstructionSets
     Cpp23Examples
@@ -297,6 +298,10 @@ message(STATUS "Added executable: MISRACppDemo")
 # NoexceptBestPractices (when to use and when NOT to use noexcept)
 add_executable(NoexceptBestPractices src/NoexceptBestPractices.cpp)
 message(STATUS "Added executable: NoexceptBestPractices")
+
+# CRTPvsVirtualFunctions (CRTP vs virtual functions - static vs dynamic polymorphism)
+add_executable(CRTPvsVirtualFunctions src/CRTPvsVirtualFunctions.cpp)
+message(STATUS "Added executable: CRTPvsVirtualFunctions")
 
 # StopTokenExample (demonstrates std::stop_token for thread cancellation)
 add_executable(StopTokenExample src/StopTokenExample.cpp)
