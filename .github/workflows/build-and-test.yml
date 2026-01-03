@@ -135,6 +135,8 @@ header-includes: |
   \usepackage{fontspec}
   \setmainfont{DejaVu Sans}
   \setmonofont{DejaVu Sans Mono}
+  \usepackage{fvextra}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
   \lstset{
     basicstyle=\ttfamily\small,
     breaklines=true,
@@ -192,12 +194,14 @@ EOF
     
     - name: Generate PDF with pandoc
       run: |
+        set -e  # Exit on any error
         echo "Starting PDF generation..."
         echo "==== Combined markdown preview (first 50 lines) ===="
         head -n 50 pdf_output/ModernCppRefresherCourse_Combined.md
         echo "==== End preview ===="
         
-        if pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
+        echo "Running pandoc..."
+        pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
           -o pdf_output/ModernCppRefresherCourse.pdf \
           --pdf-engine=xelatex \
           --toc \
@@ -208,15 +212,19 @@ EOF
           -V fontsize=11pt \
           -V linkcolor=blue \
           -V urlcolor=blue \
-          --verbose 2>&1 | tee pandoc.log; then
-          echo "✅ PDF generation successful!"
-        else
-          echo "❌ Pandoc failed!"
+          -V colorlinks=true \
+          --listings \
+          --verbose 2>&1 | tee pandoc.log
+        
+        PANDOC_EXIT=${PIPESTATUS[0]}
+        if [ $PANDOC_EXIT -ne 0 ]; then
+          echo "❌ Pandoc failed with exit code: $PANDOC_EXIT"
           echo "==== Pandoc log ===="
           cat pandoc.log
           echo "==== End log ===="
           exit 1
         fi
+        echo "✅ PDF generation successful!"
     
     - name: Verify PDF was created
       run: |

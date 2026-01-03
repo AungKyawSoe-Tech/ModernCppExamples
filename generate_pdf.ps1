@@ -146,7 +146,9 @@ $pandocArgs = @(
     "-V", "geometry:margin=1in",
     "-V", "fontsize=11pt",
     "-V", "linkcolor=blue",
-    "-V", "urlcolor=blue"
+    "-V", "urlcolor=blue",
+    "-V", "colorlinks=true",
+    "--listings"
 )
 
 try {
