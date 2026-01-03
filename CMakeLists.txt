@@ -294,6 +294,10 @@ message(STATUS "Added executable: SOLIDPrinciples")
 add_executable(MISRACppDemo src/MISRACppDemo.cpp)
 message(STATUS "Added executable: MISRACppDemo")
 
+# NoexceptBestPractices (when to use and when NOT to use noexcept)
+add_executable(NoexceptBestPractices src/NoexceptBestPractices.cpp)
+message(STATUS "Added executable: NoexceptBestPractices")
+
 # StopTokenExample (demonstrates std::stop_token for thread cancellation)
 add_executable(StopTokenExample src/StopTokenExample.cpp)
 target_link_libraries(StopTokenExample PRIVATE pthread)
