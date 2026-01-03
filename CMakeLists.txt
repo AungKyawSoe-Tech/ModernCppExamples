@@ -80,6 +80,7 @@ set(EXECUTABLES
     RuntimePolymorphism
     VirtualFunctionsInTemplates
     STLContainersNoHeap
+    SafetyCriticalSTLContainers
     ARMInstructionSets
     Cpp23Examples
     EigenSensorFusion
