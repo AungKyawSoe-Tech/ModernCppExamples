@@ -123,34 +123,6 @@ urlcolor: blue
 geometry: margin=1in
 fontsize: 11pt
 documentclass: article
-mainfont: DejaVu Sans
-monofont: DejaVu Sans Mono
-header-includes: |
-  \usepackage{fancyhdr}
-  \pagestyle{fancy}
-  \fancyhead[L]{Modern C++ Refresher Course}
-  \fancyhead[R]{v1.0.0}
-  \usepackage{listings}
-  \usepackage{xcolor}
-  \usepackage{fontspec}
-  \setmainfont{DejaVu Sans}
-  \setmonofont{DejaVu Sans Mono}
-  \usepackage{fvextra}
-  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
-  \lstset{
-    basicstyle=\ttfamily\small,
-    breaklines=true,
-    frame=single,
-    numbers=left,
-    numberstyle=\tiny,
-    language=C++,
-    showstringspaces=false,
-    commentstyle=\color{gray},
-    keywordstyle=\color{blue},
-    stringstyle=\color{red},
-    extendedchars=true,
-    literate={╔}{{\$\texttt{\char"2554}\$}}1 {═}{{\$\texttt{\char"2550}\$}}1 {╗}{{\$\texttt{\char"2557}\$}}1 {║}{{\$\texttt{\char"2551}\$}}1 {╚}{{\$\texttt{\char"255A}\$}}1 {╝}{{\$\texttt{\char"255D}\$}}1
-  }
 ---
 
 EOF
