@@ -278,6 +278,10 @@ message(STATUS "Added executable: NVIIdiomTemplateMethod")
 add_executable(ROMability src/ROMability.cpp)
 message(STATUS "Added executable: ROMability")
 
+# RealTimeProgramming (comprehensive guide to real-time C++ programming)
+add_executable(RealTimeProgramming src/RealTimeProgramming.cpp)
+message(STATUS "Added executable: RealTimeProgramming")
+
 # StopTokenExample (demonstrates std::stop_token for thread cancellation)
 add_executable(StopTokenExample src/StopTokenExample.cpp)
 target_link_libraries(StopTokenExample PRIVATE pthread)
