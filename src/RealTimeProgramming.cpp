@@ -678,6 +678,277 @@ void demonstrate() {
 } // namespace stl_containers_realtime
 
 // ============================================================================
+// SECTION 3.5: std::list::splice() - O(1) Element Movement
+// ============================================================================
+
+namespace list_splice_realtime {
+
+// std::list::splice() is PERFECT for real-time systems because:
+// 1. O(1) complexity for moving elements (constant time!)
+// 2. NO MEMORY ALLOCATION - just pointer manipulation
+// 3. NO COPYING/MOVING - elements stay in place
+// 4. Deterministic and predictable performance
+// 5. Iterators remain valid after splice
+//
+// Use cases in real-time systems:
+// - Free lists / object pools
+// - Task queue management
+// - Event scheduling
+// - Moving data between priority queues
+
+struct Task {
+    int id;
+    std::string name;
+    int priority;
+    
+    Task(int i, std::string n, int p) : id(i), name(std::move(n)), priority(p) {}
+};
+
+void demonstrate() {
+    std::cout << "\n" << std::string(80, '=') << "\n";
+    std::cout << "SECTION 3.5: std::list::splice() - O(1) Element Movement\n";
+    std::cout << std::string(80, '=') << "\n\n";
+    
+    std::cout << "WHY splice() IS CRITICAL FOR REAL-TIME SYSTEMS:\n";
+    std::cout << "  • O(1) constant time - no iteration required\n";
+    std::cout << "  • NO memory allocation - just rewires pointers\n";
+    std::cout << "  • NO copying/moving - elements stay in original memory\n";
+    std::cout << "  • Iterators remain valid - predictable behavior\n";
+    std::cout << "  • Deterministic performance - perfect for hard real-time\n\n";
+    
+    // =======================================================================
+    // EXAMPLE 1: splice() entire list - O(1)
+    // =======================================================================
+    std::cout << std::string(80, '-') << "\n";
+    std::cout << "EXAMPLE 1: Splice Entire List - O(1) Operation\n";
+    std::cout << std::string(80, '-') << "\n\n";
+    
+    std::list<Task> active_tasks;
+    active_tasks.emplace_back(1, "Process Sensor Data", 10);
+    active_tasks.emplace_back(2, "Update Control Loop", 20);
+    active_tasks.emplace_back(3, "Send Telemetry", 5);
+    
+    std::list<Task> pending_tasks;
+    pending_tasks.emplace_back(4, "Log Event", 1);
+    pending_tasks.emplace_back(5, "Check Diagnostics", 3);
+    
+    std::cout << "BEFORE splice():\n";
+    std::cout << "  Active tasks: " << active_tasks.size() << "\n";
+    for (const auto& t : active_tasks) {
+        std::cout << "    Task " << t.id << ": " << t.name << " (priority: " << t.priority << ")\n";
+    }
+    std::cout << "  Pending tasks: " << pending_tasks.size() << "\n";
+    for (const auto& t : pending_tasks) {
+        std::cout << "    Task " << t.id << ": " << t.name << " (priority: " << t.priority << ")\n";
+    }
+    
+    // Splice entire pending_tasks list into active_tasks at the end
+    // This is O(1) - just rewires a few pointers!
+    auto start = std::chrono::high_resolution_clock::now();
+    active_tasks.splice(active_tasks.end(), pending_tasks);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+    
+    std::cout << "\nAFTER splice(active.end(), pending):\n";
+    std::cout << "  Active tasks: " << active_tasks.size() << "\n";
+    for (const auto& t : active_tasks) {
+        std::cout << "    Task " << t.id << ": " << t.name << " (priority: " << t.priority << ")\n";
+    }
+    std::cout << "  Pending tasks: " << pending_tasks.size() << " (empty!)\n";
+    std::cout << "  ⏱ Time taken: " << duration.count() << " ns (O(1) - constant time!)\n";
+    std::cout << "  ✓ NO allocation, NO copying, just pointer rewiring!\n\n";
+    
+    // =======================================================================
+    // EXAMPLE 2: splice() single element - O(1)
+    // =======================================================================
+    std::cout << std::string(80, '-') << "\n";
+    std::cout << "EXAMPLE 2: Splice Single Element - O(1) Operation\n";
+    std::cout << std::string(80, '-') << "\n\n";
+    
+    std::list<Task> high_priority;
+    high_priority.emplace_back(10, "Critical Shutdown", 100);
+    high_priority.emplace_back(11, "Emergency Stop", 99);
+    
+    std::list<Task> normal_priority;
+    normal_priority.emplace_back(20, "Routine Check", 10);
+    normal_priority.emplace_back(21, "Update Display", 8);
+    normal_priority.emplace_back(22, "Log Status", 5);
+    
+    std::cout << "SCENARIO: Emergency task detected in normal queue!\n\n";
+    
+    std::cout << "BEFORE splice():\n";
+    std::cout << "  High priority: " << high_priority.size() << " tasks\n";
+    std::cout << "  Normal priority: " << normal_priority.size() << " tasks\n";
+    for (const auto& t : normal_priority) {
+        std::cout << "    Task " << t.id << ": " << t.name << " (priority: " << t.priority << ")\n";
+    }
+    
+    // Find the "Update Display" task and move it to high priority
+    auto it = std::find_if(normal_priority.begin(), normal_priority.end(),
+                          [](const Task& t) { return t.id == 21; });
+    
+    if (it != normal_priority.end()) {
+        std::cout << "\n  Found Task 21: " << it->name << " - moving to high priority!\n";
+        
+        // Splice single element - O(1)!
+        start = std::chrono::high_resolution_clock::now();
+        high_priority.splice(high_priority.end(), normal_priority, it);
+        end = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+    }
+    
+    std::cout << "\nAFTER splice(high.end(), normal, iterator):\n";
+    std::cout << "  High priority: " << high_priority.size() << " tasks\n";
+    for (const auto& t : high_priority) {
+        std::cout << "    Task " << t.id << ": " << t.name << " (priority: " << t.priority << ")\n";
+    }
+    std::cout << "  Normal priority: " << normal_priority.size() << " tasks\n";
+    for (const auto& t : normal_priority) {
+        std::cout << "    Task " << t.id << ": " << t.name << " (priority: " << t.priority << ")\n";
+    }
+    std::cout << "  ⏱ Time taken: " << duration.count() << " ns (O(1) - constant time!)\n";
+    std::cout << "  ✓ Task moved instantly without copying!\n\n";
+    
+    // =======================================================================
+    // EXAMPLE 3: splice() range of elements - O(n) where n = range size
+    // =======================================================================
+    std::cout << std::string(80, '-') << "\n";
+    std::cout << "EXAMPLE 3: Splice Range of Elements - O(n) but NO Allocation\n";
+    std::cout << std::string(80, '-') << "\n\n";
+    
+    std::list<int> source = {10, 20, 30, 40, 50, 60, 70, 80};
+    std::list<int> dest = {1, 2, 3};
+    
+    std::cout << "BEFORE splice():\n";
+    std::cout << "  Source: ";
+    for (int v : source) std::cout << v << " ";
+    std::cout << "\n  Dest: ";
+    for (int v : dest) std::cout << v << " ";
+    std::cout << "\n";
+    
+    // Move elements 30, 40, 50 from source to dest
+    auto range_start = std::find(source.begin(), source.end(), 30);
+    auto range_end = std::find(source.begin(), source.end(), 60);  // One past last element
+    
+    std::cout << "\n  Moving range [30, 40, 50] from source to dest...\n";
+    
+    // Splice range - O(n) where n = distance(range_start, range_end)
+    // But still NO memory allocation!
+    start = std::chrono::high_resolution_clock::now();
+    dest.splice(dest.end(), source, range_start, range_end);
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+    
+    std::cout << "\nAFTER splice(dest.end(), source, first, last):\n";
+    std::cout << "  Source: ";
+    for (int v : source) std::cout << v << " ";
+    std::cout << "\n  Dest: ";
+    for (int v : dest) std::cout << v << " ";
+    std::cout << "\n";
+    std::cout << "  ⏱ Time taken: " << duration.count() << " ns (O(n) but predictable!)\n";
+    std::cout << "  ✓ NO allocation - just pointer updates for range!\n\n";
+    
+    // =======================================================================
+    // EXAMPLE 4: Real-time pool management with splice()
+    // =======================================================================
+    std::cout << std::string(80, '-') << "\n";
+    std::cout << "EXAMPLE 4: Free List Pool Management - Real-Time Pattern\n";
+    std::cout << std::string(80, '-') << "\n\n";
+    
+    std::cout << "SCENARIO: Object pool using splice() for O(1) allocation/deallocation\n\n";
+    
+    struct Buffer {
+        int id;
+        std::array<char, 256> data;
+        explicit Buffer(int i) : id(i), data{} {}
+    };
+    
+    // Free pool (available buffers)
+    std::list<Buffer> free_pool;
+    for (int i = 0; i < 5; ++i) {
+        free_pool.emplace_back(i);
+    }
+    
+    // Active pool (in-use buffers)
+    std::list<Buffer> active_pool;
+    
+    std::cout << "Initial state:\n";
+    std::cout << "  Free pool: " << free_pool.size() << " buffers\n";
+    std::cout << "  Active pool: " << active_pool.size() << " buffers\n\n";
+    
+    // Allocate buffer from free pool - O(1)
+    std::cout << "Allocating 3 buffers from free pool...\n";
+    for (int i = 0; i < 3; ++i) {
+        auto it = free_pool.begin();
+        std::cout << "  Allocating buffer " << it->id << "\n";
+        active_pool.splice(active_pool.end(), free_pool, it);  // O(1)!
+    }
+    
+    std::cout << "\nAfter allocation:\n";
+    std::cout << "  Free pool: " << free_pool.size() << " buffers\n";
+    std::cout << "  Active pool: " << active_pool.size() << " buffers (";
+    for (const auto& b : active_pool) std::cout << b.id << " ";
+    std::cout << ")\n\n";
+    
+    // Deallocate buffer back to free pool - O(1)
+    std::cout << "Deallocating buffer 1 back to free pool...\n";
+    auto to_free = std::find_if(active_pool.begin(), active_pool.end(),
+                                [](const Buffer& b) { return b.id == 1; });
+    if (to_free != active_pool.end()) {
+        free_pool.splice(free_pool.end(), active_pool, to_free);  // O(1)!
+        std::cout << "  Buffer 1 returned to free pool\n";
+    }
+    
+    std::cout << "\nFinal state:\n";
+    std::cout << "  Free pool: " << free_pool.size() << " buffers\n";
+    std::cout << "  Active pool: " << active_pool.size() << " buffers (";
+    for (const auto& b : active_pool) std::cout << b.id << " ";
+    std::cout << ")\n\n";
+    
+    std::cout << "  ✓ Pool allocation/deallocation in O(1) with splice()!\n";
+    std::cout << "  ✓ NO dynamic allocation - perfect for real-time systems!\n\n";
+    
+    // =======================================================================
+    // KEY TAKEAWAYS
+    // =======================================================================
+    std::cout << std::string(80, '=') << "\n";
+    std::cout << "KEY TAKEAWAYS: Why splice() is Essential for Real-Time C++\n";
+    std::cout << std::string(80, '=') << "\n\n";
+    
+    std::cout << "1. PERFORMANCE:\n";
+    std::cout << "   • splice() entire list: O(1) - constant time\n";
+    std::cout << "   • splice() single element: O(1) - constant time\n";
+    std::cout << "   • splice() range: O(n) where n = range size (but predictable!)\n\n";
+    
+    std::cout << "2. MEMORY BEHAVIOR:\n";
+    std::cout << "   • NO memory allocation - just pointer manipulation\n";
+    std::cout << "   • NO copying or moving - elements stay in original memory\n";
+    std::cout << "   • Deterministic and bounded - perfect for hard real-time\n\n";
+    
+    std::cout << "3. ITERATOR VALIDITY:\n";
+    std::cout << "   • All iterators, pointers, and references remain valid\n";
+    std::cout << "   • Safe to cache iterators across splice operations\n\n";
+    
+    std::cout << "4. REAL-TIME USE CASES:\n";
+    std::cout << "   • Free list / object pool management\n";
+    std::cout << "   • Task queue reordering (priority changes)\n";
+    std::cout << "   • Event scheduling and rescheduling\n";
+    std::cout << "   • Moving data between priority queues\n";
+    std::cout << "   • Load balancing across worker queues\n\n";
+    
+    std::cout << "5. ALTERNATIVES ARE WORSE:\n";
+    std::cout << "   • std::copy() + erase(): Requires copying, O(n) erase\n";
+    std::cout << "   • std::move() + erase(): Still requires move, O(n) erase\n";
+    std::cout << "   • Manual reallocation: Unpredictable timing, allocation overhead\n";
+    std::cout << "   • splice() is THE optimal solution for list element movement!\n\n";
+    
+    std::cout << "⚡ GOLDEN RULE: Use splice() when you need to move elements\n";
+    std::cout << "   between std::list containers in real-time critical code!\n";
+}
+
+} // namespace list_splice_realtime
+
+// ============================================================================
 // SECTION 4: Memory Management - RAII and Custom Allocators
 // ============================================================================
 
@@ -1057,6 +1328,9 @@ int main() {
         
         // Section 3: STL Containers
         stl_containers_realtime::demonstrate();
+        
+        // Section 3.5: std::list::splice() - O(1) Element Movement
+        list_splice_realtime::demonstrate();
         
         // Section 4: Memory Management
         memory_management::demonstrate();
