@@ -84,6 +84,7 @@ jobs:
 
   generate-pdf:
     runs-on: ubuntu-latest
+    if: always()  # Run even if build-and-test fails
     needs: [build-and-test]
     timeout-minutes: 20
     
@@ -106,51 +107,51 @@ jobs:
         
         # Create combined markdown file with YAML front matter
         cat > pdf_output/ModernCppRefresherCourse_Combined.md << 'EOF'
-        ---
-        title: "Modern C++ Refresher Course"
-        subtitle: "Comprehensive Reference - C++11 through C++23"
-        author:
-          - Aung K. Soe
-          - Claude Sonnet 4.5 (AI Assistant)
-        date: January 3, 2026
-        version: 1.0.0
-        repository: ${{ github.server_url }}/${{ github.repository }}
-        toc: true
-        toc-depth: 3
-        linkcolor: blue
-        urlcolor: blue
-        geometry: margin=1in
-        fontsize: 11pt
-        documentclass: article
-        mainfont: DejaVu Sans
-        monofont: DejaVu Sans Mono
-        header-includes: |
-          \usepackage{fancyhdr}
-          \pagestyle{fancy}
-          \fancyhead[L]{Modern C++ Refresher Course}
-          \fancyhead[R]{v1.0.0}
-          \usepackage{listings}
-          \usepackage{xcolor}
-          \usepackage{fontspec}
-          \setmainfont{DejaVu Sans}
-          \setmonofont{DejaVu Sans Mono}
-          \lstset{
-            basicstyle=\ttfamily\small,
-            breaklines=true,
-            frame=single,
-            numbers=left,
-            numberstyle=\tiny,
-            language=C++,
-            showstringspaces=false,
-            commentstyle=\color{gray},
-            keywordstyle=\color{blue},
-            stringstyle=\color{red},
-            extendedchars=true,
-            literate={╔}{{\$\texttt{\char"2554}\$}}1 {═}{{\$\texttt{\char"2550}\$}}1 {╗}{{\$\texttt{\char"2557}\$}}1 {║}{{\$\texttt{\char"2551}\$}}1 {╚}{{\$\texttt{\char"255A}\$}}1 {╝}{{\$\texttt{\char"255D}\$}}1
-          }
-        ---
-        
-        EOF
+---
+title: "Modern C++ Refresher Course"
+subtitle: "Comprehensive Reference - C++11 through C++23"
+author:
+  - Aung K. Soe
+  - Claude Sonnet 4.5 (AI Assistant)
+date: January 3, 2026
+version: 1.0.0
+repository: https://github.com/AungKyawSoe-Tech/ModernCppExamples
+toc: true
+toc-depth: 3
+linkcolor: blue
+urlcolor: blue
+geometry: margin=1in
+fontsize: 11pt
+documentclass: article
+mainfont: DejaVu Sans
+monofont: DejaVu Sans Mono
+header-includes: |
+  \usepackage{fancyhdr}
+  \pagestyle{fancy}
+  \fancyhead[L]{Modern C++ Refresher Course}
+  \fancyhead[R]{v1.0.0}
+  \usepackage{listings}
+  \usepackage{xcolor}
+  \usepackage{fontspec}
+  \setmainfont{DejaVu Sans}
+  \setmonofont{DejaVu Sans Mono}
+  \lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    language=C++,
+    showstringspaces=false,
+    commentstyle=\color{gray},
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    extendedchars=true,
+    literate={╔}{{\$\texttt{\char"2554}\$}}1 {═}{{\$\texttt{\char"2550}\$}}1 {╗}{{\$\texttt{\char"2557}\$}}1 {║}{{\$\texttt{\char"2551}\$}}1 {╚}{{\$\texttt{\char"255A}\$}}1 {╝}{{\$\texttt{\char"255D}\$}}1
+  }
+---
+
+EOF
         
         # Add README content
         cat README.md >> pdf_output/ModernCppRefresherCourse_Combined.md
@@ -192,7 +193,11 @@ jobs:
     - name: Generate PDF with pandoc
       run: |
         echo "Starting PDF generation..."
-        pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
+        echo "==== Combined markdown preview (first 50 lines) ===="
+        head -n 50 pdf_output/ModernCppRefresherCourse_Combined.md
+        echo "==== End preview ===="
+        
+        if pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
           -o pdf_output/ModernCppRefresherCourse.pdf \
           --pdf-engine=xelatex \
           --toc \
@@ -203,13 +208,25 @@ jobs:
           -V fontsize=11pt \
           -V linkcolor=blue \
           -V urlcolor=blue \
-          --verbose \
-          2>&1 | tee pandoc.log || { echo "❌ Pandoc failed, see log:"; cat pandoc.log; exit 1; }
+          --verbose 2>&1 | tee pandoc.log; then
+          echo "✅ PDF generation successful!"
+        else
+          echo "❌ Pandoc failed!"
+          echo "==== Pandoc log ===="
+          cat pandoc.log
+          echo "==== End log ===="
+          exit 1
+        fi
     
     - name: Verify PDF was created
       run: |
-        ls -lh pdf_output/ModernCppRefresherCourse.pdf
-        echo "PDF size: $(du -h pdf_output/ModernCppRefresherCourse.pdf | cut -f1)"
+        if [ -f pdf_output/ModernCppRefresherCourse.pdf ]; then
+          ls -lh pdf_output/ModernCppRefresherCourse.pdf
+          echo "PDF size: $(du -h pdf_output/ModernCppRefresherCourse.pdf | cut -f1)"
+        else
+          echo "❌ ERROR: PDF file was not created!"
+          exit 1
+        fi
     
     - name: Upload PDF artifact
       uses: actions/upload-artifact@v4
@@ -218,7 +235,8 @@ jobs:
         path: pdf_output/ModernCppRefresherCourse.pdf
         retention-days: 90
     
-    - name: Upload combined markdown
+    - name: Upload combined markdown (for debugging)
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: CombinedMarkdown
