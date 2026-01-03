@@ -61,6 +61,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
 - **Topics:** `std::expected`, deducing `this`, `if consteval`, multidimensional subscript operator, `std::print`, `std::stacktrace`
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Design Patterns & Idioms
@@ -95,6 +97,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp)
 - **Topics:** Factory functions for C API
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Object-Oriented Programming
@@ -120,6 +124,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **Topics:** Object slicing problem, C++20 solutions
 - **File:** [ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)
 - **Topics:** Preventing object slicing with smart pointers
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -151,6 +157,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [ResourceLeaks.cpp](src/ResourceLeaks.cpp)
 - **Topics:** Common resource leak patterns and prevention
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Concurrency & Parallelism
@@ -179,6 +187,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [MultiThreadedMicroservices.cpp](src/MultiThreadedMicroservices.cpp)
 - **Topics:** Multi-threaded microservice architecture
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Real-Time & Embedded Systems
@@ -201,6 +211,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [ROMability.cpp](src/ROMability.cpp)
 - **Topics:** `constexpr`, `consteval`, `constinit`, ROM placement strategies
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Safety-Critical & Standards
@@ -220,6 +232,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### AUTOSAR
 - **File:** [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)
 - **Topics:** AUTOSAR C++14 guidelines, container usage
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -243,6 +257,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [BinarySearch.cpp](src/BinarySearch.cpp)
 - **Topics:** Binary search algorithms, STL algorithm usage
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Template Metaprogramming
@@ -264,6 +280,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Template Interface
 - **File:** [TemplatedCameraInterface.cpp](src/TemplatedCameraInterface.cpp)
 - **Topics:** Generic templated interfaces
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -288,6 +306,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **Topics:** `std::optional` for error handling
 - **File:** [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
 - **Topics:** `std::expected` for error handling (C++23)
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -315,6 +335,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [RestApiExample.cpp](src/RestApiExample.cpp)
 - **Topics:** REST API client, HTTP requests, CURL integration
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Performance & Optimization
@@ -334,6 +356,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Compile-Time Computation
 - **File:** [ROMability.cpp](src/ROMability.cpp)
 - **Topics:** `constexpr`, `consteval`, compile-time evaluation
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -360,6 +384,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Virtual Functions in Templates
 - **File:** [VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp)
 - **Topics:** Code bloat from virtual functions in templates, C++ Core Guidelines T.80, T.83, T.84
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -405,6 +431,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - [Cpp11Examples.cpp](src/Cpp11Examples.cpp) - decltype usage
 - [PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp) - decltype with forwarding
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Event-Driven Programming
@@ -414,6 +442,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **Topics:** Signals/slots with lambdas, observer pattern
 - **File:** [EventDrivenProgramming_Inheritance.cpp](src/EventDrivenProgramming_Inheritance.cpp)
 - **Topics:** Event systems with inheritance
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -426,6 +456,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **Topics:** Generic lambdas with auto parameters (C++14)
 - **File:** [LambdaCaptures.cpp](src/LambdaCaptures.cpp)
 - **Topics:** Lambda capture modes, mutable lambdas
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -453,6 +485,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [FindMaxNoOfConsecutiveOnesFromIntArray.cpp](src/FindMaxNoOfConsecutiveOnesFromIntArray.cpp)
 - **Topics:** Maximum consecutive elements
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Tuples & Structured Bindings
@@ -464,6 +498,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Structured Bindings
 - **File:** [StructuredBindings.cpp](src/StructuredBindings.cpp)
 - **Topics:** Structured bindings syntax and patterns
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -477,6 +513,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [SystemInteractionAndParsing.cpp](src/SystemInteractionAndParsing.cpp)
 - **Topics:** System calls, command execution, parsing
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Sensor Fusion & Scientific Computing
@@ -484,6 +522,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Eigen Library
 - **File:** [EigenSensorFusion.cpp](src/EigenSensorFusion.cpp)
 - **Topics:** Eigen library, Kalman filter, sensor fusion, matrix operations
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -525,6 +565,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 | "Timing is non-deterministic" | [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp) |
 | "Need C interop" | [CppWrappingCLibrary.cpp](src/CppWrappingCLibrary.cpp), [CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp) |
 
+**[⬆ Back to Top](#table-of-contents)**
+
 ---
 
 ## Additional Resources
@@ -547,6 +589,8 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Build Scripts
 - [scripts/](scripts/) - Build and execution scripts
 - [build_modules.ps1](build_modules.ps1) - PowerShell build script
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 
@@ -579,6 +623,8 @@ ModernCppExamples/
 ├── CMakeLists.txt        # CMake build configuration
 └── INDEX.md              # This file
 ```
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 

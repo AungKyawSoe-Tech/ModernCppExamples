@@ -270,3 +270,211 @@ jobs:
         name: pybind11-module-py${{ matrix.python-version }}
         path: pybind_example*.so
         retention-days: 7
+
+  generate-pdf:
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Update documentation for new files
+      run: |
+        echo "Checking for new source files and updating documentation..."
+        python3 scripts/update_documentation.py
+        
+        # Check if INDEX_UPDATE_TEMPLATE.txt was created (new files detected)
+        if [ -f INDEX_UPDATE_TEMPLATE.txt ]; then
+          echo "::warning::New source files detected! Review INDEX_UPDATE_TEMPLATE.txt"
+          cat INDEX_UPDATE_TEMPLATE.txt
+        fi
+    
+    - name: Commit documentation updates
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        if git diff --quiet README.md; then
+          echo "No changes to README.md"
+        else
+          git add README.md
+          git commit -m "docs: Auto-update README.md with new source files [skip ci]"
+          echo "README.md updated"
+        fi
+      continue-on-error: true
+    
+    - name: Push documentation updates
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+      continue-on-error: true
+    
+    - name: Install pandoc and LaTeX
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended \
+          texlive-latex-extra texlive-latex-recommended
+    
+    - name: Verify pandoc installation
+      run: pandoc --version
+    
+    - name: Generate combined markdown
+      run: |
+        mkdir -p pdf_output
+        
+        # Create combined markdown file with YAML front matter
+        cat > pdf_output/ModernCppRefresherCourse_Combined.md << 'EOF'
+        ---
+        title: "Modern C++ Refresher Course"
+        subtitle: "Comprehensive Reference - C++11 through C++23"
+        author:
+          - Aung K. Soe
+          - Claude Sonnet 4.5 (AI Assistant)
+        date: January 3, 2026
+        version: 1.0.0
+        repository: ${{ github.server_url }}/${{ github.repository }}
+        toc: true
+        toc-depth: 3
+        linkcolor: blue
+        urlcolor: blue
+        geometry: margin=1in
+        fontsize: 11pt
+        documentclass: article
+        header-includes: |
+          \usepackage{fancyhdr}
+          \pagestyle{fancy}
+          \fancyhead[L]{Modern C++ Refresher Course}
+          \fancyhead[R]{v1.0.0}
+          \usepackage{listings}
+          \usepackage{xcolor}
+          \lstset{
+            basicstyle=\ttfamily\small,
+            breaklines=true,
+            frame=single,
+            numbers=left,
+            numberstyle=\tiny,
+            language=C++,
+            showstringspaces=false,
+            commentstyle=\color{gray},
+            keywordstyle=\color{blue},
+            stringstyle=\color{red}
+          }
+        ---
+        
+        EOF
+        
+        # Add README content
+        cat README.md >> pdf_output/ModernCppRefresherCourse_Combined.md
+        echo -e "\n\n\\newpage\n\n" >> pdf_output/ModernCppRefresherCourse_Combined.md
+        
+        # Add all source files alphabetically
+        for file in $(find src -name "*.cpp" -o -name "*.cppm" | sort); do
+          FILENAME=$(basename "$file")
+          echo "Processing: $FILENAME"
+          cat >> pdf_output/ModernCppRefresherCourse_Combined.md << EOF2
+        # Source Code: $FILENAME
+        
+        **File:** \`$file\`  
+        **Repository:** [${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/$file](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/$file)
+        
+        \`\`\`cpp
+        EOF2
+          cat "$file" >> pdf_output/ModernCppRefresherCourse_Combined.md
+          cat >> pdf_output/ModernCppRefresherCourse_Combined.md << 'EOF3'
+        
+        ```
+        
+        \newpage
+        
+        EOF3
+        done
+        
+        # Add INDEX.md as appendix
+        echo -e "\n\n# Appendix: Comprehensive Index\n\n" >> pdf_output/ModernCppRefresherCourse_Combined.md
+        cat INDEX.md >> pdf_output/ModernCppRefresherCourse_Combined.md
+    
+    - name: Generate PDF with pandoc
+      run: |
+        pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
+          -o pdf_output/ModernCppRefresherCourse.pdf \
+          --pdf-engine=xelatex \
+          --toc \
+          --toc-depth=3 \
+          --number-sections \
+          --highlight-style=tango \
+          -V geometry:margin=1in \
+          -V fontsize=11pt \
+          -V linkcolor=blue \
+          -V urlcolor=blue
+    
+    - name: Verify PDF was created
+      run: |
+        ls -lh pdf_output/ModernCppRefresherCourse.pdf
+        echo "PDF size: $(du -h pdf_output/ModernCppRefresherCourse.pdf | cut -f1)"
+    
+    - name: Upload PDF artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ModernCppRefresherCourse-PDF
+        path: pdf_output/ModernCppRefresherCourse.pdf
+        retention-days: 90
+    
+    - name: Upload combined markdown
+      uses: actions/upload-artifact@v4
+      with:
+        name: CombinedMarkdown
+        path: pdf_output/ModernCppRefresherCourse_Combined.md
+        retention-days: 30
+
+  release-pdf:
+    runs-on: ubuntu-latest
+    needs: [generate-pdf]
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Download PDF artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ModernCppRefresherCourse-PDF
+        path: ./
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ModernCppRefresherCourse.pdf
+        body: |
+          ## Modern C++ Refresher Course - Version ${{ github.ref_name }}
+          
+          📚 **Complete PDF Documentation**
+          
+          This release includes the comprehensive Modern C++ Refresher Course PDF containing:
+          - Complete README with all 72+ examples
+          - All source code files (C++11 through C++23)
+          - Comprehensive index with topic mapping
+          
+          **Contents:**
+          - C++ Standards: C++11, C++14, C++17, C++20, C++23
+          - Design Patterns: CRTP, Pimpl, NVI, SOLID, Dependency Injection
+          - Real-Time & Embedded Systems
+          - Safety-Critical Systems (MISRA, AUTOSAR, ISO 26262)
+          - Concurrency & Parallelism
+          - Memory Management & Move Semantics
+          - Template Metaprogramming
+          
+          **Authors:**
+          - Aung K. Soe
+          - Claude Sonnet 4.5 (AI Assistant)
+          
+          📥 **Download:** Click on `ModernCppRefresherCourse.pdf` below
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

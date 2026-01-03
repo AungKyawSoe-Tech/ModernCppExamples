@@ -1,585 +1,721 @@
-# Modern C++ Examples - Comprehensive Index
+# Modern C++ Examples - Comprehensive Reference
 
-**Last Updated:** January 3, 2026
-
-This index maps C++ concepts, keywords, features, design patterns, problems, and standards to specific example files in this repository. Use this as a quick reference to find examples for specific topics.
+> **A comprehensive collection of Modern C++ examples covering C++11 through C++23, design patterns, embedded systems, real-time programming, and safety-critical development.**
 
 ---
 
-## Table of Contents
+## 📝 **Document Information**
 
-- [C++ Standards Features](#c-standards-features)
-- [Design Patterns & Idioms](#design-patterns--idioms)
-- [Object-Oriented Programming](#object-oriented-programming)
-- [Memory Management](#memory-management)
-- [Concurrency & Parallelism](#concurrency--parallelism)
-- [Real-Time & Embedded Systems](#real-time--embedded-systems)
-- [Safety-Critical & Standards](#safety-critical--standards)
-- [STL Containers & Algorithms](#stl-containers--algorithms)
-- [Template Metaprogramming](#template-metaprogramming)
-- [Error Handling](#error-handling)
-- [Interoperability](#interoperability)
-- [Performance & Optimization](#performance--optimization)
-- [Common Problems & Solutions](#common-problems--solutions)
-- [Keywords & Language Features](#keywords--language-features)
+**Version:** 1.0.0  
+**Last Updated:** January 3, 2026  
+**Authors:**
+- **Aung K. Soe** - Primary Developer
+- **Claude Sonnet 4.5** - AI Assistant & Documentation Contributor
+
+**Repository:** https://github.com/yourusername/ModernCppExamples
 
 ---
 
-## C++ Standards Features
+## 📖 **About This Project**
 
-### C++11
-- **File:** [Cpp11Examples.cpp](src/Cpp11Examples.cpp)
-- **Topics:** `auto`, `nullptr`, range-based for, lambda expressions, smart pointers, move semantics, `constexpr`, `static_assert`, uniform initialization, `decltype`, `std::array`, `std::thread`, `std::mutex`
+This repository contains over 70 comprehensive C++ examples demonstrating modern C++ features, design patterns, best practices, and real-world applications. Each example is self-contained, well-documented, and includes practical use cases.
 
-### C++14
-- **File:** [Cpp14Examples.cpp](src/Cpp14Examples.cpp)
-- **Topics:** Generic lambdas, `auto` return type deduction, binary literals, digit separators, `std::make_unique`, relaxed `constexpr`, variable templates
-- **File:** [GenericLambdas.cpp](src/GenericLambdas.cpp)
-- **Topics:** Generic lambda expressions with `auto` parameters
-
-### C++17
-- **File:** [Cpp17Examples.cpp](src/Cpp17Examples.cpp)
-- **Topics:** Structured bindings, `if constexpr`, fold expressions, `std::optional`, `std::variant`, `std::any`, `std::string_view`, parallel algorithms, `std::filesystem`
-- **File:** [Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp)
-- **Topics:** Parallel STL algorithms, execution policies
-- **File:** [StructuredBindings.cpp](src/StructuredBindings.cpp)
-- **Topics:** Structured bindings syntax and use cases
-- **File:** [OptionalExamples.cpp](src/OptionalExamples.cpp)
-- **Topics:** `std::optional` usage patterns
-
-### C++20
-- **File:** [Cpp20Examples.cpp](src/Cpp20Examples.cpp)
-- **Topics:** Concepts, ranges, coroutines, modules, three-way comparison (`<=>`), designated initializers, `std::span`, `consteval`, `constinit`
-- **File:** [ConceptsExamples.cpp](src/ConceptsExamples.cpp)
-- **Topics:** Concepts, constraints, `requires` clauses
-- **File:** [RangesExamples.cpp](src/RangesExamples.cpp)
-- **Topics:** Ranges library, views, adaptors, pipelines
-- **File:** [CameraModule.cppm](src/CameraModule.cppm) / [TemplatedCameraModules.cpp](src/TemplatedCameraModules.cpp)
-- **Topics:** C++20 modules
-
-### C++23
-- **File:** [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
-- **Topics:** `std::expected`, deducing `this`, `if consteval`, multidimensional subscript operator, `std::print`, `std::stacktrace`
+### Key Features:
+- ✅ **Complete C++ Standards Coverage**: Examples from C++11 through C++23
+- ✅ **Safety-Critical Systems**: MISRA C++, AUTOSAR C++14, ISO 26262, DO-178C
+- ✅ **Real-Time Programming**: Deterministic timing, WCET analysis, bounded memory
+- ✅ **Design Patterns**: Gang of Four, CRTP, Pimpl, NVI, SOLID principles
+- ✅ **Embedded Systems**: ARM instruction sets, ROMability, resource constraints
+- ✅ **Modern Concurrency**: C++20 coroutines, thread pools, async/await
+- ✅ **Interoperability**: Python bindings (pybind11), C API wrapping, Protocol Buffers
+- ✅ **Performance**: Move semantics, perfect forwarding, template metaprogramming
 
 ---
 
-## Design Patterns & Idioms
+## 🚀 **Quick Start**
 
-### CRTP (Curiously Recurring Template Pattern)
-- **File:** [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)
-- **Topics:** CRTP vs virtual functions, static polymorphism, performance comparison, vtable overhead
+### Prerequisites
+- C++20 or later compiler (GCC 10+, Clang 10+, MSVC 2019+)
+- CMake 3.20 or later
+- Optional: Python 3.8+ (for pybind11 examples)
+- Optional: Protocol Buffers compiler (for protobuf examples)
 
-### Pimpl (Pointer to Implementation)
-- **File:** [PimplIdiom.cpp](src/PimplIdiom.cpp)
-- **Topics:** Pimpl idiom, ABI stability, compilation firewall, real-time concerns, cache locality, FastPimpl alternative
+### Build Instructions
 
-### NVI (Non-Virtual Interface)
-- **File:** [NVIIdiomTemplateMethod.cpp](src/NVIIdiomTemplateMethod.cpp)
-- **Topics:** Non-virtual interface idiom, template method pattern, Herb Sutter's virtuality guidelines
+#### Linux/Mac:
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/ModernCppExamples.git
+cd ModernCppExamples
 
-### RAII (Resource Acquisition Is Initialization)
-- **File:** [RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp)
-- **Topics:** Rule of 3/5/0, RAII, copy/move semantics, special member functions
-- **File:** [ResourceLeaks.cpp](src/ResourceLeaks.cpp)
-- **Topics:** Preventing resource leaks with RAII
+# Build all examples
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
 
-### Dependency Injection
-- **File:** [DependencyInjection.cpp](src/DependencyInjection.cpp)
-- **Topics:** Constructor injection, setter injection, interface injection, composition over inheritance
+# Run a specific example
+./bin/Cpp20Examples
+```
 
-### SOLID Principles
-- **File:** [SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp)
-- **Topics:** Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+#### Windows (PowerShell):
+```powershell
+# Clone the repository
+git clone https://github.com/yourusername/ModernCppExamples.git
+cd ModernCppExamples
 
-### Factory Pattern
-- **File:** [CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp)
-- **Topics:** Factory functions for C API
+# Build all examples
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
 
----
-
-## Object-Oriented Programming
-
-### Inheritance
-- **File:** [InheritanceTypes.cpp](src/InheritanceTypes.cpp)
-- **Topics:** Public, private, protected inheritance, IS-A vs implemented-in-terms-of
-- **File:** [DiamondProblem.cpp](src/DiamondProblem.cpp)
-- **Topics:** Diamond problem, virtual inheritance, composition alternative
-- **File:** [FragileBaseClass.cpp](src/FragileBaseClass.cpp)
-- **Topics:** Fragile base class problem, ABI stability, solutions
-
-### Polymorphism
-- **File:** [RuntimePolymorphism.cpp](src/RuntimePolymorphism.cpp)
-- **Topics:** Virtual functions, pure virtual functions, abstract classes, dynamic polymorphism
-- **File:** [VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp)
-- **Topics:** Why virtual functions in templates cause code bloat, type erasure, CRTP, concepts as alternatives
-- **File:** [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)
-- **Topics:** Static vs dynamic polymorphism comparison
-
-### Object Slicing
-- **File:** [ObjectSlicingCpp20.cpp](src/ObjectSlicingCpp20.cpp)
-- **Topics:** Object slicing problem, C++20 solutions
-- **File:** [ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)
-- **Topics:** Preventing object slicing with smart pointers
+# Run a specific example
+.\bin\Release\Cpp20Examples.exe
+```
 
 ---
 
-## Memory Management
+## 📚 **Navigation & Documentation**
 
-### Smart Pointers
-- **File:** [RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp)
-- **Topics:** `unique_ptr`, `shared_ptr`, `weak_ptr`, ownership semantics
-- **File:** [ResourceLeaks.cpp](src/ResourceLeaks.cpp)
-- **Topics:** Smart pointers for preventing leaks
-- **File:** [ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)
-- **Topics:** Smart pointers with polymorphism
+### Detailed Index
+For comprehensive topic mapping, concept lookup, and cross-references, see:
+- **[INDEX.md](INDEX.md)** - Complete index mapping concepts, keywords, features, and problems to specific examples
 
-### Move Semantics
-- **File:** [MoveSemantics.cpp](src/MoveSemantics.cpp)
-- **Topics:** Rvalue references, move constructors, move assignment, perfect forwarding
-- **File:** [MoveSematicsPerfectForwarding.cpp](src/MoveSematicsPerfectForwarding.cpp)
-- **Topics:** Move semantics and perfect forwarding patterns
-- **File:** [PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp)
-- **Topics:** Perfect forwarding with `std::forward`, requires clauses
+### Supporting Documentation
+Additional detailed guides are available in the `MarkDownDocuments/` folder:
+- [CPP11.md](MarkDownDocuments/CPP11.md) - C++11 features guide
+- [CPP14.md](MarkDownDocuments/CPP14.md) - C++14 enhancements
+- [CPP17.md](MarkDownDocuments/CPP17.md) - C++17 major features
+- [CPP20.md](MarkDownDocuments/CPP20.md) - C++20 revolutionary features
+- [CPP23.md](MarkDownDocuments/CPP23.md) - C++23 latest additions
+- [EventDrivenProgramming.md](MarkDownDocuments/EventDrivenProgramming.md) - Event-driven architecture
+- [MultiThreadedMicroservices.md](MarkDownDocuments/MultiThreadedMicroservices.md) - Microservices patterns
+- [Protobuf.md](MarkDownDocuments/Protobuf.md) - Protocol Buffers integration
+- [Pybind11.md](MarkDownDocuments/Pybind11.md) - Python bindings
+- [SECURITY.md](MarkDownDocuments/SECURITY.md) - Security best practices
 
-### Memory Pools & Allocators
-- **File:** [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)
-- **Topics:** Memory pools, custom allocators, pre-allocation strategies
-- **File:** [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)
-- **Topics:** Custom allocators, stack allocators, pool allocators
+### 🤖 Automatic Updates
+**When you add new source files**, the documentation automatically updates:
+- ✅ **README.md** - Alphabetical listing auto-updates (see [AUTO_UPDATE_GUIDE.md](AUTO_UPDATE_GUIDE.md))
+- ⚠️ **INDEX.md** - Template generated for manual topic categorization
+- ✅ **PDF** - Automatically includes all new files
 
-### Resource Management
-- **File:** [ResourceLeaks.cpp](src/ResourceLeaks.cpp)
-- **Topics:** Common resource leak patterns and prevention
-
----
-
-## Concurrency & Parallelism
-
-### Threading
-- **File:** [AsioAndModernCppConcurrency.cpp](src/AsioAndModernCppConcurrency.cpp)
-- **Topics:** ASIO, thread pools, async operations, io_context
-- **File:** [AsioMultipleContexts.cpp](src/AsioMultipleContexts.cpp)
-- **Topics:** Multiple io_context patterns, thread distribution
-- **File:** [ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)
-- **Topics:** Thread pool implementation patterns
-
-### Parallel Algorithms
-- **File:** [Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp)
-- **Topics:** Parallel STL, execution policies (`std::execution::par`)
-
-### Future/Promise/Async
-- **File:** [FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp)
-- **Topics:** `std::future`, `std::promise`, `std::async`, `std::packaged_task`, ASIO relationship
-
-### Stop Tokens
-- **File:** [StopTokenExample.cpp](src/StopTokenExample.cpp)
-- **Topics:** `std::stop_token`, `std::stop_source`, cooperative cancellation (C++20)
-
-### Microservices
-- **File:** [MultiThreadedMicroservices.cpp](src/MultiThreadedMicroservices.cpp)
-- **Topics:** Multi-threaded microservice architecture
+**See:** [AUTO_UPDATE_GUIDE.md](AUTO_UPDATE_GUIDE.md) for complete details on adding new examples.
 
 ---
 
-## Real-Time & Embedded Systems
+## 📋 **Complete Examples - Alphabetical Reference**
 
-### Real-Time Programming
-- **File:** [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)
-- **Topics:** Deterministic behavior, WCET, Big O notation, memory pre-allocation, `std::bitset`, `std::list::splice()`, real-time patterns
+Below is a complete alphabetical listing of all 72 C++ example files in this repository. Each entry links to the source file with a brief description of its contents.
 
-### Embedded Systems
-- **File:** [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp)
-- **Topics:** Best practices for embedded systems, constexpr, fixed-size containers
-- **File:** [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp)
-- **Topics:** What to avoid in embedded systems (exceptions, dynamic allocation, iostream)
+### A
 
-### ARM & Architecture
-- **File:** [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
-- **Topics:** ARM instruction sets, NEON, SVE, architecture-specific optimization
+1. **[AdvancedExceptionHandling.cpp](src/AdvancedExceptionHandling.cpp)**
+   - Advanced exception handling techniques
+   - Nested exceptions, exception safety guarantees
+   - RAII and scope guards
+   - Key Functions: `demonstrate_exception_safety()`, `demonstrate_nested_exceptions()`
 
-### ROM Placement
-- **File:** [ROMability.cpp](src/ROMability.cpp)
-- **Topics:** `constexpr`, `consteval`, `constinit`, ROM placement strategies
+2. **[ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)**
+   - ARM processor instruction sets and optimization
+   - NEON intrinsics, inline assembly
+   - Platform-specific code patterns
+   - Key Functions: `demonstrate_arm_optimization()`
+
+3. **[AsioAndModernCppConcurrency.cpp](src/AsioAndModernCppConcurrency.cpp)**
+   - Boost.Asio with modern C++ concurrency
+   - Coroutines with Asio
+   - Async I/O patterns
+   - Key Functions: `async_tcp_server()`, `coroutine_example()`
+
+4. **[AsioMultipleContexts.cpp](src/AsioMultipleContexts.cpp)**
+   - Multiple io_context management
+   - Thread pool with Asio
+   - Load balancing strategies
+   - Key Functions: `multi_context_server()`, `load_balanced_service()`
+
+### B
+
+5. **[BinarySearch.cpp](src/BinarySearch.cpp)**
+   - Binary search implementations
+   - std::lower_bound, std::upper_bound
+   - Custom comparators
+   - Key Functions: `binary_search_recursive()`, `binary_search_iterative()`
+
+### C
+
+6. **[CameraModule.cppm](src/CameraModule.cppm)**
+   - C++20 modules example
+   - Module interface units
+   - Export declarations
+   - Key Module: `CameraModule`
+
+7. **[ConceptsExamples.cpp](src/ConceptsExamples.cpp)**
+   - C++20 concepts and constraints
+   - Requires clauses
+   - Type constraints
+   - Key Concepts: `Numeric`, `Comparable`, `Container`
+
+8. **[ConfigLoaderAndChecker.cpp](src/ConfigLoaderAndChecker.cpp)**
+   - Configuration file parsing
+   - JSON validation
+   - Error reporting
+   - Key Functions: `load_config()`, `validate_config()`
+
+9. **[Cpp11Examples.cpp](src/Cpp11Examples.cpp)**
+   - C++11 features: auto, nullptr, range-for
+   - Lambda expressions
+   - Move semantics
+   - Key Functions: `demonstrate_cpp11_features()`
+
+10. **[Cpp14Examples.cpp](src/Cpp14Examples.cpp)**
+    - C++14 enhancements: generic lambdas
+    - Binary literals, digit separators
+    - Return type deduction
+    - Key Functions: `demonstrate_cpp14_features()`
+
+11. **[Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp)**
+    - C++17 parallel algorithms
+    - std::execution policies
+    - Parallel STL
+    - Key Functions: `parallel_sort()`, `parallel_transform()`
+
+12. **[Cpp17Examples.cpp](src/Cpp17Examples.cpp)**
+    - C++17 features: structured bindings
+    - std::optional, std::variant, std::any
+    - Fold expressions
+    - Key Functions: `demonstrate_cpp17_features()`
+
+13. **[Cpp20Examples.cpp](src/Cpp20Examples.cpp)**
+    - C++20 features: concepts, ranges, coroutines
+    - Three-way comparison (spaceship operator)
+    - Calendar and time zones
+    - Key Functions: `demonstrate_cpp20_features()`
+
+14. **[Cpp23Examples.cpp](src/Cpp23Examples.cpp)**
+    - C++23 latest features: std::expected
+    - Multidimensional subscript operator
+    - Deducing this
+    - Key Functions: `demonstrate_cpp23_features()`
+
+15. **[CppWrappingCLibrary.cpp](src/CppWrappingCLibrary.cpp)**
+    - Wrapping C libraries in C++
+    - RAII for C resources
+    - Type-safe wrappers
+    - Key Functions: `wrap_c_library()`, `CFileWrapper`
+
+16. **[CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp)**
+    - Creating C API from C++ code
+    - extern "C" linkage
+    - Opaque pointer pattern
+    - Key Functions: `create_c_api()`, opaque handle pattern
+
+17. **[CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)**
+    - CRTP (Curiously Recurring Template Pattern)
+    - Static polymorphism vs dynamic polymorphism
+    - Performance comparison
+    - Key Functions: `crtp_example()`, `virtual_example()`
+
+### D
+
+18. **[DependencyInjection.cpp](src/DependencyInjection.cpp)**
+    - Dependency injection patterns
+    - Constructor injection
+    - Interface segregation
+    - Key Functions: `demonstrate_dependency_injection()`
+
+19. **[DiamondProblem.cpp](src/DiamondProblem.cpp)**
+    - Diamond inheritance problem
+    - Virtual inheritance
+    - Multiple inheritance solutions
+    - Key Functions: `demonstrate_diamond_problem()`
+
+### E
+
+20. **[EigenSensorFusion.cpp](src/EigenSensorFusion.cpp)**
+    - Eigen library for sensor fusion
+    - Kalman filters
+    - Matrix operations
+    - Key Functions: `kalman_filter()`, `sensor_fusion()`
+
+21. **[EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp)**
+    - What to avoid in embedded systems
+    - Exceptions, RTTI, dynamic memory
+    - Forbidden features for resource-constrained systems
+    - Key Functions: `demonstrate_what_to_avoid()`
+
+22. **[EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp)**
+    - Embedded C++ best practices
+    - Register access, bit manipulation
+    - Interrupt handling
+    - Key Functions: `embedded_patterns()`, `register_access()`
+
+23. **[ErrorHandling.cpp](src/ErrorHandling.cpp)**
+    - Error handling strategies
+    - Error codes vs exceptions
+    - std::expected (C++23)
+    - Key Functions: `error_code_example()`, `exception_example()`
+
+24. **[ErrorHandlingStroustrup.cpp](src/ErrorHandlingStroustrup.cpp)**
+    - Bjarne Stroustrup's error handling guidelines
+    - Constructor exceptions
+    - Resource management
+    - Key Functions: `demonstrate_stroustrup_guidelines()`
+
+25. **[EventDrivenProgramming_Inheritance.cpp](src/EventDrivenProgramming_Inheritance.cpp)**
+    - Event-driven programming using inheritance
+    - Observer pattern
+    - Event dispatch
+    - Key Functions: `EventSystem`, `Observer`
+
+26. **[EventDrivenProgramming_Lambdas.cpp](src/EventDrivenProgramming_Lambdas.cpp)**
+    - Event-driven programming using lambdas
+    - Callback registration
+    - Signal/slot mechanism
+    - Key Functions: `EventDispatcher`, `on_event()`
+
+27. **[ExceptionWithSourceLocation.cpp](src/ExceptionWithSourceLocation.cpp)**
+    - C++20 std::source_location
+    - Exception with location info
+    - Debug-friendly exceptions
+    - Key Functions: `throw_with_location()`
+
+### F
+
+28. **[FindCountOfCommonNodes.cpp](src/FindCountOfCommonNodes.cpp)**
+    - Algorithm: count common nodes in linked lists
+    - Two-pointer technique
+    - Key Functions: `count_common_nodes()`
+
+29. **[FindFirstCommonNode.cpp](src/FindFirstCommonNode.cpp)**
+    - Algorithm: find first common node in linked lists
+    - Intersection point detection
+    - Key Functions: `find_first_common_node()`
+
+30. **[FindMaxNoOfConsecutiveOnesFromIntArray.cpp](src/FindMaxNoOfConsecutiveOnesFromIntArray.cpp)**
+    - Algorithm: find maximum consecutive ones
+    - Sliding window technique
+    - Key Functions: `find_max_consecutive_ones()`
+
+31. **[FindMToLastElement.cpp](src/FindMToLastElement.cpp)**
+    - Algorithm: find Mth element from end
+    - Two-pointer technique
+    - Key Functions: `find_mth_from_last()`
+
+32. **[FragileBaseClass.cpp](src/FragileBaseClass.cpp)**
+    - Fragile base class problem
+    - Avoiding inheritance pitfalls
+    - Composition over inheritance
+    - Key Functions: `demonstrate_fragile_base_class()`
+
+33. **[FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp)**
+    - ISO 26262 functional safety
+    - ASIL levels
+    - Safety mechanisms
+    - Key Functions: `demonstrate_iso26262_patterns()`
+
+34. **[FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp)**
+    - std::future, std::promise, std::async
+    - Asynchronous programming
+    - Task-based parallelism
+    - Key Functions: `async_example()`, `promise_example()`
+
+### G
+
+35. **[GenericLambdas.cpp](src/GenericLambdas.cpp)**
+    - Generic lambdas (C++14)
+    - Auto parameters
+    - Template lambdas (C++20)
+    - Key Functions: `demonstrate_generic_lambdas()`
+
+### I
+
+36. **[InheritanceTypes.cpp](src/InheritanceTypes.cpp)**
+    - Public, protected, private inheritance
+    - Interface inheritance vs implementation inheritance
+    - Key Functions: `demonstrate_inheritance_types()`
+
+37. **[InsertAndDeleteNodes.cpp](src/InsertAndDeleteNodes.cpp)**
+    - Linked list operations: insert/delete
+    - Node management
+    - Key Functions: `insert_node()`, `delete_node()`
+
+### L
+
+38. **[LambdaCaptures.cpp](src/LambdaCaptures.cpp)**
+    - Lambda capture modes
+    - Capture by value, by reference, init captures
+    - Key Functions: `demonstrate_lambda_captures()`
+
+### M
+
+39. **[MISRACppDemo.cpp](src/MISRACppDemo.cpp)**
+    - MISRA C++ guidelines demonstration
+    - Safety-critical coding standards
+    - Rule compliance examples
+    - Key Functions: `demonstrate_misra_rules()`
+
+40. **[MoveSemantics.cpp](src/MoveSemantics.cpp)**
+    - Move semantics and rvalue references
+    - std::move, perfect forwarding
+    - Key Functions: `demonstrate_move_semantics()`
+
+41. **[MoveSematicsPerfectForwarding.cpp](src/MoveSematicsPerfectForwarding.cpp)**
+    - Advanced move semantics
+    - Perfect forwarding with std::forward
+    - Universal references
+    - Key Functions: `perfect_forward()`, `make_unique_example()`
+
+42. **[MultiThreadedMicroservices.cpp](src/MultiThreadedMicroservices.cpp)**
+    - Multi-threaded microservices architecture
+    - Service communication
+    - Thread-safe queues
+    - Key Functions: `MicroserviceFramework`, `Service`
+
+### N
+
+43. **[NlohmannJsonExample.cpp](src/NlohmannJsonExample.cpp)**
+    - nlohmann/json library usage
+    - JSON parsing and serialization
+    - Key Functions: `parse_json()`, `serialize_json()`
+
+44. **[NoexceptBestPractices.cpp](src/NoexceptBestPractices.cpp)**
+    - noexcept specifier best practices
+    - Conditional noexcept
+    - Move operations and noexcept
+    - Key Functions: `demonstrate_noexcept()`
+
+45. **[NVIIdiomTemplateMethod.cpp](src/NVIIdiomTemplateMethod.cpp)**
+    - Non-Virtual Interface (NVI) idiom
+    - Template Method pattern
+    - Key Functions: `NVIBase`, `template_method()`
+
+### O
+
+46. **[ObjectSlicingCpp20.cpp](src/ObjectSlicingCpp20.cpp)**
+    - Object slicing problem
+    - Solutions using polymorphism
+    - Key Functions: `demonstrate_object_slicing()`
+
+47. **[ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)**
+    - Object slicing prevention with smart pointers
+    - Polymorphic containers
+    - Key Functions: `demonstrate_polymorphic_container()`
+
+48. **[OptionalExamples.cpp](src/OptionalExamples.cpp)**
+    - std::optional usage
+    - Monadic operations (C++23)
+    - Key Functions: `optional_examples()`, `transform_optional()`
+
+### P
+
+49. **[PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp)**
+    - Perfect forwarding with requires clauses
+    - Constrained templates
+    - Key Functions: `forward_with_constraints()`
+
+50. **[PimplIdiom.cpp](src/PimplIdiom.cpp)**
+    - Pointer to Implementation (Pimpl) idiom
+    - Compilation firewall
+    - ABI stability
+    - Performance considerations for real-time systems
+    - FastPimpl alternatives
+    - Key Functions: `Widget`, `WidgetImpl`, `FastPimplWidget`
+
+51. **[ProtobufExample.cpp](src/ProtobufExample.cpp)**
+    - Protocol Buffers integration
+    - Serialization/deserialization
+    - Key Functions: `serialize_protobuf()`, `deserialize_protobuf()`
+
+52. **[Pybind11Example.cpp](src/Pybind11Example.cpp)**
+    - Python bindings with pybind11
+    - Exposing C++ to Python
+    - Key Functions: `PYBIND11_MODULE()`
+
+### R
+
+53. **[RangesExamples.cpp](src/RangesExamples.cpp)**
+    - C++20 Ranges library
+    - Views, adaptors, pipelines
+    - Key Functions: `demonstrate_ranges()`, `range_pipelines()`
+
+54. **[RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)**
+    - Real-time C++ programming
+    - Deterministic timing
+    - WCET analysis
+    - std::list::splice() for O(1) operations
+    - Memory pools and bounded execution
+    - Key Functions: `demonstrate_realtime_patterns()`, `list_splice_example()`
+
+55. **[ResourceLeaks.cpp](src/ResourceLeaks.cpp)**
+    - Resource leak detection and prevention
+    - RAII patterns
+    - Key Functions: `demonstrate_resource_management()`
+
+56. **[RestApiExample.cpp](src/RestApiExample.cpp)**
+    - REST API implementation
+    - HTTP client/server
+    - Key Functions: `RestApiServer`, `handle_request()`
+
+57. **[ROMability.cpp](src/ROMability.cpp)**
+    - ROMable code for embedded systems
+    - Const correctness
+    - Placement in ROM vs RAM
+    - Key Functions: `demonstrate_romability()`
+
+58. **[RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp)**
+    - Rule of Three, Five, and Zero
+    - Copy/move constructors and assignment operators
+    - Key Functions: `RuleOfThree`, `RuleOfFive`, `RuleOfZero`
+
+59. **[RuntimePolymorphism.cpp](src/RuntimePolymorphism.cpp)**
+    - Runtime polymorphism
+    - Virtual functions, vtables
+    - Key Functions: `demonstrate_polymorphism()`
+
+### S
+
+60. **[SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)**
+    - STL containers in safety-critical systems
+    - MISRA C++, AUTOSAR C++14, ISO 26262, DO-178C guidelines
+    - Which containers to avoid (std::list, std::map, std::set, unordered_*)
+    - Custom allocators for deterministic behavior
+    - std::array, std::vector with fixed capacity
+    - Key Functions: `demonstrate_safe_containers()`, `custom_allocator_example()`
+
+61. **[SearchAnagramsDictionary.cpp](src/SearchAnagramsDictionary.cpp)**
+    - Algorithm: find anagrams in dictionary
+    - Hash-based solutions
+    - Key Functions: `find_anagrams()`
+
+62. **[SinglyLinkedList.cpp](src/SinglyLinkedList.cpp)**
+    - Singly linked list implementation
+    - Basic operations: insert, delete, search
+    - Key Functions: `SinglyLinkedList::insert()`, `SinglyLinkedList::remove()`
+
+63. **[SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp)**
+    - SOLID principles demonstration
+    - Single Responsibility, Open/Closed, Liskov Substitution
+    - Interface Segregation, Dependency Inversion
+    - Key Functions: `demonstrate_solid_principles()`
+
+64. **[STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)**
+    - STL containers without heap allocation
+    - Fixed-size containers
+    - Custom allocators
+    - Key Functions: `demonstrate_no_heap_containers()`
+
+65. **[StopTokenExample.cpp](src/StopTokenExample.cpp)**
+    - C++20 std::stop_token for cancellation
+    - Cooperative cancellation
+    - Key Functions: `cancellable_task()`
+
+66. **[StructuredBindings.cpp](src/StructuredBindings.cpp)**
+    - C++17 structured bindings
+    - Decomposition declarations
+    - Key Functions: `demonstrate_structured_bindings()`
+
+67. **[SystemInteractionAndParsing.cpp](src/SystemInteractionAndParsing.cpp)**
+    - System interaction: file I/O, command execution
+    - Parsing: regex, string operations
+    - Key Functions: `execute_command()`, `parse_output()`
+
+### T
+
+68. **[TemplatedCameraInterface.cpp](src/TemplatedCameraInterface.cpp)**
+    - Templated camera interface design
+    - Policy-based design
+    - Key Functions: `CameraInterface<>`, camera policies
+
+69. **[TemplatedCameraModules.cpp](src/TemplatedCameraModules.cpp)**
+    - Advanced templated camera modules
+    - Compile-time polymorphism
+    - Key Functions: `CameraModule<>`, sensor abstractions
+
+70. **[ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)**
+    - Thread pool implementation
+    - Task scheduling
+    - Work queues
+    - Key Functions: `ThreadPool`, `enqueue_task()`
+
+71. **[TuplesAndStructuredBindings.cpp](src/TuplesAndStructuredBindings.cpp)**
+    - std::tuple with structured bindings
+    - Tuple manipulation
+    - Key Functions: `tuple_examples()`, `structured_binding_examples()`
+
+### V
+
+72. **[VariadicTemplateRecursion.cpp](src/VariadicTemplateRecursion.cpp)**
+    - Variadic templates
+    - Template parameter pack expansion
+    - Recursive templates
+    - Key Functions: `variadic_print()`, `sum()`
+
+73. **[VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp)**
+    - Virtual functions in template classes
+    - Combining static and dynamic polymorphism
+    - Key Functions: `TemplateWithVirtual<>`
 
 ---
 
-## Safety-Critical & Standards
+## 🏗️ **Project Structure**
 
-### MISRA C++
-- **File:** [MISRACppDemo.cpp](src/MISRACppDemo.cpp)
-- **Topics:** MISRA C++ rules, safety-critical coding guidelines
-
-### ISO 26262 (Automotive)
-- **File:** [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp)
-- **Topics:** ISO 26262 functional safety, ASIL levels, automotive safety
-
-### STL for Safety-Critical
-- **File:** [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)
-- **Topics:** Which STL containers to avoid/use in safety-critical systems, MISRA compliance, AUTOSAR, heap allocation issues
-
-### AUTOSAR
-- **File:** [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)
-- **Topics:** AUTOSAR C++14 guidelines, container usage
-
----
-
-## STL Containers & Algorithms
-
-### Container Usage
-- **File:** [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)
-- **Topics:** Using STL containers without heap, custom allocators, `std::array`, `std::span`
-- **File:** [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)
-- **Topics:** Container safety analysis, forbidden containers (list, map, set, unordered_*)
-
-### std::bitset
-- **File:** [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)
-- **Topics:** `std::bitset` vs `std::vector<bool>`, real-time usage
-
-### std::list::splice()
-- **File:** [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)
-- **Topics:** O(1) element movement, splice operations, real-time patterns
-
-### Algorithms
-- **File:** [BinarySearch.cpp](src/BinarySearch.cpp)
-- **Topics:** Binary search algorithms, STL algorithm usage
-
----
-
-## Template Metaprogramming
-
-### Templates & Concepts
-- **File:** [ConceptsExamples.cpp](src/ConceptsExamples.cpp)
-- **Topics:** C++20 concepts, type constraints, `requires` clauses
-- **File:** [PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp)
-- **Topics:** Perfect forwarding with concepts
-
-### CRTP (Static Polymorphism)
-- **File:** [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)
-- **Topics:** Curiously Recurring Template Pattern, compile-time polymorphism
-
-### Variadic Templates
-- **File:** [VariadicTemplateRecursion.cpp](src/VariadicTemplateRecursion.cpp)
-- **Topics:** Variadic templates, template recursion, parameter packs
-
-### Template Interface
-- **File:** [TemplatedCameraInterface.cpp](src/TemplatedCameraInterface.cpp)
-- **Topics:** Generic templated interfaces
-
----
-
-## Error Handling
-
-### Exceptions
-- **File:** [ErrorHandling.cpp](src/ErrorHandling.cpp)
-- **Topics:** Exception handling patterns, custom exceptions
-- **File:** [AdvancedExceptionHandling.cpp](src/AdvancedExceptionHandling.cpp)
-- **Topics:** Advanced exception techniques, exception safety guarantees
-- **File:** [ExceptionWithSourceLocation.cpp](src/ExceptionWithSourceLocation.cpp)
-- **Topics:** `std::source_location` (C++20), exception context
-- **File:** [ErrorHandlingStroustrup.cpp](src/ErrorHandlingStroustrup.cpp)
-- **Topics:** Bjarne Stroustrup's error handling guidelines
-
-### noexcept
-- **File:** [NoexceptBestPractices.cpp](src/NoexceptBestPractices.cpp)
-- **Topics:** `noexcept` specifier, move operations, best practices
-
-### Error Codes & Optional
-- **File:** [OptionalExamples.cpp](src/OptionalExamples.cpp)
-- **Topics:** `std::optional` for error handling
-- **File:** [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
-- **Topics:** `std::expected` for error handling (C++23)
-
----
-
-## Interoperability
-
-### C Interop
-- **File:** [CppWrappingCLibrary.cpp](src/CppWrappingCLibrary.cpp)
-- **Topics:** Wrapping C libraries in C++, RAII for C resources
-- **File:** [CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp)
-- **Topics:** Creating C API from C++ code, `extern "C"`, opaque pointers
-
-### Python Binding
-- **File:** [Pybind11Example.cpp](src/Pybind11Example.cpp)
-- **Topics:** pybind11, exposing C++ to Python, automatic binding generation
-
-### Protobuf
-- **File:** [ProtobufExample.cpp](src/ProtobufExample.cpp)
-- **Topics:** Protocol Buffers, serialization, cross-language data exchange
-
-### JSON
-- **File:** [NlohmannJsonExample.cpp](src/NlohmannJsonExample.cpp)
-- **Topics:** nlohmann/json library, JSON parsing and serialization
-
-### REST API
-- **File:** [RestApiExample.cpp](src/RestApiExample.cpp)
-- **Topics:** REST API client, HTTP requests, CURL integration
-
----
-
-## Performance & Optimization
-
-### Performance Comparison
-- **File:** [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)
-- **Topics:** CRTP vs virtual functions performance, vtable overhead, benchmarking
-- **File:** [PimplIdiom.cpp](src/PimplIdiom.cpp)
-- **Topics:** Pimpl performance impact, cache locality, indirection overhead
-
-### Cache Locality
-- **File:** [PimplIdiom.cpp](src/PimplIdiom.cpp)
-- **Topics:** Cache-friendly design, avoiding pointer indirection
-- **File:** [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)
-- **Topics:** Memory layout for real-time systems
-
-### Compile-Time Computation
-- **File:** [ROMability.cpp](src/ROMability.cpp)
-- **Topics:** `constexpr`, `consteval`, compile-time evaluation
-
----
-
-## Common Problems & Solutions
-
-### Fragile Base Class
-- **File:** [FragileBaseClass.cpp](src/FragileBaseClass.cpp)
-- **Topics:** Fragile base class problem, ABI breaks, composition over inheritance
-
-### Diamond Problem
-- **File:** [DiamondProblem.cpp](src/DiamondProblem.cpp)
-- **Topics:** Multiple inheritance diamond problem, virtual inheritance solution
-
-### Object Slicing
-- **File:** [ObjectSlicingCpp20.cpp](src/ObjectSlicingCpp20.cpp)
-- **Topics:** Object slicing, prevention strategies
-- **File:** [ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)
-- **Topics:** Smart pointers to prevent slicing
-
-### Resource Leaks
-- **File:** [ResourceLeaks.cpp](src/ResourceLeaks.cpp)
-- **Topics:** Memory leaks, file handle leaks, RAII solutions
-
-### Virtual Functions in Templates
-- **File:** [VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp)
-- **Topics:** Code bloat from virtual functions in templates, C++ Core Guidelines T.80, T.83, T.84
-
----
-
-## Keywords & Language Features
-
-### Keywords
-
-#### `auto`
-- [Cpp11Examples.cpp](src/Cpp11Examples.cpp) - C++11 auto keyword
-- [Cpp14Examples.cpp](src/Cpp14Examples.cpp) - C++14 auto return type
-- [GenericLambdas.cpp](src/GenericLambdas.cpp) - Generic lambdas with auto
-
-#### `constexpr` / `consteval` / `constinit`
-- [Cpp11Examples.cpp](src/Cpp11Examples.cpp) - C++11 constexpr
-- [Cpp14Examples.cpp](src/Cpp14Examples.cpp) - C++14 relaxed constexpr
-- [Cpp20Examples.cpp](src/Cpp20Examples.cpp) - C++20 consteval, constinit
-- [ROMability.cpp](src/ROMability.cpp) - ROM placement with const* keywords
-
-#### `virtual`
-- [RuntimePolymorphism.cpp](src/RuntimePolymorphism.cpp) - Virtual functions basics
-- [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp) - Virtual vs CRTP
-- [VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp) - Virtual in templates problem
-- [NVIIdiomTemplateMethod.cpp](src/NVIIdiomTemplateMethod.cpp) - Virtual in NVI pattern
-
-#### `noexcept`
-- [NoexceptBestPractices.cpp](src/NoexceptBestPractices.cpp) - noexcept best practices
-- [MoveSemantics.cpp](src/MoveSemantics.cpp) - noexcept move operations
-
-#### `requires` (Concepts)
-- [ConceptsExamples.cpp](src/ConceptsExamples.cpp) - Requires clauses
-- [PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp) - Requires with forwarding
-
-#### `final`
-- [FragileBaseClass.cpp](src/FragileBaseClass.cpp) - Final keyword usage
-
-#### `override`
-- [RuntimePolymorphism.cpp](src/RuntimePolymorphism.cpp) - Override specifier
-
-#### `nullptr`
-- [Cpp11Examples.cpp](src/Cpp11Examples.cpp) - nullptr vs NULL
-
-#### `decltype`
-- [Cpp11Examples.cpp](src/Cpp11Examples.cpp) - decltype usage
-- [PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp) - decltype with forwarding
-
----
-
-## Event-Driven Programming
-
-### Event Systems
-- **File:** [EventDrivenProgramming_Lambdas.cpp](src/EventDrivenProgramming_Lambdas.cpp)
-- **Topics:** Signals/slots with lambdas, observer pattern
-- **File:** [EventDrivenProgramming_Inheritance.cpp](src/EventDrivenProgramming_Inheritance.cpp)
-- **Topics:** Event systems with inheritance
-
----
-
-## Lambda Expressions
-
-### Lambda Basics
-- **File:** [Cpp11Examples.cpp](src/Cpp11Examples.cpp)
-- **Topics:** Basic lambda syntax (C++11)
-- **File:** [GenericLambdas.cpp](src/GenericLambdas.cpp)
-- **Topics:** Generic lambdas with auto parameters (C++14)
-- **File:** [LambdaCaptures.cpp](src/LambdaCaptures.cpp)
-- **Topics:** Lambda capture modes, mutable lambdas
-
----
-
-## Data Structures & Algorithms
-
-### Linked Lists
-- **File:** [SinglyLinkedList.cpp](src/SinglyLinkedList.cpp)
-- **Topics:** Singly linked list implementation
-- **File:** [InsertAndDeleteNodes.cpp](src/InsertAndDeleteNodes.cpp)
-- **Topics:** Node insertion and deletion
-- **File:** [FindFirstCommonNode.cpp](src/FindFirstCommonNode.cpp)
-- **Topics:** Finding common node in linked lists
-- **File:** [FindCountOfCommonNodes.cpp](src/FindCountOfCommonNodes.cpp)
-- **Topics:** Counting common nodes
-- **File:** [FindMToLastElement.cpp](src/FindMToLastElement.cpp)
-- **Topics:** Finding m-th to last element
-
-### Search & Sort
-- **File:** [BinarySearch.cpp](src/BinarySearch.cpp)
-- **Topics:** Binary search implementation
-- **File:** [SearchAnagramsDictionary.cpp](src/SearchAnagramsDictionary.cpp)
-- **Topics:** Anagram searching in dictionary
-
-### Array Algorithms
-- **File:** [FindMaxNoOfConsecutiveOnesFromIntArray.cpp](src/FindMaxNoOfConsecutiveOnesFromIntArray.cpp)
-- **Topics:** Maximum consecutive elements
-
----
-
-## Tuples & Structured Bindings
-
-### Tuples
-- **File:** [TuplesAndStructuredBindings.cpp](src/TuplesAndStructuredBindings.cpp)
-- **Topics:** `std::tuple`, tuple operations, structured bindings
-
-### Structured Bindings
-- **File:** [StructuredBindings.cpp](src/StructuredBindings.cpp)
-- **Topics:** Structured bindings syntax and patterns
-
----
-
-## Configuration & Parsing
-
-### Configuration
-- **File:** [ConfigLoaderAndChecker.cpp](src/ConfigLoaderAndChecker.cpp)
-- **Topics:** Configuration file loading and validation
-
-### System Interaction
-- **File:** [SystemInteractionAndParsing.cpp](src/SystemInteractionAndParsing.cpp)
-- **Topics:** System calls, command execution, parsing
-
----
-
-## Sensor Fusion & Scientific Computing
-
-### Eigen Library
-- **File:** [EigenSensorFusion.cpp](src/EigenSensorFusion.cpp)
-- **Topics:** Eigen library, Kalman filter, sensor fusion, matrix operations
-
----
-
-## Quick Reference Tables
-
-### By Language Version
-
-| C++11 | C++14 | C++17 | C++20 | C++23 |
-|-------|-------|-------|-------|-------|
-| [Cpp11Examples.cpp](src/Cpp11Examples.cpp) | [Cpp14Examples.cpp](src/Cpp14Examples.cpp) | [Cpp17Examples.cpp](src/Cpp17Examples.cpp) | [Cpp20Examples.cpp](src/Cpp20Examples.cpp) | [Cpp23Examples.cpp](src/Cpp23Examples.cpp) |
-| [MoveSemantics.cpp](src/MoveSemantics.cpp) | [GenericLambdas.cpp](src/GenericLambdas.cpp) | [StructuredBindings.cpp](src/StructuredBindings.cpp) | [ConceptsExamples.cpp](src/ConceptsExamples.cpp) | - |
-| [LambdaCaptures.cpp](src/LambdaCaptures.cpp) | - | [OptionalExamples.cpp](src/OptionalExamples.cpp) | [RangesExamples.cpp](src/RangesExamples.cpp) | - |
-| - | - | [Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp) | [StopTokenExample.cpp](src/StopTokenExample.cpp) | - |
-
-### By Use Case
-
-| Use Case | Recommended Files |
-|----------|------------------|
-| **Learning Modern C++** | Start with [Cpp11Examples.cpp](src/Cpp11Examples.cpp), then progress through C++14, 17, 20, 23 examples |
-| **Real-Time Systems** | [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp), [PimplIdiom.cpp](src/PimplIdiom.cpp) |
-| **Embedded Systems** | [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp) |
-| **Safety-Critical** | [MISRACppDemo.cpp](src/MISRACppDemo.cpp), [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp) |
-| **Performance** | [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp), [PimplIdiom.cpp](src/PimplIdiom.cpp), [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp) |
-| **OOP Design** | [InheritanceTypes.cpp](src/InheritanceTypes.cpp), [DependencyInjection.cpp](src/DependencyInjection.cpp), [SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp) |
-| **Memory Management** | [RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp), [MoveSemantics.cpp](src/MoveSemantics.cpp), [ResourceLeaks.cpp](src/ResourceLeaks.cpp) |
-| **Concurrency** | [AsioAndModernCppConcurrency.cpp](src/AsioAndModernCppConcurrency.cpp), [FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp), [ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp) |
-
-### By Problem You're Trying to Solve
-
-| Problem | Solution Files |
-|---------|---------------|
-| "My code has memory leaks" | [ResourceLeaks.cpp](src/ResourceLeaks.cpp), [RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp) |
-| "Objects are getting sliced" | [ObjectSlicingCpp20.cpp](src/ObjectSlicingCpp20.cpp), [ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp) |
-| "Base class changes break derived classes" | [FragileBaseClass.cpp](src/FragileBaseClass.cpp) |
-| "Multiple inheritance is causing problems" | [DiamondProblem.cpp](src/DiamondProblem.cpp) |
-| "Virtual functions are too slow" | [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp), [VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp) |
-| "Pimpl hurts performance" | [PimplIdiom.cpp](src/PimplIdiom.cpp) |
-| "Need containers without heap" | [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp) |
-| "Timing is non-deterministic" | [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp) |
-| "Need C interop" | [CppWrappingCLibrary.cpp](src/CppWrappingCLibrary.cpp), [CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp) |
-
----
-
-## Additional Resources
-
-### Documentation Files
-- [MarkDownDocuments/](MarkDownDocuments/) - Comprehensive markdown documentation
-  - CPP11.md, CPP14.md, CPP17.md, CPP20.md, CPP23.md
-  - Cpp20Modules.md, Cpp20ModulesQuickRef.md
-  - CppCInterop.md
-  - EventDrivenProgramming.md
-  - MultiThreadedMicroservices.md
-  - NlohmannJson.md
-  - Protobuf.md
-  - Pybind11.md
-  - RestApi.md
-  - SECURITY.md
-  - TemplatedCameraInterface.md
-  - VirtualFunctions.md
-
-### Build Scripts
-- [scripts/](scripts/) - Build and execution scripts
-- [build_modules.ps1](build_modules.ps1) - PowerShell build script
-
----
-
-## How to Use This Index
-
-1. **Find by Topic**: Search for a keyword (e.g., "lambda", "virtual", "real-time")
-2. **Find by Standard**: Look under C++ Standards Features for version-specific examples
-3. **Find by Problem**: Check "Common Problems & Solutions" section
-4. **Find by Use Case**: See "By Use Case" table for curated file lists
-
----
-
-## Contributing
-
-When adding new example files:
-1. Update this index with appropriate mappings
-2. Add to relevant sections
-3. Update quick reference tables
-4. Add problem-solution mapping if applicable
-
----
-
-**Repository Structure:**
 ```
 ModernCppExamples/
-├── src/                  # Source files (.cpp, .cppm)
-├── MarkDownDocuments/    # Markdown documentation
-├── scripts/              # Build scripts
-├── proto/                # Protocol buffer definitions
-├── CMakeLists.txt        # CMake build configuration
-└── INDEX.md              # This file
+├── src/                      # All C++ source files (.cpp, .cppm)
+│   ├── Cpp11Examples.cpp     # C++11 features
+│   ├── Cpp20Examples.cpp     # C++20 features
+│   ├── RealTimeProgramming.cpp
+│   ├── SafetyCriticalSTLContainers.cpp
+│   ├── PimplIdiom.cpp
+│   └── ... (70+ examples)
+│
+├── MarkDownDocuments/        # Detailed documentation
+│   ├── CPP20.md
+│   ├── EventDrivenProgramming.md
+│   ├── MultiThreadedMicroservices.md
+│   ├── Protobuf.md
+│   ├── Pybind11.md
+│   ├── SECURITY.md
+│   └── ...
+│
+├── scripts/                  # Build and utility scripts
+│   ├── build.sh              # Main build script
+│   ├── build_modules.sh      # C++20 modules build
+│   ├── build_protobuf.sh     # Protocol Buffers build
+│   ├── build_pybind.sh       # Pybind11 build
+│   └── run_all.sh            # Run all examples
+│
+├── proto/                    # Protocol Buffer definitions
+│   └── sensor_data.proto
+│
+├── build/                    # Build output directory
+│   └── bin/                  # Compiled executables
+│
+├── CMakeLists.txt            # CMake configuration
+├── INDEX.md                  # Comprehensive topic index
+├── README.md                 # This file
+└── config.json               # Configuration file
 ```
 
 ---
 
-*Last updated: January 3, 2026*
+## 🔍 **Finding Examples by Topic**
+
+For detailed topic mapping, see [INDEX.md](INDEX.md). Quick topic guide:
+
+### By C++ Standard
+- **C++11**: [Cpp11Examples.cpp](src/Cpp11Examples.cpp), [LambdaCaptures.cpp](src/LambdaCaptures.cpp), [MoveSemantics.cpp](src/MoveSemantics.cpp)
+- **C++14**: [Cpp14Examples.cpp](src/Cpp14Examples.cpp), [GenericLambdas.cpp](src/GenericLambdas.cpp)
+- **C++17**: [Cpp17Examples.cpp](src/Cpp17Examples.cpp), [StructuredBindings.cpp](src/StructuredBindings.cpp), [OptionalExamples.cpp](src/OptionalExamples.cpp)
+- **C++20**: [Cpp20Examples.cpp](src/Cpp20Examples.cpp), [ConceptsExamples.cpp](src/ConceptsExamples.cpp), [RangesExamples.cpp](src/RangesExamples.cpp), [CameraModule.cppm](src/CameraModule.cppm)
+- **C++23**: [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
+
+### By Application Domain
+- **Embedded Systems**: [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [ROMability.cpp](src/ROMability.cpp), [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
+- **Real-Time Systems**: [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)
+- **Safety-Critical**: [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp), [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp), [MISRACppDemo.cpp](src/MISRACppDemo.cpp)
+- **Concurrency**: [Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp), [FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp), [ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)
+
+### By Design Pattern
+- **CRTP**: [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)
+- **Pimpl**: [PimplIdiom.cpp](src/PimplIdiom.cpp)
+- **NVI**: [NVIIdiomTemplateMethod.cpp](src/NVIIdiomTemplateMethod.cpp)
+- **Dependency Injection**: [DependencyInjection.cpp](src/DependencyInjection.cpp)
+- **SOLID**: [SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp)
+
+---
+
+## 🧪 **Testing & Running Examples**
+
+Each example is a standalone executable. After building:
+
+```bash
+cd build/bin
+
+# Run a specific example
+./Cpp20Examples
+
+# Run all examples (Linux/Mac)
+cd ../..
+./scripts/run_all.sh
+
+# Run all examples (Windows PowerShell)
+Get-ChildItem .\bin\Release\*.exe | ForEach-Object { & $_.FullName }
+```
+
+---
+
+## 📦 **Dependencies**
+
+Most examples have no external dependencies. Optional dependencies for specific examples:
+
+- **Boost.Asio**: [AsioAndModernCppConcurrency.cpp](src/AsioAndModernCppConcurrency.cpp), [AsioMultipleContexts.cpp](src/AsioMultipleContexts.cpp)
+- **Eigen**: [EigenSensorFusion.cpp](src/EigenSensorFusion.cpp)
+- **nlohmann/json**: [NlohmannJsonExample.cpp](src/NlohmannJsonExample.cpp)
+- **Protocol Buffers**: [ProtobufExample.cpp](src/ProtobufExample.cpp)
+- **pybind11**: [Pybind11Example.cpp](src/Pybind11Example.cpp)
+
+Build scripts automatically check for these dependencies.
+
+---
+
+## 🤝 **Contributing**
+
+Contributions are welcome! Please follow these guidelines:
+
+1. **Code Style**: Follow the existing code style (Google C++ Style Guide)
+2. **Documentation**: Each example should have clear comments explaining the concepts
+3. **Compilation**: Ensure code compiles with C++20 standard
+4. **Testing**: Test on multiple compilers if possible
+5. **Commit Messages**: Use clear, descriptive commit messages
+
+---
+
+## 📄 **License**
+
+This project is licensed under the MIT License. See LICENSE file for details.
+
+---
+
+## 📞 **Contact & Support**
+
+For questions, suggestions, or issues:
+- **GitHub Issues**: https://github.com/yourusername/ModernCppExamples/issues
+- **Email**: your.email@example.com
+
+---
+
+## 🙏 **Acknowledgments**
+
+Special thanks to:
+- The C++ Standards Committee for continuously evolving the language
+- Open source contributors: Boost, Eigen, nlohmann/json, pybind11
+- The C++ community for valuable feedback and suggestions
+
+---
+
+## 📖 **Additional Resources**
+
+### Official Documentation
+- [C++ Reference](https://en.cppreference.com/)
+- [ISO C++ Standard](https://isocpp.org/)
+- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+
+### Safety Standards
+- [MISRA C++:2008](https://www.misra.org.uk/)
+- [AUTOSAR C++14](https://www.autosar.org/)
+- [ISO 26262](https://www.iso.org/standard/68383.html) - Automotive functional safety
+- [DO-178C](https://en.wikipedia.org/wiki/DO-178C) - Airborne software safety
+
+### Books
+- "Effective Modern C++" by Scott Meyers
+- "C++ Concurrency in Action" by Anthony Williams
+- "Real-Time C++" by Christopher Kormanyos
+- "C++ Move Semantics" by Nicolai Josuttis
+
+---
+
+**Last Updated:** January 3, 2026  
+**Version:** 1.0.0  
+**Repository:** https://github.com/yourusername/ModernCppExamples

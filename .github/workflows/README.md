@@ -319,3 +319,230 @@ Potential improvements:
 - Add memory leak detection (valgrind)
 - Add sanitizers (address, thread, undefined behavior)
 - Add Windows/macOS builds
+
+---
+
+## 📄 PDF Generation (NEW!)
+
+### Automatic PDF Generation Job
+
+**Added to:** `build-and-test.yml`
+
+**Job Name:** `generate-pdf`
+
+**Trigger:** Runs automatically after `build-and-test` completes successfully
+
+**What it does:**
+1. Installs pandoc and LaTeX (XeLaTeX engine)
+2. Combines README.md + all source files (alphabetically) + INDEX.md
+3. Generates professional PDF: `ModernCppRefresherCourse.pdf`
+4. Uploads PDF as artifact (90-day retention)
+5. Uploads combined markdown (30-day retention)
+
+**PDF Contents:**
+- Title page with authors, version, repository link
+- Table of contents (3 levels deep, auto-generated)
+- Complete README with all examples
+- All 72+ source code files with syntax highlighting
+- Comprehensive INDEX as appendix
+- Clickable GitHub repository links
+
+---
+
+## 📥 How to Download the PDF
+
+### Option 1: From GitHub Actions Artifacts
+
+1. Go to **Actions** tab on GitHub
+2. Click on latest **"Build and Test C++ Examples"** run
+3. Scroll to **Artifacts** section
+4. Click **"ModernCppRefresherCourse-PDF"** to download
+
+**Retention:** 90 days
+
+### Option 2: From GitHub Releases (Recommended)
+
+#### Create a Release with PDF:
+
+```bash
+# Tag your commit
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin v1.0.0
+```
+
+**Automatic actions:**
+- Workflow generates PDF
+- Creates GitHub Release
+- Attaches PDF to release
+- Adds release notes
+
+**Download:**
+- Go to repository → **Releases**
+- Click on latest release
+- Download `ModernCppRefresherCourse.pdf`
+
+**Retention:** Permanent (attached to release)
+
+---
+
+## 🚀 Release Job (NEW!)
+
+**Job Name:** `release-pdf`
+
+**Trigger:** Only when you push a version tag (e.g., `v1.0.0`, `v2.1.3`)
+
+**Dependencies:** Requires `generate-pdf` to complete first
+
+**Actions:**
+1. Downloads the generated PDF artifact
+2. Creates a GitHub Release with the tag name
+3. Attaches `ModernCppRefresherCourse.pdf` to the release
+4. Includes comprehensive release notes with:
+   - Version information
+   - Contents summary
+   - Authors
+   - Download instructions
+
+**Example:**
+```bash
+# Create and push a tag
+git tag -a v1.0.0 -m "Initial release with all examples"
+git push origin v1.0.0
+
+# GitHub Actions will automatically:
+# 1. Build and test code
+# 2. Generate PDF
+# 3. Create release with PDF attached
+```
+
+---
+
+## 🔧 Customizing PDF Generation
+
+Edit `.github/workflows/build-and-test.yml` to customize:
+
+### Change Retention Period:
+```yaml
+retention-days: 90  # PDF artifacts kept for 90 days
+retention-days: 30  # Markdown kept for 30 days
+```
+
+### Change PDF Engine:
+```yaml
+--pdf-engine=xelatex   # Current (best Unicode support)
+--pdf-engine=pdflatex  # Faster, less Unicode support
+--pdf-engine=lualatex  # More features, slower
+```
+
+### Change Syntax Highlighting:
+```yaml
+--highlight-style=tango        # Current
+--highlight-style=pygments     # Default
+--highlight-style=kate         # Alternative
+--highlight-style=monochrome   # Black & white
+--highlight-style=espresso     # Dark theme
+```
+
+### Change PDF Formatting:
+```yaml
+-V geometry:margin=1in    # Margins
+-V fontsize=11pt          # Font size (10pt, 11pt, 12pt)
+-V linkcolor=blue         # Link color
+-V papersize=a4           # Paper size (letter, a4)
+```
+
+---
+
+## 🧪 Test PDF Generation Locally
+
+Before pushing, test locally:
+
+**Linux/Mac:**
+```bash
+sudo apt-get install pandoc texlive-xetex texlive-fonts-recommended
+chmod +x generate_pdf.sh
+./generate_pdf.sh
+```
+
+**Windows:**
+```powershell
+choco install pandoc miktex
+.\generate_pdf.ps1
+```
+
+**Output:** `pdf_output/ModernCppRefresherCourse.pdf`
+
+---
+
+## 📊 Workflow Status Badges
+
+Add to your README.md:
+
+```markdown
+[![Build and Test](https://github.com/yourusername/ModernCppExamples/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/yourusername/ModernCppExamples/actions/workflows/build-and-test.yml)
+
+[![Latest Release](https://img.shields.io/github/v/release/yourusername/ModernCppExamples)](https://github.com/yourusername/ModernCppExamples/releases/latest)
+
+[![PDF Available](https://img.shields.io/badge/PDF-Download-blue)](https://github.com/yourusername/ModernCppExamples/releases/latest)
+```
+
+---
+
+## 🐛 Troubleshooting PDF Generation
+
+### Issue: "pandoc: xelatex not found"
+**Solution:** Workflow installs XeLaTeX automatically. Check install logs.
+
+### Issue: "LaTeX Error: File ... not found"
+**Solution:** Missing LaTeX package. Add to workflow:
+```yaml
+sudo apt-get install -y texlive-latex-extra texlive-fonts-extra
+```
+
+### Issue: PDF generation timeout
+**Solution:** Large PDF (72+ files). Increase timeout:
+```yaml
+timeout-minutes: 30  # Default is 360 (6 hours)
+```
+
+### Issue: PDF too large
+**Solutions:**
+- Split into multiple PDFs
+- Use `pdflatex` instead of `xelatex`
+- Reduce code samples or comments
+
+---
+
+## 📋 Complete Workflow Overview
+
+```
+Push to main/master/develop
+  ↓
+build-and-test job (Matrix: GCC/Clang, Release/Debug)
+  ├─ Build all examples
+  ├─ Run tests
+  └─ Upload executables (artifacts, 7 days)
+  ↓
+build-pybind11 job (Matrix: Python 3.8-3.12)
+  ├─ Build pybind11 extension
+  ├─ Run Python tests
+  └─ Upload Python modules (artifacts, 7 days)
+  ↓
+generate-pdf job
+  ├─ Install pandoc + LaTeX
+  ├─ Combine README + sources + INDEX
+  ├─ Generate PDF with XeLaTeX
+  └─ Upload PDF (artifact, 90 days)
+  
+If tag pushed (e.g., v1.0.0):
+  ↓
+release-pdf job
+  ├─ Download PDF artifact
+  ├─ Create GitHub Release
+  └─ Attach PDF to release (permanent)
+```
+
+---
+
+**Last Updated:** January 3, 2026  
+**Version:** 1.0.0 (with PDF generation)
