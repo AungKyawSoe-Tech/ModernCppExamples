@@ -81,6 +81,7 @@ set(EXECUTABLES
     VirtualFunctionsInTemplates
     STLContainersNoHeap
     SafetyCriticalSTLContainers
+    PimplIdiom
     ARMInstructionSets
     Cpp23Examples
     EigenSensorFusion
