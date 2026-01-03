@@ -290,6 +290,10 @@ message(STATUS "Added executable: MoveSematicsPerfectForwarding")
 add_executable(SOLIDPrinciples src/SOLIDPrinciples.cpp)
 message(STATUS "Added executable: SOLIDPrinciples")
 
+# MISRACppDemo (demonstrates MISRA C++ coding guidelines for safety-critical systems)
+add_executable(MISRACppDemo src/MISRACppDemo.cpp)
+message(STATUS "Added executable: MISRACppDemo")
+
 # StopTokenExample (demonstrates std::stop_token for thread cancellation)
 add_executable(StopTokenExample src/StopTokenExample.cpp)
 target_link_libraries(StopTokenExample PRIVATE pthread)
