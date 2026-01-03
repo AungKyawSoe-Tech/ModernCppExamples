@@ -20,6 +20,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <list>
 #include <bitset>
 #include <chrono>
 #include <algorithm>
