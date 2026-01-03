@@ -51,7 +51,7 @@ author:
   - Claude Sonnet 4.5 (AI Assistant)
 date: January 3, 2026
 version: 1.0.0
-repository: https://github.com/yourusername/ModernCppExamples
+repository: https://github.com/AungKyawSoe-Tech/ModernCppExamples
 toc: true
 toc-depth: 3
 linkcolor: blue
@@ -99,7 +99,7 @@ for file in $SOURCE_FILES; do
 # Source Code: $FILENAME
 
 **File:** \`$file\`  
-**Repository:** [View on GitHub](https://github.com/yourusername/ModernCppExamples/blob/main/$file)
+**Repository:** [View on GitHub](https://github.com/AungKyawSoe-Tech/ModernCppExamples/blob/main/$file)
 
 \`\`\`cpp
 EOF

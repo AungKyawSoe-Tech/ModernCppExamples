@@ -8,11 +8,11 @@
 
 **Version:** 1.0.0  
 **Last Updated:** January 3, 2026  
-**Authors:**
+**Authours:**
 - **Aung K. Soe** - Primary Developer
 - **Claude Sonnet 4.5** - AI Assistant & Documentation Contributor
 
-**Repository:** https://github.com/yourusername/ModernCppExamples
+**Repository:** https://github.com/AungKyawSoe-Tech/ModernCppExamples
 
 ---
 
@@ -45,7 +45,7 @@ This repository contains over 70 comprehensive C++ examples demonstrating modern
 #### Linux/Mac:
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ModernCppExamples.git
+git clone https://github.com/AungKyawSoe-Tech/ModernCppExamples.git
 cd ModernCppExamples
 
 # Build all examples
@@ -60,7 +60,7 @@ make -j$(nproc)
 #### Windows (PowerShell):
 ```powershell
 # Clone the repository
-git clone https://github.com/yourusername/ModernCppExamples.git
+git clone https://github.com/AungKyawSoe-Tech/ModernCppExamples.git
 cd ModernCppExamples
 
 # Build all examples
@@ -654,8 +654,8 @@ This project is licensed under the MIT License. See LICENSE file for details.
 ## 📞 **Contact & Support**
 
 For questions, suggestions, or issues:
-- **GitHub Issues**: https://github.com/yourusername/ModernCppExamples/issues
-- **Email**: your.email@example.com
+- **GitHub Issues**: https://github.com/AungKyawSoe-Tech/ModernCppExamples/issues
+- **Email**: aungksoe.mobile@gmail.com
 
 ---
 
@@ -691,4 +691,4 @@ Special thanks to:
 
 **Last Updated:** January 3, 2026  
 **Version:** 1.0.0  
-**Repository:** https://github.com/yourusername/ModernCppExamples
+**Repository:** https://github.com/AungKyawSoe-Tech/ModernCppExamples

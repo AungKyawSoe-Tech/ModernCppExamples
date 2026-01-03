@@ -479,11 +479,11 @@ choco install pandoc miktex
 Add to your README.md:
 
 ```markdown
-[![Build and Test](https://github.com/yourusername/ModernCppExamples/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/yourusername/ModernCppExamples/actions/workflows/build-and-test.yml)
+[![Build and Test](https://github.com/AungKyawSoe-Tech/ModernCppExamples/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/AungKyawSoe-Tech/ModernCppExamples/actions/workflows/build-and-test.yml)
 
-[![Latest Release](https://img.shields.io/github/v/release/yourusername/ModernCppExamples)](https://github.com/yourusername/ModernCppExamples/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/AungKyawSoe-Tech/ModernCppExamples)](https://github.com/AungKyawSoe-Tech/ModernCppExamples/releases/latest)
 
-[![PDF Available](https://img.shields.io/badge/PDF-Download-blue)](https://github.com/yourusername/ModernCppExamples/releases/latest)
+[![PDF Available](https://img.shields.io/badge/PDF-Download-blue)](https://github.com/AungKyawSoe-Tech/ModernCppExamples/releases/latest)
 ```
 
 ---

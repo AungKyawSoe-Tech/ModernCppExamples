@@ -56,7 +56,7 @@ author:
   - Claude Sonnet 4.5 (AI Assistant)
 date: January 3, 2026
 version: 1.0.0
-repository: https://github.com/yourusername/ModernCppExamples
+repository: https://github.com/AungKyawSoe-Tech/ModernCppExamples
 toc: true
 toc-depth: 3
 linkcolor: blue
@@ -104,7 +104,7 @@ foreach ($file in $sourceFiles) {
 # Source Code: $fileName
 
 **File:** ``src/$fileName``  
-**Repository:** [View on GitHub](https://github.com/yourusername/ModernCppExamples/blob/main/src/$fileName)
+**Repository:** [View on GitHub](https://github.com/AungKyawSoe-Tech/ModernCppExamples/blob/main/src/$fileName)
 
 ``````cpp
 "@
