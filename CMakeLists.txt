@@ -282,6 +282,10 @@ message(STATUS "Added executable: ROMability")
 add_executable(RealTimeProgramming src/RealTimeProgramming.cpp)
 message(STATUS "Added executable: RealTimeProgramming")
 
+# MoveSematicsPerfectForwarding (move semantics and perfect forwarding)
+add_executable(MoveSematicsPerfectForwarding src/MoveSematicsPerfectForwarding.cpp)
+message(STATUS "Added executable: MoveSematicsPerfectForwarding")
+
 # StopTokenExample (demonstrates std::stop_token for thread cancellation)
 add_executable(StopTokenExample src/StopTokenExample.cpp)
 target_link_libraries(StopTokenExample PRIVATE pthread)
