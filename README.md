@@ -106,455 +106,428 @@ Additional detailed guides are available in the `MarkDownDocuments/` folder:
 
 ## 📋 **Complete Examples - Alphabetical Reference**
 
-Below is a complete alphabetical listing of all 72 C++ example files in this repository. Each entry links to the source file with a brief description of its contents.
+Below is a complete alphabetical listing of all C++ example files in this repository. 
+Each entry links to the source file with a brief description of its contents.
 
 ### A
 
 1. **[AdvancedExceptionHandling.cpp](src/AdvancedExceptionHandling.cpp)**
-   - Advanced exception handling techniques
-   - Nested exceptions, exception safety guarantees
-   - RAII and scope guards
-   - Key Functions: `demonstrate_exception_safety()`, `demonstrate_nested_exceptions()`
+   - AdvancedExceptionHandling.cpp
+   - Namespaces: std
+   - Classes: DatabaseException, TracedException, StackTrace
 
 2. **[ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)**
-   - ARM processor instruction sets and optimization
-   - NEON intrinsics, inline assembly
-   - Platform-specific code patterns
-   - Key Functions: `demonstrate_arm_optimization()`
+   - compiled as Thumb
+   - Functions: explain_alignment_issues, explain_interworking, explain_instruction_sets
 
 3. **[AsioAndModernCppConcurrency.cpp](src/AsioAndModernCppConcurrency.cpp)**
-   - Boost.Asio with modern C++ concurrency
-   - Coroutines with Asio
-   - Async I/O patterns
-   - Key Functions: `async_tcp_server()`, `coroutine_example()`
+   - Note: This example demonstrates ASIO concepts using standard C++ features.
+   - Namespaces: std
+   - Classes: SimulatedAsioTimer, HybridServer, EventLoop
 
 4. **[AsioMultipleContexts.cpp](src/AsioMultipleContexts.cpp)**
-   - Multiple io_context management
-   - Thread pool with Asio
-   - Load balancing strategies
-   - Key Functions: `multi_context_server()`, `load_balanced_service()`
+   - ...
+   - Namespaces: SimulatedAsio, std
+   - Classes: io_context, executor_work_guard, steady_timer
+
 
 ### B
 
 5. **[BinarySearch.cpp](src/BinarySearch.cpp)**
-   - Binary search implementations
-   - std::lower_bound, std::upper_bound
-   - Custom comparators
-   - Key Functions: `binary_search_recursive()`, `binary_search_iterative()`
+   - Modern C++ example demonstrating various features
+   - Classes: Solution
+   - Functions: main
+
 
 ### C
 
 6. **[CameraModule.cppm](src/CameraModule.cppm)**
-   - C++20 modules example
-   - Module interface units
-   - Export declarations
-   - Key Module: `CameraModule`
+   - ===================================================================
+   - Classes: ImageProcessor, Image, Camera
 
 7. **[ConceptsExamples.cpp](src/ConceptsExamples.cpp)**
-   - C++20 concepts and constraints
-   - Requires clauses
-   - Type constraints
-   - Key Concepts: `Numeric`, `Comparable`, `Container`
+   - ===================================================================
+   - Classes: Rectangle, Point2D, Circle
+   - Functions: print_sum, example_basic_concept, example_standard_concepts
 
 8. **[ConfigLoaderAndChecker.cpp](src/ConfigLoaderAndChecker.cpp)**
-   - Configuration file parsing
-   - JSON validation
-   - Error reporting
-   - Key Functions: `load_config()`, `validate_config()`
+   - ConfigLoaderAndChecker.cpp
+   - Namespaces: std, fs
+   - Classes: ConfigManager, ConfigMonitor
 
 9. **[Cpp11Examples.cpp](src/Cpp11Examples.cpp)**
-   - C++11 features: auto, nullptr, range-for
-   - Lambda expressions
-   - Move semantics
-   - Key Functions: `demonstrate_cpp11_features()`
+   - ===================================================================
+   - Classes: Color, Traffic, MoveableResource
+   - Functions: example_auto, foo
 
 10. **[Cpp14Examples.cpp](src/Cpp14Examples.cpp)**
-    - C++14 enhancements: generic lambdas
-    - Binary literals, digit separators
-    - Return type deduction
-    - Key Functions: `demonstrate_cpp14_features()`
+   - ===================================================================
+   - Namespaces: std
+   - Functions: example_generic_lambdas, example_lambda_capture_initializers, example_binary_literals
 
 11. **[Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp)**
-    - C++17 parallel algorithms
-    - std::execution policies
-    - Parallel STL
-    - Key Functions: `parallel_sort()`, `parallel_transform()`
+   - ===================================================================
+   - Namespaces: std
+   - Classes: AsyncFileProcessor, CancellableFuture, ThreadPool
 
 12. **[Cpp17Examples.cpp](src/Cpp17Examples.cpp)**
-    - C++17 features: structured bindings
-    - std::optional, std::variant, std::any
-    - Fold expressions
-    - Key Functions: `demonstrate_cpp17_features()`
+   - ===================================================================
+   - Namespaces: fs, A
+   - Functions: example_template_argument_deduction, example_structured_bindings, sum_fold
 
 13. **[Cpp20Examples.cpp](src/Cpp20Examples.cpp)**
-    - C++20 features: concepts, ranges, coroutines
-    - Three-way comparison (spaceship operator)
-    - Calendar and time zones
-    - Key Functions: `demonstrate_cpp20_features()`
+   - ===================================================================
+   - Classes: Color
+   - Functions: example_concepts, example_designated_initializers, example_three_way_comparison
 
 14. **[Cpp23Examples.cpp](src/Cpp23Examples.cpp)**
-    - C++23 latest features: std::expected
-    - Multidimensional subscript operator
-    - Deducing this
-    - Key Functions: `demonstrate_cpp23_features()`
+   - ===================================================================
+   - Classes: GPIOPin, MemoryRegister, SensorError
+   - Functions: demonstrate_expected, demonstrate_byteswap
 
 15. **[CppWrappingCLibrary.cpp](src/CppWrappingCLibrary.cpp)**
-    - Wrapping C libraries in C++
-    - RAII for C resources
-    - Type-safe wrappers
-    - Key Functions: `wrap_c_library()`, `CFileWrapper`
+   - ===================================================================
+   - Classes: Socket, TcpServer, SocketError
+   - Functions: demonstrate_raii, demonstrate_nodiscard, demonstrate_noexcept
 
 16. **[CreatingCApiFromCpp.cpp](src/CreatingCApiFromCpp.cpp)**
-    - Creating C API from C++ code
-    - extern "C" linkage
-    - Opaque pointer pattern
-    - Key Functions: `create_c_api()`, opaque handle pattern
+   - Create a new image
+   - Namespaces: image_processing
+   - Classes: Image
 
 17. **[CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp)**
-    - CRTP (Curiously Recurring Template Pattern)
-    - Static polymorphism vs dynamic polymorphism
-    - Performance comparison
-    - Key Functions: `crtp_example()`, `virtual_example()`
+   - CRTP vs Virtual Functions: Static vs Dynamic Polymorphism
+   - Namespaces: static_functions, virtual_functions
+   - Classes: Dog, AnimalBase, Base
+
 
 ### D
 
 18. **[DependencyInjection.cpp](src/DependencyInjection.cpp)**
-    - Dependency injection patterns
-    - Constructor injection
-    - Interface segregation
-    - Key Functions: `demonstrate_dependency_injection()`
+   - ===================================================================
+   - Classes: ConsoleLogger, ILogger, FileLogger
+   - Functions: example_traditional_di, example_constructor_injection, example_interface_injection
 
 19. **[DiamondProblem.cpp](src/DiamondProblem.cpp)**
-    - Diamond inheritance problem
-    - Virtual inheritance
-    - Multiple inheritance solutions
-    - Key Functions: `demonstrate_diamond_problem()`
+   - DiamondProblem.cpp
+   - Namespaces: virtual_inheritance_solution, diamond_problem
+   - Classes: InputDevice, OutputDevice, Device
+
 
 ### E
 
 20. **[EigenSensorFusion.cpp](src/EigenSensorFusion.cpp)**
-    - Eigen library for sensor fusion
-    - Kalman filters
-    - Matrix operations
-    - Key Functions: `kalman_filter()`, `sensor_fusion()`
+   - EXPECTED OUTPUT:
+   - Namespaces: Eigen
+   - Classes: ComplementaryFilter, ParticleFilter, KalmanFilter
 
 21. **[EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp)**
-    - What to avoid in embedded systems
-    - Exceptions, RTTI, dynamic memory
-    - Forbidden features for resource-constrained systems
-    - Key Functions: `demonstrate_what_to_avoid()`
+   - ===================================================================
+   - Classes: BaseSensor, TempSensor, SensorBase
+   - Functions: demonstrate_vector_problems, demonstrate_string_problems, demonstrate_heap_fragmentation
 
 22. **[EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp)**
-    - Embedded C++ best practices
-    - Register access, bit manipulation
-    - Interrupt handling
-    - Key Functions: `embedded_patterns()`, `register_access()`
+   - ===================================================================
+   - Namespaces: BitOps
+   - Classes: MemoryPool, PinMode, CircularBuffer
 
 23. **[ErrorHandling.cpp](src/ErrorHandling.cpp)**
-    - Error handling strategies
-    - Error codes vs exceptions
-    - std::expected (C++23)
-    - Key Functions: `error_code_example()`, `exception_example()`
+   - ===================================================================
+   - Classes: runtime_error, CameraException, CameraNotConnectedException
+   - Functions: demonstrate_custom_exceptions, demonstrate_basic_exception_handling, demonstrate_exception_hierarchy
 
 24. **[ErrorHandlingStroustrup.cpp](src/ErrorHandlingStroustrup.cpp)**
-    - Bjarne Stroustrup's error handling guidelines
-    - Constructor exceptions
-    - Resource management
-    - Key Functions: `demonstrate_stroustrup_guidelines()`
+   - ===================================================================
+   - Classes: FileHandler_GOOD, FileHandler_BAD, ConfigParser
+   - Functions: demonstrate_return_values, demonstrate_exceptions, demonstrate_termination
 
 25. **[EventDrivenProgramming_Inheritance.cpp](src/EventDrivenProgramming_Inheritance.cpp)**
-    - Event-driven programming using inheritance
-    - Observer pattern
-    - Event dispatch
-    - Key Functions: `EventSystem`, `Observer`
+   - ===================================================================
+   - Classes: IObserver, ConsoleObserver, CountingObserver
+   - Functions: example_inheritance_observer, example_listener_pattern, example_event_hierarchy
 
 26. **[EventDrivenProgramming_Lambdas.cpp](src/EventDrivenProgramming_Lambdas.cpp)**
-    - Event-driven programming using lambdas
-    - Callback registration
-    - Signal/slot mechanism
-    - Key Functions: `EventDispatcher`, `on_event()`
+   - ===================================================================
+   - Classes: Subject, Signal, Button
+   - Functions: example_variant_dispatcher, example_signal_slot, example_lambda_observer
 
 27. **[ExceptionWithSourceLocation.cpp](src/ExceptionWithSourceLocation.cpp)**
-    - C++20 std::source_location
-    - Exception with location info
-    - Debug-friendly exceptions
-    - Key Functions: `throw_with_location()`
+   - ===================================================================
+   - Classes: DetailedException, SourceLocationException, BaseLocationException
+   - Functions: demonstrate_detailed_location, demonstrate_basic_location, some_function_that_fails
+
 
 ### F
 
 28. **[FindCountOfCommonNodes.cpp](src/FindCountOfCommonNodes.cpp)**
-    - Algorithm: count common nodes in linked lists
-    - Two-pointer technique
-    - Key Functions: `count_common_nodes()`
+   - Modern C++ example demonstrating various features
+   - Namespaces: std
+   - Classes: Solution
 
 29. **[FindFirstCommonNode.cpp](src/FindFirstCommonNode.cpp)**
-    - Algorithm: find first common node in linked lists
-    - Intersection point detection
-    - Key Functions: `find_first_common_node()`
+   - Modern C++ example demonstrating various features
+   - Namespaces: std
+   - Classes: Solution
 
 30. **[FindMaxNoOfConsecutiveOnesFromIntArray.cpp](src/FindMaxNoOfConsecutiveOnesFromIntArray.cpp)**
-    - Algorithm: find maximum consecutive ones
-    - Sliding window technique
-    - Key Functions: `find_max_consecutive_ones()`
+   - Instructions:
+   - Functions: main
 
 31. **[FindMToLastElement.cpp](src/FindMToLastElement.cpp)**
-    - Algorithm: find Mth element from end
-    - Two-pointer technique
-    - Key Functions: `find_mth_from_last()`
+   - Modern C++ example demonstrating various features
+   - Namespaces: std
+   - Classes: Solution
 
 32. **[FragileBaseClass.cpp](src/FragileBaseClass.cpp)**
-    - Fragile base class problem
-    - Avoiding inheritance pitfalls
-    - Composition over inheritance
-    - Key Functions: `demonstrate_fragile_base_class()`
+   - FragileBaseClass.cpp
+   - Namespaces: composition_solution, fragile_example
+   - Classes: Counter_V1, LoggingCounter_V1, Counter_V2
 
 33. **[FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp)**
-    - ISO 26262 functional safety
-    - ASIL levels
-    - Safety mechanisms
-    - Key Functions: `demonstrate_iso26262_patterns()`
+   - FunctionalSafetyISO26262.cpp
+   - Classes: SafetyResult, SafetyState, ASILLevel
+   - Functions: demonstrate_safe_data_types, demonstrate_redundancy_voting, demonstrate_asil_levels
 
 34. **[FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp)**
-    - std::future, std::promise, std::async
-    - Asynchronous programming
-    - Task-based parallelism
-    - Key Functions: `async_example()`, `promise_example()`
+   - FuturePromiseAsync.cpp
+   - Namespaces: std, async_examples
+   - Classes: RequestProcessor, SimpleThreadPool
+
 
 ### G
 
 35. **[GenericLambdas.cpp](src/GenericLambdas.cpp)**
-    - Generic lambdas (C++14)
-    - Auto parameters
-    - Template lambdas (C++20)
-    - Key Functions: `demonstrate_generic_lambdas()`
+   - ===================================================================
+   - Functions: example_basic_generic_lambda, example_generic_lambda_operations, example_generic_lambda_containers
+
 
 ### I
 
 36. **[InheritanceTypes.cpp](src/InheritanceTypes.cpp)**
-    - Public, protected, private inheritance
-    - Interface inheritance vs implementation inheritance
-    - Key Functions: `demonstrate_inheritance_types()`
+   - ===================================================================
+   - Classes: Animal, Dog, Timer
+   - Functions: example_public_inheritance, example_private_inheritance, example_protected_inheritance
 
 37. **[InsertAndDeleteNodes.cpp](src/InsertAndDeleteNodes.cpp)**
-    - Linked list operations: insert/delete
-    - Node management
-    - Key Functions: `insert_node()`, `delete_node()`
+   - PrintListNode(pInHead);
+   - Namespaces: std
+   - Classes: Solution
+
 
 ### L
 
 38. **[LambdaCaptures.cpp](src/LambdaCaptures.cpp)**
-    - Lambda capture modes
-    - Capture by value, by reference, init captures
-    - Key Functions: `demonstrate_lambda_captures()`
+   - ===================================================================
+   - Classes: ExampleClass, ExampleClass2, Button
+   - Functions: example_capture_all_by_reference, example_no_capture, example_capture_all_by_value
+
 
 ### M
 
 39. **[MISRACppDemo.cpp](src/MISRACppDemo.cpp)**
-    - MISRA C++ guidelines demonstration
-    - Safety-critical coding standards
-    - Rule compliance examples
-    - Key Functions: `demonstrate_misra_rules()`
+   - ===================================================================
+   - Namespaces: expressions_and_operators, types_and_declarations
+   - Classes: Resource, GoodBase, BadBase
 
 40. **[MoveSemantics.cpp](src/MoveSemantics.cpp)**
-    - Move semantics and rvalue references
-    - std::move, perfect forwarding
-    - Key Functions: `demonstrate_move_semantics()`
+   - ===================================================================
+   - Classes: MoveOnlyType, LargeObject, Resource
+   - Functions: demonstrate_copy_vs_move, demonstrate_std_move, demonstrate_lvalue_rvalue
 
 41. **[MoveSematicsPerfectForwarding.cpp](src/MoveSematicsPerfectForwarding.cpp)**
-    - Advanced move semantics
-    - Perfect forwarding with std::forward
-    - Universal references
-    - Key Functions: `perfect_forward()`, `make_unique_example()`
+   - ===================================================================
+   - Namespaces: lvalues_rvalues, move_semantics
+   - Classes: Resource, Widget
 
 42. **[MultiThreadedMicroservices.cpp](src/MultiThreadedMicroservices.cpp)**
-    - Multi-threaded microservices architecture
-    - Service communication
-    - Thread-safe queues
-    - Key Functions: `MicroserviceFramework`, `Service`
+   - MultiThreadedMicroservices.cpp
+   - Namespaces: std
+   - Classes: ThreadType, ThreadContext, Logger
+
 
 ### N
 
-43. **[NlohmannJsonExample.cpp](src/NlohmannJsonExample.cpp)**
-    - nlohmann/json library usage
-    - JSON parsing and serialization
-    - Key Functions: `parse_json()`, `serialize_json()`
+42. **[NlohmannJsonExample.cpp](src/NlohmannJsonExample.cpp)**
+   - ===================================================================
+   - Functions: example_basic_json, example_arrays, example_custom_types
 
-44. **[NoexceptBestPractices.cpp](src/NoexceptBestPractices.cpp)**
-    - noexcept specifier best practices
-    - Conditional noexcept
-    - Move operations and noexcept
-    - Key Functions: `demonstrate_noexcept()`
+42. **[NoexceptBestPractices.cpp](src/NoexceptBestPractices.cpp)**
+   - ===================================================================
+   - Namespaces: always_use_noexcept, what_is_noexcept
+   - Classes: Resource, Swappable, MoveableResource
 
-45. **[NVIIdiomTemplateMethod.cpp](src/NVIIdiomTemplateMethod.cpp)**
-    - Non-Virtual Interface (NVI) idiom
-    - Template Method pattern
-    - Key Functions: `NVIBase`, `template_method()`
+42. **[NVIIdiomTemplateMethod.cpp](src/NVIIdiomTemplateMethod.cpp)**
+   - NVIIdiomTemplateMethod.cpp
+   - Namespaces: std, basic_nvi
+   - Classes: CSVProcessor, JSONProcessor, DataProcessor
+
 
 ### O
 
-46. **[ObjectSlicingCpp20.cpp](src/ObjectSlicingCpp20.cpp)**
-    - Object slicing problem
-    - Solutions using polymorphism
-    - Key Functions: `demonstrate_object_slicing()`
+42. **[ObjectSlicingCpp20.cpp](src/ObjectSlicingCpp20.cpp)**
+   - ===================================================================
+   - Classes: Shape, Rectangle, Circle
+   - Functions: draw_shape, process_shape, example_concepts_prevent_slicing
 
-47. **[ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)**
-    - Object slicing prevention with smart pointers
-    - Polymorphic containers
-    - Key Functions: `demonstrate_polymorphic_container()`
+42. **[ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)**
+   - ===================================================================
+   - Classes: Shape, Rectangle, Circle
+   - Functions: example_shared_ptr_slicing_wrong, example_container_slicing_wrong, example_classic_slicing
 
-48. **[OptionalExamples.cpp](src/OptionalExamples.cpp)**
-    - std::optional usage
-    - Monadic operations (C++23)
-    - Key Functions: `optional_examples()`, `transform_optional()`
+42. **[OptionalExamples.cpp](src/OptionalExamples.cpp)**
+   - ===================================================================
+   - Functions: example_basic_optional, example_optional_return, example_value_or
+
 
 ### P
 
-49. **[PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp)**
-    - Perfect forwarding with requires clauses
-    - Constrained templates
-    - Key Functions: `forward_with_constraints()`
+42. **[PerfectForwardingAndRequires.cpp](src/PerfectForwardingAndRequires.cpp)**
+   - tests
+   - Classes: ThreadSafeQueue, Serializable, Register
+   - Functions: demonstrate_perfect_forwarding, call_with_forward, call_by_value
 
-50. **[PimplIdiom.cpp](src/PimplIdiom.cpp)**
-    - Pointer to Implementation (Pimpl) idiom
-    - Compilation firewall
-    - ABI stability
-    - Performance considerations for real-time systems
-    - FastPimpl alternatives
-    - Key Functions: `Widget`, `WidgetImpl`, `FastPimplWidget`
+42. **[PimplIdiom.cpp](src/PimplIdiom.cpp)**
+   - ===================================================================
+   - Namespaces: what_is_pimpl, modern_cpp_pimpl
+   - Classes: WidgetCpp98, WidgetNoPimpl, WidgetWithPimpl
 
-51. **[ProtobufExample.cpp](src/ProtobufExample.cpp)**
-    - Protocol Buffers integration
-    - Serialization/deserialization
-    - Key Functions: `serialize_protobuf()`, `deserialize_protobuf()`
+42. **[ProtobufExample.cpp](src/ProtobufExample.cpp)**
+   - ===================================================================
+   - Functions: example_binary_deserialization, example_binary_serialization, example_create_sensor_reading
 
-52. **[Pybind11Example.cpp](src/Pybind11Example.cpp)**
-    - Python bindings with pybind11
-    - Exposing C++ to Python
-    - Key Functions: `PYBIND11_MODULE()`
+42. **[Pybind11Example.cpp](src/Pybind11Example.cpp)**
+   - PYTHON USAGE EXAMPLES:
+   - Namespaces: py
+   - Classes: Vector2D, Shape, Circle
+
 
 ### R
 
-53. **[RangesExamples.cpp](src/RangesExamples.cpp)**
-    - C++20 Ranges library
-    - Views, adaptors, pipelines
-    - Key Functions: `demonstrate_ranges()`, `range_pipelines()`
+42. **[RangesExamples.cpp](src/RangesExamples.cpp)**
+   - ===================================================================
+   - Namespaces: views, ranges
+   - Functions: example_filter_view, example_basic_ranges, example_transform_view
 
-54. **[RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)**
-    - Real-time C++ programming
-    - Deterministic timing
-    - WCET analysis
-    - std::list::splice() for O(1) operations
-    - Memory pools and bounded execution
-    - Key Functions: `demonstrate_realtime_patterns()`, `list_splice_example()`
+42. **[RealTimeProgramming.cpp](src/RealTimeProgramming.cpp)**
+   - RealTimeProgramming.cpp
+   - Namespaces: big_o_notation, thread_architecture
+   - Classes: RealTimeFlagManager, SensorSystem, SensorStatus
 
-55. **[ResourceLeaks.cpp](src/ResourceLeaks.cpp)**
-    - Resource leak detection and prevention
-    - RAII patterns
-    - Key Functions: `demonstrate_resource_management()`
+42. **[ResourceLeaks.cpp](src/ResourceLeaks.cpp)**
+   - EXPECTED OUTPUT HIGHLIGHTS:
+   - Namespaces: ModernCpp, OldCpp
+   - Classes: Node, ExpensiveResource, ResourceIntensive
 
-56. **[RestApiExample.cpp](src/RestApiExample.cpp)**
-    - REST API implementation
-    - HTTP client/server
-    - Key Functions: `RestApiServer`, `handle_request()`
+42. **[RestApiExample.cpp](src/RestApiExample.cpp)**
+   - ===================================================================
+   - Classes: CurlHandle, CurlHeaders, RestClient
+   - Functions: example_create_post, example_update_post, example_json_placeholder_api
 
-57. **[ROMability.cpp](src/ROMability.cpp)**
-    - ROMable code for embedded systems
-    - Const correctness
-    - Placement in ROM vs RAM
-    - Key Functions: `demonstrate_romability()`
+42. **[ROMability.cpp](src/ROMability.cpp)**
+   - ROMability.cpp
+   - Namespaces: const_vs_constexpr, rom_arrays
+   - Functions: demonstrate, get_runtime_value
 
-58. **[RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp)**
-    - Rule of Three, Five, and Zero
-    - Copy/move constructors and assignment operators
-    - Key Functions: `RuleOfThree`, `RuleOfFive`, `RuleOfZero`
+42. **[RuleOf3_5_0.cpp](src/RuleOf3_5_0.cpp)**
+   - no-op
+   - Classes: RuleOfFiveExample, RuleOfThreeExample, RuleOfZeroExample
+   - Functions: example_rule_of_zero, example_rule_of_five, example_rule_of_three
 
-59. **[RuntimePolymorphism.cpp](src/RuntimePolymorphism.cpp)**
-    - Runtime polymorphism
-    - Virtual functions, vtables
-    - Key Functions: `demonstrate_polymorphism()`
+42. **[RuntimePolymorphism.cpp](src/RuntimePolymorphism.cpp)**
+   - ===================================================================
+   - Classes: IShape, Rectangle, Circle
+   - Functions: example_virtual_destructor, example_virtual_with_default, example_pure_virtual
+
 
 ### S
 
-60. **[SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)**
-    - STL containers in safety-critical systems
-    - MISRA C++, AUTOSAR C++14, ISO 26262, DO-178C guidelines
-    - Which containers to avoid (std::list, std::map, std::set, unordered_*)
-    - Custom allocators for deterministic behavior
-    - std::array, std::vector with fixed capacity
-    - Key Functions: `demonstrate_safe_containers()`, `custom_allocator_example()`
+42. **[SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp)**
+   - ===================================================================
+   - Namespaces: container_classification, containers_to_avoid
+   - Classes: SafetyPoolAllocator
 
-61. **[SearchAnagramsDictionary.cpp](src/SearchAnagramsDictionary.cpp)**
-    - Algorithm: find anagrams in dictionary
-    - Hash-based solutions
-    - Key Functions: `find_anagrams()`
+42. **[SearchAnagramsDictionary.cpp](src/SearchAnagramsDictionary.cpp)**
+   - Example program
+   - Functions: main
 
-62. **[SinglyLinkedList.cpp](src/SinglyLinkedList.cpp)**
-    - Singly linked list implementation
-    - Basic operations: insert, delete, search
-    - Key Functions: `SinglyLinkedList::insert()`, `SinglyLinkedList::remove()`
+42. **[SinglyLinkedList.cpp](src/SinglyLinkedList.cpp)**
+   - pHead
+   - Functions: print, main
 
-63. **[SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp)**
-    - SOLID principles demonstration
-    - Single Responsibility, Open/Closed, Liskov Substitution
-    - Interface Segregation, Dependency Inversion
-    - Key Functions: `demonstrate_solid_principles()`
+42. **[SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp)**
+   - ===================================================================
+   - Namespaces: open_closed, single_responsibility
+   - Classes: Employee, BadEmployee, TaxCalculator
 
-64. **[STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)**
-    - STL containers without heap allocation
-    - Fixed-size containers
-    - Custom allocators
-    - Key Functions: `demonstrate_no_heap_containers()`
+42. **[STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)**
+   - ===================================================================
+   - Classes: PoolAllocator, FixedVector, StackAllocator
+   - Functions: example_std_array, example_std_span, process_data
 
-65. **[StopTokenExample.cpp](src/StopTokenExample.cpp)**
-    - C++20 std::stop_token for cancellation
-    - Cooperative cancellation
-    - Key Functions: `cancellable_task()`
+42. **[StopTokenExample.cpp](src/StopTokenExample.cpp)**
+   - StopTokenExample.cpp
+   - Namespaces: std, old_vs_new
+   - Classes: RESTService, OldStyleThread, NewStyleThread
 
-66. **[StructuredBindings.cpp](src/StructuredBindings.cpp)**
-    - C++17 structured bindings
-    - Decomposition declarations
-    - Key Functions: `demonstrate_structured_bindings()`
+42. **[StructuredBindings.cpp](src/StructuredBindings.cpp)**
+   - ===================================================================
+   - Functions: example_array_bindings, example_tuple_bindings, example_basic_structured_bindings
 
-67. **[SystemInteractionAndParsing.cpp](src/SystemInteractionAndParsing.cpp)**
-    - System interaction: file I/O, command execution
-    - Parsing: regex, string operations
-    - Key Functions: `execute_command()`, `parse_output()`
+42. **[SystemInteractionAndParsing.cpp](src/SystemInteractionAndParsing.cpp)**
+   - ===================================================================
+   - Namespaces: fs
+   - Classes: BankAccount, ThreadSafeLogger, SharedCounter
+
 
 ### T
 
-68. **[TemplatedCameraInterface.cpp](src/TemplatedCameraInterface.cpp)**
-    - Templated camera interface design
-    - Policy-based design
-    - Key Functions: `CameraInterface<>`, camera policies
+42. **[TemplatedCameraInterface.cpp](src/TemplatedCameraInterface.cpp)**
+   - ===================================================================
+   - Classes: Camera8bit, Image, Camera
+   - Functions: demonstrate_16bit_camera, demonstrate_float_camera, demonstrate_8bit_camera
 
-69. **[TemplatedCameraModules.cpp](src/TemplatedCameraModules.cpp)**
-    - Advanced templated camera modules
-    - Compile-time polymorphism
-    - Key Functions: `CameraModule<>`, sensor abstractions
+42. **[TemplatedCameraModules.cpp](src/TemplatedCameraModules.cpp)**
+   - ===================================================================
+   - Functions: demonstrate_camera_capture, demonstrate_concepts, display_camera_info
 
-70. **[ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)**
-    - Thread pool implementation
-    - Task scheduling
-    - Work queues
-    - Key Functions: `ThreadPool`, `enqueue_task()`
+42. **[ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)**
+   - ThreadPoolExamples.cpp
+   - Namespaces: std
+   - Classes: BasicThreadPool, TaskPriority, ThreadPoolWithFutures
 
-71. **[TuplesAndStructuredBindings.cpp](src/TuplesAndStructuredBindings.cpp)**
-    - std::tuple with structured bindings
-    - Tuple manipulation
-    - Key Functions: `tuple_examples()`, `structured_binding_examples()`
+42. **[TuplesAndStructuredBindings.cpp](src/TuplesAndStructuredBindings.cpp)**
+   - ===================================================================
+   - Functions: demonstrate_structured_bindings, demonstrate_basic_tuples, demonstrate_tie
+
 
 ### V
 
-72. **[VariadicTemplateRecursion.cpp](src/VariadicTemplateRecursion.cpp)**
-    - Variadic templates
-    - Template parameter pack expansion
-    - Recursive templates
-    - Key Functions: `variadic_print()`, `sum()`
+42. **[VariadicTemplateRecursion.cpp](src/VariadicTemplateRecursion.cpp)**
+   - ===================================================================
+   - Classes: GPIO_Pin
+   - Functions: demonstrate_basic_recursion, print_recursive
 
-73. **[VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp)**
-    - Virtual functions in template classes
-    - Combining static and dynamic polymorphism
-    - Key Functions: `TemplateWithVirtual<>`
+42. **[VirtualFunctionsInTemplates.cpp](src/VirtualFunctionsInTemplates.cpp)**
+   - VIRTUAL FUNCTIONS IN TEMPLATES: THE CODE BLOAT PROBLEM
+   - Namespaces: the_problem, bad_example_t80
+   - Classes: template, Vector, DemoInstantiation
+
+
+### 🎯 **Interview Preparation**
+
+75. **[MockInterview.cpp](src/MockInterview.cpp)**
+   - **Complete C++ Interview Questions & Answers** - Comprehensive mock interview preparation guide
+   - **Topics Covered:**
+     - Section 1: C++ Fundamentals (pointers vs references, const correctness, RAII)
+     - Section 2: Memory Management (smart pointers, memory alignment, custom allocators)
+     - Section 3: OOP & Design Patterns (virtual dispatch, CRTP, PIMPL)
+     - Section 4: Templates & Metaprogramming (SFINAE, variadic templates, compile-time computation)
+     - Section 5: Concurrency & Multithreading (singleton, producer-consumer, atomic operations)
+     - Section 6: Performance & Optimization (move semantics, RVO/NRVO, copy elision)
+   - **Key Demonstrations:** 25+ interview questions with detailed explanations and runnable code
+   - **Namespaces:** std
+   - **Classes:** FileHandler, Data, Widget, ThreadSafeSingleton, ProducerConsumer, LargeObject, Expensive
+   - **Functions:** pointers_vs_references, const_correctness, raii_demo, smart_pointers_advanced, memory_alignment, virtual_dispatch_details, crtp_mixins_demo, sfinae_demo, variadic_demo, compile_time_demo, singleton_demo, producer_consumer_demo, atomic_operations_demo, move_semantics_performance, copy_elision_demo
 
 ---
 

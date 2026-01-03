@@ -8,6 +8,7 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 
 ## Table of Contents
 
+- [Interview Preparation](#interview-preparation)
 - [C++ Standards Features](#c-standards-features)
 - [Design Patterns & Idioms](#design-patterns--idioms)
 - [Object-Oriented Programming](#object-oriented-programming)
@@ -22,6 +23,33 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - [Performance & Optimization](#performance--optimization)
 - [Common Problems & Solutions](#common-problems--solutions)
 - [Keywords & Language Features](#keywords--language-features)
+
+---
+
+## Interview Preparation
+
+### Complete C++ Interview Guide
+- **File:** [MockInterview.cpp](src/MockInterview.cpp)
+- **Description:** Comprehensive collection of C++ interview questions with detailed, runnable answers
+- **Topics Covered:**
+  - **Fundamentals:** Pointers vs references, const correctness, RAII pattern
+  - **Memory Management:** Smart pointers (unique_ptr, shared_ptr, weak_ptr), custom deleters, aliasing constructor, enable_shared_from_this, memory alignment, custom allocators
+  - **OOP & Design Patterns:** Virtual dispatch mechanics, vtable internals, multiple inheritance, CRTP with mixins, PIMPL idiom, compile-time polymorphism
+  - **Templates & Metaprogramming:** SFINAE techniques, enable_if, detection idiom, variadic templates, fold expressions, compile-time computation, constexpr/consteval
+  - **Concurrency:** Thread-safe singleton (Meyer's, call_once), producer-consumer pattern, condition variables, atomic operations, memory ordering
+  - **Performance:** Move semantics, copy elision (RVO/NRVO), cache-friendly design, branch prediction optimization
+- **Common Interview Questions:**
+  - What's the difference between pointers and references?
+  - Explain smart pointers and when to use each type
+  - How does virtual dispatch work internally?
+  - What is SFINAE and how is it used?
+  - How do you implement a thread-safe singleton?
+  - What's the difference between RVO and move semantics?
+  - Explain memory ordering in atomic operations
+  - How does CRTP provide compile-time polymorphism?
+- **Format:** Each section includes working code examples with detailed explanations and best practices
+
+**[⬆ Back to Top](#table-of-contents)**
 
 ---
 

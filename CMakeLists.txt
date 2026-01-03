@@ -310,6 +310,11 @@ add_executable(StopTokenExample src/StopTokenExample.cpp)
 target_link_libraries(StopTokenExample PRIVATE pthread)
 message(STATUS "Added executable: StopTokenExample")
 
+# MockInterview (comprehensive C++ interview questions and answers)
+add_executable(MockInterview src/MockInterview.cpp)
+target_link_libraries(MockInterview PRIVATE pthread)
+message(STATUS "Added executable: MockInterview")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
