@@ -30,7 +30,7 @@ echo "✓ Found $FILE_COUNT source files"
 echo ""
 
 # Create output directory
-OUTPUT_DIR="pdf_output"
+OUTPUT_DIR="pdf_out"
 mkdir -p "$OUTPUT_DIR"
 echo "✓ Created output directory: $OUTPUT_DIR"
 

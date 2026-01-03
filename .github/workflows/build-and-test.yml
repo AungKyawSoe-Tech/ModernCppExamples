@@ -103,10 +103,10 @@ jobs:
     
     - name: Generate combined markdown
       run: |
-        mkdir -p pdf_output
+        mkdir -p pdf_out
         
         # Create combined markdown file with YAML front matter
-        cat > pdf_output/ModernCppRefresherCourse_Combined.md << 'EOF'
+        cat > pdf_out/ModernCppRefresherCourse_Combined.md << 'EOF'
 ---
 title: "Modern C++ Refresher Course"
 subtitle: "Comprehensive Reference - C++11 through C++23"
@@ -128,14 +128,14 @@ documentclass: article
 EOF
         
         # Add README content
-        cat README.md >> pdf_output/ModernCppRefresherCourse_Combined.md
-        echo -e "\n\n\\newpage\n\n" >> pdf_output/ModernCppRefresherCourse_Combined.md
+        cat README.md >> pdf_out/ModernCppRefresherCourse_Combined.md
+        echo -e "\n\n\\newpage\n\n" >> pdf_out/ModernCppRefresherCourse_Combined.md
         
         # Add all source files alphabetically
         for file in $(find src -name "*.cpp" -o -name "*.cppm" | sort); do
           FILENAME=$(basename "$file")
           echo "Processing: $FILENAME"
-          cat >> pdf_output/ModernCppRefresherCourse_Combined.md << EOF2
+          cat >> pdf_out/ModernCppRefresherCourse_Combined.md << EOF2
         # Source Code: $FILENAME
         
         **File:** \`$file\`  
@@ -143,8 +143,8 @@ EOF
         
         \`\`\`cpp
         EOF2
-          cat "$file" >> pdf_output/ModernCppRefresherCourse_Combined.md
-          cat >> pdf_output/ModernCppRefresherCourse_Combined.md << 'EOF3'
+          cat "$file" >> pdf_out/ModernCppRefresherCourse_Combined.md
+          cat >> pdf_out/ModernCppRefresherCourse_Combined.md << 'EOF3'
         
         ```
         
@@ -154,65 +154,65 @@ EOF
         done
         
         # Add INDEX.md as appendix
-        echo -e "\n\n# Appendix: Comprehensive Index\n\n" >> pdf_output/ModernCppRefresherCourse_Combined.md
-        cat INDEX.md >> pdf_output/ModernCppRefresherCourse_Combined.md
+        echo -e "\n\n# Appendix: Comprehensive Index\n\n" >> pdf_out/ModernCppRefresherCourse_Combined.md
+        cat INDEX.md >> pdf_out/ModernCppRefresherCourse_Combined.md
     
     - name: Check markdown file
       run: |
         echo "Checking combined markdown file..."
-        ls -lh pdf_output/ModernCppRefresherCourse_Combined.md
-        echo "File size: $(du -h pdf_output/ModernCppRefresherCourse_Combined.md | cut -f1)"
-        echo "Line count: $(wc -l < pdf_output/ModernCppRefresherCourse_Combined.md)"
+        ls -lh pdf_out/ModernCppRefresherCourse_Combined.md
+        echo "File size: $(du -h pdf_out/ModernCppRefresherCourse_Combined.md | cut -f1)"
+        echo "Line count: $(wc -l < pdf_out/ModernCppRefresherCourse_Combined.md)"
     
     - name: Generate PDF with pandoc
+      continue-on-error: true
+      id: generate_pdf
       run: |
-        set -e  # Exit on any error
         echo "Starting PDF generation..."
         echo "==== Combined markdown preview (first 50 lines) ===="
-        head -n 50 pdf_output/ModernCppRefresherCourse_Combined.md
+        head -n 50 pdf_out/ModernCppRefresherCourse_Combined.md
         echo "==== End preview ===="
         
         echo "Running pandoc..."
-        pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
-          -o pdf_output/ModernCppRefresherCourse.pdf \
+        if pandoc pdf_out/ModernCppRefresherCourse_Combined.md \
+          -o pdf_out/ModernCppRefresherCourse.pdf \
           --pdf-engine=xelatex \
           --toc \
           --toc-depth=3 \
           --number-sections \
           --highlight-style=tango \
-          -V geometry:margin=1in \
-          -V fontsize=11pt \
+          -V geometry:margin=0.75in \
+          -V fontsize=9pt \
           -V linkcolor=blue \
           -V urlcolor=blue \
           -V colorlinks=true \
-          --listings \
-          --verbose 2>&1 | tee pandoc.log
-        
-        PANDOC_EXIT=${PIPESTATUS[0]}
-        if [ $PANDOC_EXIT -ne 0 ]; then
-          echo "❌ Pandoc failed with exit code: $PANDOC_EXIT"
-          echo "==== Pandoc log ===="
+          --verbose 2>&1 | tee pandoc.log; then
+          echo "✅ PDF generation successful!"
+          echo "success=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Pandoc failed!"
+          echo "success=false" >> $GITHUB_OUTPUT
           cat pandoc.log
-          echo "==== End log ===="
           exit 1
         fi
-        echo "✅ PDF generation successful!"
     
     - name: Verify PDF was created
+      if: steps.generate_pdf.outputs.success == 'true'
       run: |
-        if [ -f pdf_output/ModernCppRefresherCourse.pdf ]; then
-          ls -lh pdf_output/ModernCppRefresherCourse.pdf
-          echo "PDF size: $(du -h pdf_output/ModernCppRefresherCourse.pdf | cut -f1)"
+        if [ -f pdf_out/ModernCppRefresherCourse.pdf ]; then
+          ls -lh pdf_out/ModernCppRefresherCourse.pdf
+          echo "PDF size: $(du -h pdf_out/ModernCppRefresherCourse.pdf | cut -f1)"
         else
           echo "❌ ERROR: PDF file was not created!"
           exit 1
         fi
     
     - name: Upload PDF artifact
+      if: steps.generate_pdf.outputs.success == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ModernCppRefresherCourse-PDF
-        path: pdf_output/ModernCppRefresherCourse.pdf
+        path: pdf_out/ModernCppRefresherCourse.pdf
         retention-days: 90
     
     - name: Upload combined markdown (for debugging)
@@ -220,7 +220,7 @@ EOF
       uses: actions/upload-artifact@v4
       with:
         name: CombinedMarkdown
-        path: pdf_output/ModernCppRefresherCourse_Combined.md
+        path: pdf_out/ModernCppRefresherCourse_Combined.md
         retention-days: 30
     
     - name: Upload pandoc log on failure

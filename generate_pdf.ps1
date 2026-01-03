@@ -33,7 +33,7 @@ Write-Host "✓ Found $($sourceFiles.Count) source files" -ForegroundColor Green
 Write-Host ""
 
 # Create output directory
-$outputDir = "pdf_output"
+$outputDir = "pdf_out"
 if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
     Write-Host "✓ Created output directory: $outputDir" -ForegroundColor Green
