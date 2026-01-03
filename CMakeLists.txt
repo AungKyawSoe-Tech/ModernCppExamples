@@ -286,6 +286,10 @@ message(STATUS "Added executable: RealTimeProgramming")
 add_executable(MoveSematicsPerfectForwarding src/MoveSematicsPerfectForwarding.cpp)
 message(STATUS "Added executable: MoveSematicsPerfectForwarding")
 
+# SOLIDPrinciples (demonstrates SOLID object-oriented design principles)
+add_executable(SOLIDPrinciples src/SOLIDPrinciples.cpp)
+message(STATUS "Added executable: SOLIDPrinciples")
+
 # StopTokenExample (demonstrates std::stop_token for thread cancellation)
 add_executable(StopTokenExample src/StopTokenExample.cpp)
 target_link_libraries(StopTokenExample PRIVATE pthread)
