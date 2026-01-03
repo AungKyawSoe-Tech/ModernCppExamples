@@ -90,13 +90,14 @@ void const_correctness() {
         
         // 1. Non-const getter - can only be called on non-const objects
         int getValue() { 
-            cout << "Non-const getValue" << endl;
+            value = 44;
+            cout << "Non-const getValue, Changed value = ";
             return value; 
         }
         
         // 2. Const getter - can be called on both const and non-const objects
         int getValue() const { 
-            cout << "Const getValue" << endl;
+            cout << "Const getValue, value = ";
             counter++;  // OK because counter is mutable
             return value; 
         }
@@ -109,10 +110,13 @@ void const_correctness() {
     };
     
     Data d1(42);
-    const Data d2(100);
+    const Data d2(43);
     
-    d1.getValue();     // Calls non-const version
-    d2.getValue();     // Calls const version
+    cout << "d1 " << std::to_string(d1.getValue()) << endl;     // Calls non-const version
+    cout << "d2 " << std::to_string(d2.getValue()) << endl;     // Calls const version
+
+
+    
     // d2.getValueRef() = 50;  // ERROR: Cannot modify through const reference
     
     cout << "\nConst Rules:" << endl;
@@ -183,6 +187,7 @@ void raii_demo() {
     cout << "2. Release resource in destructor" << endl;
     cout << "3. Use stack unwinding for exception safety" << endl;
     cout << "4. Smart pointers, locks, containers use RAII" << endl;
+	cout << "5. Use automatic (in stack) std::lock_guard and std::unique_lock in member functions" << endl;
 }
 
 // ===================================================================
@@ -193,24 +198,150 @@ void raii_demo() {
 void smart_pointers_advanced() {
     cout << "\n=== SMART POINTERS ADVANCED ===\n";
     
-    // 1. Custom deleters
+    // 1. Custom deleters - Why and when to use them
     {
-        cout << "\n1. Custom Deleters:" << endl;
-        auto deleter = [](int* p) {
-            cout << "Custom delete: " << *p << endl;
+        cout << "\n1. Custom Deleters - Use Cases:" << endl;
+        cout << "   • File handles (FILE*) - need fclose()" << endl;
+        cout << "   • C arrays - need delete[] instead of delete" << endl;
+        cout << "   • Resource cleanup - network sockets, locks, etc." << endl;
+        cout << "   • Custom allocators - memory pools" << endl;
+        cout << "   • Logging/debugging - track object lifetime\n" << endl;
+        
+        // Example 1: FILE* with custom deleter
+        auto file_deleter = [](FILE* f) {
+            if (f) {
+                cout << "   Closing file with fclose()" << endl;
+                fclose(f);
+            }
+        };
+        shared_ptr<FILE> file(fopen("temp.txt", "w"), file_deleter);
+        if (file) {
+            fprintf(file.get(), "Custom deleter example\n");
+        }
+        
+        // Example 2: Array with delete[]
+        shared_ptr<int> arr(new int[10], [](int* p) {
+            cout << "   Deleting array with delete[]" << endl;
+            delete[] p;
+        });
+        // Note: Better to use unique_ptr<int[]> or vector<int> for arrays
+        
+        // Example 3: unique_ptr with custom deleter type
+        auto int_deleter = [](int* p) {
+            cout << "   Custom delete: " << *p << endl;
             delete p;
         };
-        
-        unique_ptr<int, decltype(deleter)> ptr1(new int(42), deleter);
-        shared_ptr<int> ptr2(new int(100), [](int* p) {
-            cout << "Lambda deleter: " << *p << endl;
-            delete p;
-        });
+        unique_ptr<int, decltype(int_deleter)> ptr1(new int(42), int_deleter);
     }
     
-    // 2. Aliasing constructor
+    // 2. weak_ptr - Breaking circular references
     {
-        cout << "\n2. Aliasing Constructor:" << endl;
+        cout << "\n2. weak_ptr - Safe Non-Owning Observation:" << endl;
+        cout << "   Purpose: Observe shared_ptr without affecting reference count" << endl;
+        cout << "   Use cases:" << endl;
+        cout << "   • Breaking circular references (parent-child relationships)" << endl;
+        cout << "   • Cache implementations (entries can be evicted)" << endl;
+        cout << "   • Observer pattern (observers shouldn't own subject)" << endl;
+        cout << "   • Factory tracking (don't prevent object deletion)\n" << endl;
+        
+        // Example: Parent-Child circular reference problem
+        class Child;
+        class Parent {
+        public:
+            shared_ptr<Child> child;
+            ~Parent() { cout << "   ~Parent()" << endl; }
+        };
+        
+        class Child {
+        public:
+            weak_ptr<Parent> parent;  // Use weak_ptr to break cycle!
+            ~Child() { cout << "   ~Child()" << endl; }
+        };
+        
+        cout << "   Creating parent-child relationship:" << endl;
+        {
+            auto parent = make_shared<Parent>();
+            auto child = make_shared<Child>();
+            
+            parent->child = child;
+            child->parent = parent;  // weak_ptr doesn't increase ref count
+            
+            cout << "   Parent use_count: " << parent.use_count() << endl;  // 1
+            cout << "   Child use_count: " << child.use_count() << endl;    // 2
+            
+            // Safe weak_ptr access pattern
+            if (auto parent_ptr = child->parent.lock()) {  // Convert weak to shared
+                cout << "   Parent is still alive, use_count: " << parent_ptr.use_count() << endl;
+            } else {
+                cout << "   Parent has been destroyed" << endl;
+            }
+            
+            cout << "   Scope ending..." << endl;
+        }  // Both Parent and Child are properly destroyed!
+        cout << "   Both objects cleaned up (no memory leak)\n" << endl;
+        
+        // Example: Safe weak_ptr usage pattern
+        shared_ptr<int> strong = make_shared<int>(100);
+        weak_ptr<int> weak = strong;
+        
+        cout << "   weak_ptr safe access pattern:" << endl;
+        cout << "   • expired(): Check if object still exists" << endl;
+        cout << "   • lock(): Get shared_ptr if object exists" << endl;
+        cout << "   • use_count(): Get current ref count\n" << endl;
+        
+        cout << "   weak.expired(): " << (weak.expired() ? "true" : "false") << endl;
+        cout << "   weak.use_count(): " << weak.use_count() << endl;
+        
+        if (auto sp = weak.lock()) {
+            cout << "   Successfully locked: " << *sp << endl;
+        }
+        
+        strong.reset();  // Destroy the object
+        cout << "   After strong.reset():" << endl;
+        cout << "   weak.expired(): " << (weak.expired() ? "true" : "false") << endl;
+        
+        if (auto sp = weak.lock()) {
+            cout << "   Got shared_ptr" << endl;
+        } else {
+            cout << "   lock() returned nullptr (object destroyed)" << endl;
+        }
+    }
+    
+    // 3. make_shared is ONE-WAY - Cannot convert back to unique_ptr
+    {
+        cout << "\n3. make_shared is ONE-WAY (Irreversible):" << endl;
+        cout << "   ✓ unique_ptr → shared_ptr: YES (via std::move)" << endl;
+        cout << "   ✗ shared_ptr → unique_ptr: NO (impossible)\n" << endl;
+        
+        // Forward conversion: unique → shared (OK)
+        unique_ptr<int> unique = make_unique<int>(42);
+        cout << "   unique_ptr created: " << *unique << endl;
+        
+        shared_ptr<int> shared = move(unique);  // Transfer ownership
+        cout << "   Moved to shared_ptr: " << *shared << endl;
+        cout << "   unique_ptr is now: " << (unique ? "valid" : "nullptr") << endl;
+        
+        // Backward conversion: shared → unique (IMPOSSIBLE)
+        cout << "\n   Why shared_ptr → unique_ptr is IMPOSSIBLE:" << endl;
+        cout << "   • shared_ptr allows multiple owners (ref count)" << endl;
+        cout << "   • unique_ptr requires single ownership" << endl;
+        cout << "   • Cannot guarantee no other shared_ptrs exist" << endl;
+        cout << "   • No std::unique_ptr(std::shared_ptr) constructor" << endl;
+        cout << "   • No way to 'steal' ownership from shared_ptr\n" << endl;
+        
+        // // This would NOT compile:
+        // unique_ptr<int> back_to_unique = move(shared);  // ❌ ERROR!
+        // unique_ptr<int> back_to_unique(shared.get());   // ❌ DANGEROUS! Double delete!
+        
+        cout << "   Design implication: Choose wisely at creation!" << endl;
+        cout << "   • Use unique_ptr by default (can upgrade later)" << endl;
+        cout << "   • Use shared_ptr only when shared ownership needed" << endl;
+        cout << "   • Prefer make_unique/make_shared for exception safety" << endl;
+    }
+    
+    // 4. Aliasing constructor
+    {
+        cout << "\n4. Aliasing Constructor:" << endl;
         struct Data {
             int x = 10;
             int y = 20;
@@ -220,13 +351,13 @@ void smart_pointers_advanced() {
         auto x_ptr = shared_ptr<int>(data_ptr, &data_ptr->x);
         auto y_ptr = shared_ptr<int>(data_ptr, &data_ptr->y);
         
-        cout << "Use count: " << data_ptr.use_count() << endl;
-        cout << "x_ptr points to x but shares ownership of Data" << endl;
+        cout << "   Use count: " << data_ptr.use_count() << endl;
+        cout << "   x_ptr points to x but shares ownership of Data" << endl;
     }
     
-    // 3. enable_shared_from_this
+    // 5. enable_shared_from_this
     {
-        cout << "\n3. enable_shared_from_this:" << endl;
+        cout << "\n5. enable_shared_from_this:" << endl;
         class Widget : public enable_shared_from_this<Widget> {
         public:
             shared_ptr<Widget> get_shared() {
@@ -236,7 +367,7 @@ void smart_pointers_advanced() {
         
         auto widget = make_shared<Widget>();
         auto another_ref = widget->get_shared();
-        cout << "Use count: " << widget.use_count() << endl;
+        cout << "   Use count: " << widget.use_count() << endl;
     }
 }
 
