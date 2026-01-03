@@ -279,48 +279,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Update documentation for new files
-      run: |
-        echo "Checking for new source files and updating documentation..."
-        python3 scripts/update_documentation.py
-        
-        # Check if INDEX_UPDATE_TEMPLATE.txt was created (new files detected)
-        if [ -f INDEX_UPDATE_TEMPLATE.txt ]; then
-          echo "::warning::New source files detected! Review INDEX_UPDATE_TEMPLATE.txt"
-          cat INDEX_UPDATE_TEMPLATE.txt
-        fi
-    
-    - name: Commit documentation updates
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        
-        if git diff --quiet README.md; then
-          echo "No changes to README.md"
-        else
-          git add README.md
-          git commit -m "docs: Auto-update README.md with new source files [skip ci]"
-          echo "README.md updated"
-        fi
-      continue-on-error: true
-    
-    - name: Push documentation updates
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
-      continue-on-error: true
-    
     - name: Install pandoc and LaTeX
       run: |
         sudo apt-get update
         sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended \
-          texlive-latex-extra texlive-latex-recommended
+          texlive-latex-extra texlive-latex-recommended fonts-dejavu fonts-liberation
     
     - name: Verify pandoc installation
       run: pandoc --version
@@ -347,6 +310,8 @@ jobs:
         geometry: margin=1in
         fontsize: 11pt
         documentclass: article
+        mainfont: DejaVu Sans
+        monofont: DejaVu Sans Mono
         header-includes: |
           \usepackage{fancyhdr}
           \pagestyle{fancy}
@@ -354,6 +319,9 @@ jobs:
           \fancyhead[R]{v1.0.0}
           \usepackage{listings}
           \usepackage{xcolor}
+          \usepackage{fontspec}
+          \setmainfont{DejaVu Sans}
+          \setmonofont{DejaVu Sans Mono}
           \lstset{
             basicstyle=\ttfamily\small,
             breaklines=true,
@@ -364,7 +332,9 @@ jobs:
             showstringspaces=false,
             commentstyle=\color{gray},
             keywordstyle=\color{blue},
-            stringstyle=\color{red}
+            stringstyle=\color{red},
+            extendedchars=true,
+            literate={╔}{{\$\texttt{\char"2554}\$}}1 {═}{{\$\texttt{\char"2550}\$}}1 {╗}{{\$\texttt{\char"2557}\$}}1 {║}{{\$\texttt{\char"2551}\$}}1 {╚}{{\$\texttt{\char"255A}\$}}1 {╝}{{\$\texttt{\char"255D}\$}}1
           }
         ---
         
@@ -400,8 +370,16 @@ jobs:
         echo -e "\n\n# Appendix: Comprehensive Index\n\n" >> pdf_output/ModernCppRefresherCourse_Combined.md
         cat INDEX.md >> pdf_output/ModernCppRefresherCourse_Combined.md
     
+    - name: Check markdown file
+      run: |
+        echo "Checking combined markdown file..."
+        ls -lh pdf_output/ModernCppRefresherCourse_Combined.md
+        echo "File size: $(du -h pdf_output/ModernCppRefresherCourse_Combined.md | cut -f1)"
+        echo "Line count: $(wc -l < pdf_output/ModernCppRefresherCourse_Combined.md)"
+    
     - name: Generate PDF with pandoc
       run: |
+        echo "Starting PDF generation..."
         pandoc pdf_output/ModernCppRefresherCourse_Combined.md \
           -o pdf_output/ModernCppRefresherCourse.pdf \
           --pdf-engine=xelatex \
@@ -412,7 +390,9 @@ jobs:
           -V geometry:margin=1in \
           -V fontsize=11pt \
           -V linkcolor=blue \
-          -V urlcolor=blue
+          -V urlcolor=blue \
+          --verbose \
+          2>&1 | tee pandoc.log || { echo "❌ Pandoc failed, see log:"; cat pandoc.log; exit 1; }
     
     - name: Verify PDF was created
       run: |
@@ -432,6 +412,52 @@ jobs:
         name: CombinedMarkdown
         path: pdf_output/ModernCppRefresherCourse_Combined.md
         retention-days: 30
+    
+    - name: Upload pandoc log on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: PandocLog
+        path: pandoc.log
+        retention-days: 7
+    
+    - name: Set up Python for documentation update
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Update documentation for new files
+      run: |
+        echo "Checking for new source files and updating documentation..."
+        python3 scripts/update_documentation.py
+        
+        # Check if INDEX_UPDATE_TEMPLATE.txt was created (new files detected)
+        if [ -f INDEX_UPDATE_TEMPLATE.txt ]; then
+          echo "::warning::New source files detected! Review INDEX_UPDATE_TEMPLATE.txt"
+          cat INDEX_UPDATE_TEMPLATE.txt
+        fi
+      continue-on-error: true
+    
+    - name: Commit documentation updates
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        if git diff --quiet README.md; then
+          echo "No changes to README.md"
+        else
+          git add README.md
+          git commit -m "docs: Auto-update README.md with new source files [skip ci]"
+          echo "README.md updated"
+        fi
+      continue-on-error: true
+    
+    - name: Push documentation updates
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+      continue-on-error: true
 
   release-pdf:
     runs-on: ubuntu-latest
