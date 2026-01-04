@@ -167,6 +167,22 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **File:** [ObjectSlicingSmartPtr.cpp](src/ObjectSlicingSmartPtr.cpp)
 - **Topics:** Smart pointers with polymorphism
 
+### Universal Resource Management with Custom Deleters
+- **File:** [UniversalResourceManager.cpp](src/UniversalResourceManager.cpp)
+- **Topics:** Custom deleters for RAII, universal resource management beyond memory
+- **Description:** Comprehensive guide to using smart pointers with custom deleters for managing non-memory resources (files, sockets, databases, GPU resources, shared memory, resource pools). Demonstrates 8 real-world examples, 10 common pitfalls with solutions, deleter patterns (lambdas, function objects, stateful deleters), decision tree for choosing unique_ptr vs shared_ptr, and simplified RAII patterns
+- **Key Examples:**
+  - FILE* management with `fclose()` deleter
+  - Database connection lifecycle with RAII
+  - Socket/network resource cleanup
+  - GPU resource management (buffers, textures)
+  - Shared memory mapping/unmapping
+  - Resource pool integration with custom deleters
+  - Debug allocators with statistics tracking
+  - Composite deleters for multi-step cleanup
+- **Pitfalls Covered:** Type bloat, size overhead, nullptr checks, exception safety, dangling references, double delete, stack vs heap, performance implications, allocation mismatch, thread safety
+- **Design Patterns:** Lambdas, stateful lambdas, function objects, function pointers, templated factory functions, RAII wrapper templates
+
 ### Move Semantics
 - **File:** [MoveSemantics.cpp](src/MoveSemantics.cpp)
 - **Topics:** Rvalue references, move constructors, move assignment, perfect forwarding

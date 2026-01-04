@@ -315,6 +315,10 @@ add_executable(MockInterview src/MockInterview.cpp)
 target_link_libraries(MockInterview PRIVATE pthread)
 message(STATUS "Added executable: MockInterview")
 
+# UniversalResourceManager (custom deleters for universal RAII resource management)
+add_executable(UniversalResourceManager src/UniversalResourceManager.cpp)
+message(STATUS "Added executable: UniversalResourceManager")
+
 # Print build configuration
 message(STATUS "")
 message(STATUS "===========================================")
