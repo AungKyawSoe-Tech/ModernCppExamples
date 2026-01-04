@@ -244,6 +244,9 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ### Embedded Systems
 - **File:** [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp)
 - **Topics:** Best practices for embedded systems, constexpr, fixed-size containers
+- **File:** [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp)
+- **Topics:** Thread-safety and re-entrancy for embedded/firmware systems, ISR-safe code, re-entrant functions, atomic operations, lock-free circular buffers, critical sections, volatile keyword, double buffering, ISR patterns, UART driver example
+- **Concepts:** Re-entrant vs thread-safe vs ISR-safe, interrupt service routines, memory-mapped I/O, bare-metal programming, RTOS patterns
 - **File:** [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp)
 - **Topics:** What to avoid in embedded systems (exceptions, dynamic allocation, iostream)
 
@@ -588,7 +591,7 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 |----------|------------------|
 | **Learning Modern C++** | Start with [Cpp11Examples.cpp](src/Cpp11Examples.cpp), then progress through C++14, 17, 20, 23 examples |
 | **Real-Time Systems** | [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp), [PimplIdiom.cpp](src/PimplIdiom.cpp) |
-| **Embedded Systems** | [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp) |
+| **Embedded Systems** | [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp), [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp) |
 | **Safety-Critical** | [MISRACppDemo.cpp](src/MISRACppDemo.cpp), [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp) |
 | **Performance** | [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp), [PimplIdiom.cpp](src/PimplIdiom.cpp), [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp) |
 | **OOP Design** | [InheritanceTypes.cpp](src/InheritanceTypes.cpp), [DependencyInjection.cpp](src/DependencyInjection.cpp), [SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp) |

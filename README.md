@@ -231,7 +231,13 @@ Each entry links to the source file with a brief description of its contents.
    - Namespaces: BitOps
    - Classes: MemoryPool, PinMode, CircularBuffer
 
-23. **[ErrorHandling.cpp](src/ErrorHandling.cpp)**
+23. **[EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp)**
+   - Thread-safety and re-entrancy for embedded/firmware systems
+   - ISR-safe code, lock-free circular buffers, critical sections, atomic operations
+   - Re-entrant vs thread-safe vs ISR-safe patterns, interrupt service routines
+   - Practical UART driver with zero-overhead design
+
+24. **[ErrorHandling.cpp](src/ErrorHandling.cpp)**
    - ===================================================================
    - Classes: CameraException, runtime_error, CameraNotConnectedException
    - Functions: demonstrate_basic_exception_handling, demonstrate_custom_exceptions, demonstrate_exception_hierarchy
@@ -581,7 +587,7 @@ For detailed topic mapping, see [INDEX.md](INDEX.md). Quick topic guide:
 - **C++23**: [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
 
 ### By Application Domain
-- **Embedded Systems**: [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [ROMability.cpp](src/ROMability.cpp), [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
+- **Embedded Systems**: [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp), [ROMability.cpp](src/ROMability.cpp), [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
 - **Real-Time Systems**: [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)
 - **Safety-Critical**: [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp), [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp), [MISRACppDemo.cpp](src/MISRACppDemo.cpp)
 - **Concurrency**: [Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp), [FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp), [ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)

@@ -72,6 +72,7 @@ set(EXECUTABLES
     EventDrivenProgramming_Inheritance
     EmbeddedSystemsProgramming
     EmbeddedSystemsAvoid
+    EmbeddedThreadSafetyReentrancy
     TemplatedCameraInterface
     ErrorHandling
     ExceptionWithSourceLocation
