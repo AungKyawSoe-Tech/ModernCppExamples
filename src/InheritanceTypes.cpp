@@ -371,7 +371,301 @@ void example_override_with_private() {
 }
 
 // ===================================================================
-// 7. USING DECLARATION TO SELECTIVELY EXPOSE MEMBERS
+// 6B. REAL-WORLD EXAMPLE: ANIMATION SYSTEM (VIRTUAL OVERRIDE)
+// ===================================================================
+
+// Timer base class with virtual callback
+class AnimationTimer {
+protected:
+    int tick_count = 0;
+    
+    // Virtual function that derived classes override
+    virtual void onTick() {
+        std::cout << "  [Timer] Tick " << tick_count << std::endl;
+    }
+    
+public:
+    void start(int ticks) {
+        for (int i = 0; i < ticks; ++i) {
+            tick_count++;
+            onTick();  // Calls derived version via polymorphism
+        }
+    }
+    
+    int getTicks() const { return tick_count; }
+};
+
+// Animation is IMPLEMENTED using AnimationTimer (private inheritance)
+// We override virtual function for custom behavior
+class Animation : private AnimationTimer {
+    std::string name;
+    int frame = 0;
+    
+protected:
+    // Override Timer's virtual function
+    void onTick() override {
+        frame++;
+        std::cout << "  🎬 [Animation '" << name << "'] Frame " << frame 
+                  << " (tick " << getTicks() << ")" << std::endl;
+    }
+    
+public:
+    Animation(const std::string& n) : name(n) {}
+    
+    // Expose start() with different name
+    void play(int frames) {
+        std::cout << "▶  Playing animation: " << name << std::endl;
+        start(frames);  // Calls AnimationTimer::start internally
+        std::cout << "■  Animation complete!" << std::endl;
+    }
+    
+    int getCurrentFrame() const { return frame; }
+};
+
+// Why composition CANNOT do this:
+class AnimationWithComposition {
+    AnimationTimer timer;  // Has-a timer
+    std::string name;
+    int frame = 0;
+    
+public:
+    AnimationWithComposition(const std::string& n) : name(n) {}
+    
+    void play(int frames) {
+        // ❌ PROBLEM: Cannot override onTick()!
+        // timer.start(frames) will call AnimationTimer::onTick(), not our custom version
+        timer.start(frames);  // Won't call our frame update logic!
+    }
+    
+    // We'd have to reimplement the entire start() logic - code duplication!
+};
+
+void example_animation_system() {
+    std::cout << "\n=== 6B. ANIMATION SYSTEM - WHY PRIVATE INHERITANCE IS NEEDED ===" << std::endl;
+    std::cout << "Use case: Override virtual callbacks while reusing base implementation\n" << std::endl;
+    
+    Animation anim("Explosion");
+    anim.play(3);
+    std::cout << "Final frame: " << anim.getCurrentFrame() << std::endl;
+    
+    std::cout << "\n✓ WHY PRIVATE INHERITANCE HERE:" << std::endl;
+    std::cout << "   • Need to override AnimationTimer::onTick() for custom behavior" << std::endl;
+    std::cout << "   • Composition cannot override virtual functions!" << std::endl;
+    std::cout << "   • AnimationTimer is implementation detail, not public interface" << std::endl;
+    std::cout << "   • Animation is NOT-A timer (no is-a relationship)" << std::endl;
+}
+
+// ===================================================================
+// 6C. ACCESSING PROTECTED MEMBERS (PRIVATE INHERITANCE)
+// ===================================================================
+
+class DataSource {
+protected:
+    // Protected helper that derived classes can use
+    void validateData(const std::string& data) const {
+        if (data.empty()) {
+            std::cout << "  ⚠️  Warning: Empty data" << std::endl;
+        } else {
+            std::cout << "  ✓ Data validated: " << data << std::endl;
+        }
+    }
+    
+public:
+    virtual ~DataSource() = default;
+    
+    void processData(const std::string& data) {
+        validateData(data);
+        std::cout << "  Processing: " << data << std::endl;
+    }
+};
+
+// ✅ Private inheritance can access protected members
+class SecureProcessor : private DataSource {
+    std::string processorId;
+    
+public:
+    SecureProcessor(const std::string& id) : processorId(id) {}
+    
+    void secureProcess(const std::string& data) {
+        std::cout << "Processor " << processorId << " running..." << std::endl;
+        
+        // ✓ Can access protected validateData() from base
+        validateData(data);
+        
+        // Custom secure processing
+        std::cout << "  🔒 Encrypting data..." << std::endl;
+        std::cout << "  🔒 Secure processing complete" << std::endl;
+    }
+};
+
+// ❌ Composition CANNOT access protected members
+class SecureProcessorWithComposition {
+    DataSource source;  // Has-a DataSource
+    std::string processorId;
+    
+public:
+    SecureProcessorWithComposition(const std::string& id) : processorId(id) {}
+    
+    void secureProcess(const std::string& data) {
+        std::cout << "Processor " << processorId << " running..." << std::endl;
+        
+        // ❌ COMPILE ERROR: Cannot access protected validateData()!
+        // source.validateData(data);  // ERROR!
+        
+        // Would have to use public processData() or reimplement validation
+        source.processData(data);  // Can only use public interface
+    }
+};
+
+void example_protected_access() {
+    std::cout << "\n=== 6C. ACCESSING PROTECTED MEMBERS ===" << std::endl;
+    std::cout << "Use case: Need access to base class protected helpers\n" << std::endl;
+    
+    SecureProcessor processor("SEC-01");
+    processor.secureProcess("sensitive_data");
+    
+    std::cout << "\n✓ WHY PRIVATE INHERITANCE HERE:" << std::endl;
+    std::cout << "   • Need to access protected validateData() method" << std::endl;
+    std::cout << "   • Composition cannot access protected members!" << std::endl;
+    std::cout << "   • DataSource is implementation detail, not exposed" << std::endl;
+}
+
+// ===================================================================
+// 7. EMPTY BASE OPTIMIZATION (EBO)
+// ===================================================================
+
+// Policy class with no data members
+struct NoThrowPolicy {
+    static void handle_error() {
+        std::cout << "  No-throw policy: Ignoring error" << std::endl;
+    }
+};
+
+struct LoggingPolicy {
+    static void handle_error() {
+        std::cout << "  Logging policy: Error logged" << std::endl;
+    }
+};
+
+// ❌ Composition wastes memory
+template<typename ErrorPolicy>
+class ContainerComposition {
+    ErrorPolicy policy;  // Even though empty, takes 1 byte!
+    int* data;
+    size_t size;
+    
+public:
+    ContainerComposition() : data(nullptr), size(0) {}
+    
+    void handleError() {
+        policy.handle_error();
+    }
+};
+
+// ✅ Private inheritance enables Empty Base Optimization
+template<typename ErrorPolicy>
+class ContainerInheritance : private ErrorPolicy {
+    int* data;
+    size_t size;
+    
+public:
+    ContainerInheritance() : data(nullptr), size(0) {}
+    
+    void handleError() {
+        ErrorPolicy::handle_error();
+    }
+};
+
+void example_empty_base_optimization() {
+    std::cout << "\n=== 7. EMPTY BASE OPTIMIZATION (EBO) ===" << std::endl;
+    std::cout << "Use case: Save memory when inheriting from stateless policy classes\n" << std::endl;
+    
+    ContainerComposition<NoThrowPolicy> comp;
+    ContainerInheritance<NoThrowPolicy> inherit;
+    
+    std::cout << "Memory comparison:" << std::endl;
+    std::cout << "  Composition: " << sizeof(comp) << " bytes" << std::endl;
+    std::cout << "  Inheritance: " << sizeof(inherit) << " bytes" << std::endl;
+    std::cout << "  Savings: " << (sizeof(comp) - sizeof(inherit)) << " bytes per instance" << std::endl;
+    
+    std::cout << "\nBehavior comparison:" << std::endl;
+    std::cout << "Composition: ";
+    comp.handleError();
+    std::cout << "Inheritance: ";
+    inherit.handleError();
+    
+    std::cout << "\n✓ WHY PRIVATE INHERITANCE HERE:" << std::endl;
+    std::cout << "   • Empty Base Optimization eliminates storage for empty base class" << std::endl;
+    std::cout << "   • Composition always allocates at least 1 byte (even for empty class)" << std::endl;
+    std::cout << "   • Critical for policy-based design patterns" << std::endl;
+    std::cout << "   • Used extensively in STL (allocators, comparators, etc.)" << std::endl;
+}
+
+// ===================================================================
+// 8. WHEN NOT TO USE PRIVATE INHERITANCE: CAR/WHEEL EXAMPLE
+// ===================================================================
+
+class Wheel {
+public:
+    void rotate() { 
+        std::cout << "  Wheel rotating" << std::endl; 
+    }
+    
+    int getDiameter() const { return 17; }
+};
+
+// ❌ WRONG: Private inheritance for parts
+// Car is NOT "implemented using Wheel" - it HAS wheels!
+class CarWrong : private Wheel {
+public:
+    void drive() {
+        std::cout << "❌ Wrong design: Car inheriting from ONE wheel?" << std::endl;
+        rotate();  // Only rotates ONE wheel!
+    }
+    // Problem: Car needs FOUR wheels, not IS-A wheel!
+};
+
+// ✅ CORRECT: Composition for parts
+class CarCorrect {
+    std::vector<Wheel> wheels;  // Car HAS 4 wheels
+    
+public:
+    CarCorrect() : wheels(4) {
+        std::cout << "✓ Car created with 4 wheels" << std::endl;
+    }
+    
+    void drive() {
+        std::cout << "✓ Driving car (all 4 wheels rotating):" << std::endl;
+        for (size_t i = 0; i < wheels.size(); ++i) {
+            std::cout << "  Wheel " << (i+1) << ": ";
+            wheels[i].rotate();
+        }
+    }
+    
+    size_t getWheelCount() const { return wheels.size(); }
+};
+
+void example_parts_composition() {
+    std::cout << "\n=== 8. WHEN NOT TO USE PRIVATE INHERITANCE ===\n" << std::endl;
+    std::cout << "❌ BAD: Using private inheritance for 'parts' relationship\n" << std::endl;
+    
+    CarWrong bad_car;
+    bad_car.drive();
+    std::cout << "  Problem: Car inherits from ONE wheel, but needs FOUR!" << std::endl;
+    
+    std::cout << "\n✓ GOOD: Using composition for 'parts' relationship\n" << std::endl;
+    CarCorrect good_car;
+    good_car.drive();
+    
+    std::cout << "\n📋 RULE: PARTS = COMPOSITION, NOT INHERITANCE" << std::endl;
+    std::cout << "   • Car HAS wheels (4 of them) → Composition" << std::endl;
+    std::cout << "   • House HAS rooms (many) → Composition" << std::endl;
+    std::cout << "   • Computer HAS CPU (1) → Composition" << std::endl;
+    std::cout << "   • NEVER use inheritance for 'whole-part' relationships!" << std::endl;
+}
+
+// ===================================================================
+// 9. USING DECLARATION TO SELECTIVELY EXPOSE MEMBERS
 // ===================================================================
 
 class Engine {
@@ -397,7 +691,7 @@ public:
 };
 
 void example_using_declaration() {
-    std::cout << "\n=== 7. USING DECLARATION - SELECTIVE EXPOSURE ===" << std::endl;
+    std::cout << "\n=== 9. USING DECLARATION - SELECTIVE EXPOSURE ===" << std::endl;
     std::cout << "Use case: Expose only specific base class methods\n" << std::endl;
     
     Car car;
@@ -416,11 +710,11 @@ void example_using_declaration() {
 }
 
 // ===================================================================
-// 8. ACCESS LEVEL SUMMARY TABLE
+// 10. ACCESS LEVEL SUMMARY TABLE
 // ===================================================================
 
 void example_access_summary() {
-    std::cout << "\n=== 8. ACCESS LEVEL SUMMARY ===" << std::endl;
+    std::cout << "\n=== 10. ACCESS LEVEL SUMMARY ===" << std::endl;
     
     std::cout << "\n┌───────────────────────┬─────────────┬─────────────┬─────────────┐" << std::endl;
     std::cout << "│ Base Class Member     │   Public    │  Protected  │   Private   │" << std::endl;
@@ -447,6 +741,10 @@ int main() {
     example_stack_private_inheritance();
     example_private_vs_composition();
     example_override_with_private();
+    example_animation_system();
+    example_protected_access();
+    example_empty_base_optimization();
+    example_parts_composition();
     example_using_declaration();
     example_access_summary();
     

@@ -459,56 +459,125 @@ void virtual_dispatch_details() {
     delete b;
 }
 
-// ============ Q3.2: CRTP with Mixins ============
-template<typename Derived>
-class Printable {
+// ============ Q3.2: CRTP with Compile-Time Polymorphism (Static Polymorphism) ============
+// CRTP Pattern: Curiously Recurring Template Pattern
+// Key Insight: Derived class "overrides" base functionality WITHOUT virtual functions
+// Use Case: Zero-overhead polymorphism when types are known at compile-time
+
+// CRTP Base: Animal knows about its derived type at compile time
+template <typename Derived>
+class Animal {
 public:
-    void print() const {
-        cout << static_cast<const Derived*>(this)->to_string() << endl;
+    // Static polymorphism entry point - calls derived implementation
+    void speak() {
+        // Downcast to Derived and call its makeSound() method
+        static_cast<Derived*>(this)->makeSound();
+    }
+    
+    void speak_twice() {
+        speak();
+        speak();
     }
 };
 
-template<typename Derived>
-class Comparable {
+// Dog "overrides" by providing makeSound() method
+class Dog : public Animal<Dog> {
 public:
-    bool operator==(const Comparable& other) const {
-        return static_cast<const Derived*>(this)->get_id() == 
-               static_cast<const Derived*>(&other)->get_id();
+    void makeSound() { 
+        cout << "Woof!" << endl; 
     }
 };
 
-class Widget : public Printable<Widget>, public Comparable<Widget> {
-    int id;
-    string name;
-    
+// Cat "overrides" by providing makeSound() method
+class Cat : public Animal<Cat> {
 public:
-    Widget(int i, string n) : id(i), name(move(n)) {}
-    
-    string to_string() const {
-        return "Widget[" + std::to_string(id) + ", " + name + "]";
+    void makeSound() { 
+        cout << "Meow!" << endl; 
     }
-    
-    int get_id() const { return id; }
 };
+
+// Cow provides different implementation
+class Cow : public Animal<Cow> {
+public:
+    void makeSound() { 
+        cout << "Moo!" << endl; 
+    }
+};
+
+// Generic function that works with any Animal-derived type
+// Note: Takes Animal<T>& not Animal*
+template <typename T>
+void makeAnimalSpeak(Animal<T>& animal) {
+    animal.speak();  // Correctly calls derived implementation at compile-time
+}
+
+template <typename T>
+void makeAnimalSpeakMultiple(Animal<T>& animal, int times) {
+    cout << "Making animal speak " << times << " times: ";
+    for (int i = 0; i < times; ++i) {
+        animal.speak();
+    }
+}
 
 void crtp_mixins_demo() {
-    cout << "\n=== CRTP WITH MIXINS ===\n";
+    cout << "\n=== CRTP: COMPILE-TIME POLYMORPHISM (STATIC POLYMORPHISM) ===\n";
     
-    Widget w1(1, "First");
-    Widget w2(2, "Second");
-    Widget w3(1, "Another");
+    Dog dog;
+    Cat cat;
+    Cow cow;
     
-    w1.print();
-    w2.print();
+    cout << "\nDirect calls to speak() (via CRTP):\n";
+    cout << "Dog: ";
+    dog.speak();
     
-    cout << "w1 == w2: " << (w1 == w2) << endl;
-    cout << "w1 == w3: " << (w1 == w3) << endl;
+    cout << "Cat: ";
+    cat.speak();
     
-    cout << "\nCRTP Mixin Benefits:" << endl;
-    cout << "1. Compile-time polymorphism" << endl;
-    cout << "2. No vtable overhead" << endl;
-    cout << "3. Can combine multiple behaviors" << endl;
-    cout << "4. Type-safe at compile time" << endl;
+    cout << "Cow: ";
+    cow.speak();
+    
+    cout << "\nUsing generic function with CRTP:\n";
+    cout << "Dog via makeAnimalSpeak: ";
+    makeAnimalSpeak(dog);   // Output: Woof!
+    
+    cout << "Cat via makeAnimalSpeak: ";
+    makeAnimalSpeak(cat);   // Output: Meow!
+    
+    cout << "Cow via makeAnimalSpeak: ";
+    makeAnimalSpeak(cow);   // Output: Moo!
+    
+    cout << "\nBase class can build complex behavior:\n";
+    cout << "Dog speaking twice: ";
+    dog.speak_twice();
+    
+    cout << "\nUsing parametric function:\n";
+    makeAnimalSpeakMultiple(cat, 3);
+    
+    cout << "\n\nCRTP Key Points:" << endl;
+    cout << "1. Base class template parameterized by derived type: Animal<Dog>" << endl;
+    cout << "2. Base calls derived methods via static_cast<Derived*>(this)" << endl;
+    cout << "3. Derived 'overrides' by providing expected methods (makeSound)" << endl;
+    cout << "4. NO VIRTUAL FUNCTIONS - all resolved at compile-time" << endl;
+    cout << "5. Zero runtime overhead - can be fully inlined by compiler" << endl;
+    cout << "6. Type-safe: won't compile if derived doesn't provide required methods" << endl;
+    cout << "7. Cannot store in heterogeneous containers (no Animal* base pointer)" << endl;
+    
+    cout << "\nVirtual vs CRTP Comparison:" << endl;
+    cout << "Virtual:  Animal* -> vtable lookup -> Dog::makeSound() (runtime cost)" << endl;
+    cout << "CRTP:     Animal<Dog> -> Dog::makeSound() (compile-time, zero cost)" << endl;
+    cout << "Virtual:  Can store in vector<Animal*> (runtime polymorphism)" << endl;
+    cout << "CRTP:     Cannot mix types, must know type at compile-time" << endl;
+    
+    cout << "\nWhen to use CRTP:" << endl;
+    cout << "✓ Performance-critical code (no vtable overhead)" << endl;
+    cout << "✓ Types known at compile-time" << endl;
+    cout << "✓ Want static polymorphism with zero-cost abstraction" << endl;
+    cout << "✓ Embedded systems / high-frequency trading / game engines" << endl;
+    
+    cout << "\nWhen to use Virtual:" << endl;
+    cout << "✓ Need runtime polymorphism (plugin systems, dynamic loading)" << endl;
+    cout << "✓ Store different types in same container (vector<Animal*>)" << endl;
+    cout << "✓ Types not known until runtime" << endl;
 }
 
 // ===================================================================
