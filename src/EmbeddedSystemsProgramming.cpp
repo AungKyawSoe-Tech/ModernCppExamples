@@ -735,6 +735,14 @@ int main() {
     std::cout << "   • \"Real-Time C++\" by Christopher Kormanyos" << std::endl;
     std::cout << "   • \"Effective Modern C++\" (embedded-applicable patterns)" << std::endl;
     
+    std::cout << "\n🔗 RELATED TOPICS:" << std::endl;
+    std::cout << "   • See EmbeddedSystemsAvoid.cpp for anti-patterns" << std::endl;
+    std::cout << "   • See FunctionalSafetyCppSTL.cpp for:" << std::endl;
+    std::cout << "     - STL usage on STM32 MCUs vs STM32MPs (with MMU)" << std::endl;
+    std::cout << "     - IEC-61508 SIL-3 functional safety requirements" << std::endl;
+    std::cout << "     - ISO 26262 ASIL-D automotive safety standards" << std::endl;
+    std::cout << "     - MISRA C++ and AUTOSAR C++ compliance" << std::endl;
+    
     std::cout << "\n================================================================\n" << std::endl;
     
     return 0;

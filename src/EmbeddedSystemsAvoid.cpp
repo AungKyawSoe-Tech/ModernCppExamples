@@ -561,6 +561,19 @@ int main() {
     std::cout << "  Disabling features above: ~130KB Flash savings!" << std::endl;
     std::cout << "  From 256KB Flash → 126KB available (49% → 98% usable!)" << std::endl;
     
+    std::cout << "\n🔗 RELATED TOPICS:" << std::endl;
+    std::cout << "  • See EmbeddedSystemsProgramming.cpp for best practices" << std::endl;
+    std::cout << "  • See FunctionalSafetyCppSTL.cpp for:" << std::endl;
+    std::cout << "    - STL usage guidelines for STM32 MCUs vs STM32MPs" << std::endl;
+    std::cout << "    - Functional safety requirements (IEC-61508 SIL-3)" << std::endl;
+    std::cout << "    - Automotive safety standards (ISO 26262 ASIL-D)" << std::endl;
+    std::cout << "    - When heap/STL is allowed vs prohibited" << std::endl;
+    
+    std::cout << "\n⚠️ IMPORTANT NOTES:" << std::endl;
+    std::cout << "  • STM32 MCUs (Cortex-M): Very limited resources, avoid dynamic allocation" << std::endl;
+    std::cout << "  • STM32MP (Cortex-A with MMU): Full STL support, Linux-like development" << std::endl;
+    std::cout << "  • Safety-critical (SIL-3/ASIL-D): Zero dynamic allocation, MISRA/AUTOSAR" << std::endl;
+    
     std::cout << "\n================================================================\n" << std::endl;
     
     return 0;

@@ -73,6 +73,7 @@ set(EXECUTABLES
     EmbeddedSystemsProgramming
     EmbeddedSystemsAvoid
     EmbeddedThreadSafetyReentrancy
+    FunctionalSafetyCppSTL
     TemplatedCameraInterface
     ErrorHandling
     ExceptionWithSourceLocation
