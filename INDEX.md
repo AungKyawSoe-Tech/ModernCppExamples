@@ -37,7 +37,15 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
   - **OOP & Design Patterns:** Virtual dispatch mechanics, vtable internals, multiple inheritance, CRTP with mixins, PIMPL idiom, compile-time polymorphism
   - **Templates & Metaprogramming:** SFINAE techniques, enable_if, detection idiom, variadic templates, fold expressions, compile-time computation, constexpr/consteval
   - **Concurrency:** Thread-safe singleton (Meyer's, call_once), producer-consumer pattern, condition variables, atomic operations, memory ordering
-  - **Performance:** Move semantics, copy elision (RVO/NRVO), cache-friendly design, branch prediction optimization
+  - **Performance:** **Enhanced move semantics with comprehensive 7-part educational guide**, copy elision (RVO/NRVO), cache-friendly design, branch prediction optimization
+- **Move Semantics Deep Dive (Educational):**
+  - Part 1: Basic string class with move constructor and move assignment operator
+  - Part 2: Understanding value categories (lvalues vs rvalues)
+  - Part 3: Rule of Five complete implementation with ResourceManager class
+  - Part 4: Performance comparison with timing measurements (copy vs move)
+  - Part 5: Common pitfalls (moving from const, using moved-from objects, unnecessary std::move on returns, forgetting noexcept)
+  - Part 6: Perfect forwarding with universal references and std::forward
+  - Part 7: Comprehensive summary with key takeaways and best practices
 - **Common Interview Questions:**
   - What's the difference between pointers and references?
   - Explain smart pointers and when to use each type
@@ -47,6 +55,7 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
   - What's the difference between RVO and move semantics?
   - Explain memory ordering in atomic operations
   - How does CRTP provide compile-time polymorphism?
+  - **How do you implement move semantics? (Complete educational implementation included)**
 - **Format:** Each section includes working code examples with detailed explanations and best practices
 
 **[⬆ Back to Top](#table-of-contents)**
@@ -249,6 +258,9 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 - **Concepts:** Re-entrant vs thread-safe vs ISR-safe, interrupt service routines, memory-mapped I/O, bare-metal programming, RTOS patterns
 - **File:** [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp)
 - **Topics:** What to avoid in embedded systems (exceptions, dynamic allocation, iostream)
+- **File:** [FunctionalSafetyCppSTL.cpp](src/FunctionalSafetyCppSTL.cpp)
+- **Topics:** STL usage on STM32 MCUs vs MPs, functional safety (IEC-61508 SIL-3, ISO 26262 ASIL-D), MISRA/AUTOSAR compliance
+- **See Also:** Safety-Critical & Standards section for detailed coverage
 
 ### ARM & Architecture
 - **File:** [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
@@ -263,6 +275,19 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 ---
 
 ## Safety-Critical & Standards
+
+### Functional Safety and STL Usage on STM32
+- **File:** [FunctionalSafetyCppSTL.cpp](src/FunctionalSafetyCppSTL.cpp)
+- **Description:** Comprehensive guide to C++ and STL usage across different STM32 platforms and safety levels
+- **Topics Covered:**
+  - **STM32 MCUs (Cortex-M, no MMU):** Safe STL subset, bounded allocation, memory constraints
+  - **STM32MP (Cortex-A with MMU):** Full STL support, Linux-based development
+  - **IEC-61508 SIL-3:** Functional safety requirements, prohibited features, compliant patterns
+  - **ISO 26262 ASIL-D:** Automotive safety, AUTOSAR C++14 compliance
+  - **Comparison Tables:** Feature availability across platforms and safety levels
+  - **Practical Examples:** SIL-3 compliant error handling, CRTP for safety-critical systems, ASIL-D brake controller
+- **Key Concepts:** MISRA C++, AUTOSAR C++, heap allocation restrictions, static polymorphism, bounded containers, deterministic behavior
+- **When to Use:** Understanding STL limitations in embedded/safety-critical contexts, choosing appropriate C++ features for your platform
 
 ### MISRA C++
 - **File:** [MISRACppDemo.cpp](src/MISRACppDemo.cpp)
@@ -591,7 +616,7 @@ This index maps C++ concepts, keywords, features, design patterns, problems, and
 |----------|------------------|
 | **Learning Modern C++** | Start with [Cpp11Examples.cpp](src/Cpp11Examples.cpp), then progress through C++14, 17, 20, 23 examples |
 | **Real-Time Systems** | [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp), [PimplIdiom.cpp](src/PimplIdiom.cpp) |
-| **Embedded Systems** | [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp), [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp) |
+| **Embedded Systems** | [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp), [EmbeddedSystemsAvoid.cpp](src/EmbeddedSystemsAvoid.cpp), [FunctionalSafetyCppSTL.cpp](src/FunctionalSafetyCppSTL.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp) |
 | **Safety-Critical** | [MISRACppDemo.cpp](src/MISRACppDemo.cpp), [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp), [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp) |
 | **Performance** | [CRTPvsVirtualFunctions.cpp](src/CRTPvsVirtualFunctions.cpp), [PimplIdiom.cpp](src/PimplIdiom.cpp), [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp) |
 | **OOP Design** | [InheritanceTypes.cpp](src/InheritanceTypes.cpp), [DependencyInjection.cpp](src/DependencyInjection.cpp), [SOLIDPrinciples.cpp](src/SOLIDPrinciples.cpp) |

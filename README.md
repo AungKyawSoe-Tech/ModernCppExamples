@@ -247,7 +247,16 @@ Each entry links to the source file with a brief description of its contents.
    - Classes: ConfigParser, FileHandler_GOOD, FileHandler_BAD
    - Functions: demonstrate_exceptions, demonstrate_termination, demonstrate_return_values
 
-25. **[EventDrivenProgramming_Inheritance.cpp](src/EventDrivenProgramming_Inheritance.cpp)**
+25. **[FunctionalSafetyCppSTL.cpp](src/FunctionalSafetyCppSTL.cpp)**
+   - Functional Safety C++ and STL usage on STM32 platforms
+   - STL usage on STM32 MCUs (Cortex-M, no MMU) vs STM32MPs (Cortex-A with MMU)
+   - IEC-61508 SIL-3 compliant C++ patterns and requirements
+   - ISO 26262 ASIL-D automotive safety standards
+   - MISRA C++ and AUTOSAR C++14 compliance guidelines
+   - When to use heap-based STL vs fixed-size containers
+   - Comparison table: MCU vs MPU vs Safety-Critical requirements
+
+26. **[EventDrivenProgramming_Inheritance.cpp](src/EventDrivenProgramming_Inheritance.cpp)**
    - ===================================================================
    - Classes: CountingObserver, IObserver, ConsoleObserver
    - Functions: example_event_hierarchy, example_inheritance_observer, example_listener_pattern
@@ -336,9 +345,14 @@ Each entry links to the source file with a brief description of its contents.
    - Classes: GoodBase, Resource, BadBase
 
 40. **[MockInterview.cpp](src/MockInterview.cpp)**
-   - ===================================================================
-   - Namespaces: std
-   - Classes: Data, FileHandler, Parent
+   - Comprehensive C++ interview questions and answers with runnable examples
+   - **Fundamentals:** Pointers vs references, const correctness, RAII pattern
+   - **Memory Management:** Smart pointers, memory alignment, custom allocators
+   - **OOP:** Virtual dispatch, CRTP with mixins, PIMPL idiom
+   - **Templates:** SFINAE, variadic templates, compile-time computation
+   - **Concurrency:** Thread-safe singleton, producer-consumer, atomic operations
+   - **Performance:** **Enhanced move semantics with 7-part educational guide**, copy elision (RVO/NRVO)
+   - **Move Semantics Sections:** Basic string class, value categories, Rule of Five, performance comparison, common pitfalls, perfect forwarding, comprehensive summary
 
 41. **[MoveSemantics.cpp](src/MoveSemantics.cpp)**
    - ===================================================================
@@ -587,7 +601,7 @@ For detailed topic mapping, see [INDEX.md](INDEX.md). Quick topic guide:
 - **C++23**: [Cpp23Examples.cpp](src/Cpp23Examples.cpp)
 
 ### By Application Domain
-- **Embedded Systems**: [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp), [ROMability.cpp](src/ROMability.cpp), [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
+- **Embedded Systems**: [EmbeddedSystemsProgramming.cpp](src/EmbeddedSystemsProgramming.cpp), [EmbeddedThreadSafetyReentrancy.cpp](src/EmbeddedThreadSafetyReentrancy.cpp), [FunctionalSafetyCppSTL.cpp](src/FunctionalSafetyCppSTL.cpp), [ROMability.cpp](src/ROMability.cpp), [ARMInstructionSets.cpp](src/ARMInstructionSets.cpp)
 - **Real-Time Systems**: [RealTimeProgramming.cpp](src/RealTimeProgramming.cpp), [STLContainersNoHeap.cpp](src/STLContainersNoHeap.cpp)
 - **Safety-Critical**: [SafetyCriticalSTLContainers.cpp](src/SafetyCriticalSTLContainers.cpp), [FunctionalSafetyISO26262.cpp](src/FunctionalSafetyISO26262.cpp), [MISRACppDemo.cpp](src/MISRACppDemo.cpp)
 - **Concurrency**: [Cpp17Concurrency.cpp](src/Cpp17Concurrency.cpp), [FuturePromiseAsync.cpp](src/FuturePromiseAsync.cpp), [ThreadPoolExamples.cpp](src/ThreadPoolExamples.cpp)
