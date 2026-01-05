@@ -5,6 +5,10 @@
 #include <type_traits>
 #include <optional>
 #include <variant>
+#include <set>
+#include <map>
+#include <vector>
+
 
 // ===================================================================
 // FUNCTIONAL SAFETY C++ AND STL USAGE ON STM32
@@ -23,7 +27,8 @@
 
 namespace stm32_mcu {
 
-std::cout << R"(
+void print_introduction() {
+    std::cout << R"(
 ╔═══════════════════════════════════════════════════════════════╗
 ║       STL USAGE ON STM32 MCUs (Cortex-M, No MMU)             ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -37,6 +42,7 @@ std::cout << R"(
 
 ✅ SAFE STL SUBSET (No dynamic allocation):
 )" << std::endl;
+}
 
 void demonstrate_safe_stl() {
     std::cout << "\n=== SAFE STL FOR MCUs ===" << std::endl;
@@ -67,7 +73,8 @@ void demonstrate_safe_stl() {
     std::cout << "    Device: " << device_name << std::endl;
 }
 
-std::cout << R"(
+void print_usage_warning() {
+    std::cout << R"(
 ⚠️ USE WITH CAUTION (Bounded/Pre-allocated):
 
   std::vector<T> - IF:
@@ -80,6 +87,7 @@ std::cout << R"(
     buffer.reserve(1000);  // One-time allocation
     // Now push_back() won't allocate if size < 1000
 )" << std::endl;
+}
 
 void demonstrate_bounded_vector() {
     std::cout << "\n=== BOUNDED VECTOR (Pre-allocated) ===" << std::endl;
@@ -101,7 +109,8 @@ void demonstrate_bounded_vector() {
     std::cout << "  Size: " << sensor_buffer.size() << " (no reallocation)" << std::endl;
 }
 
-std::cout << R"(
+void print_warnings() {
+    std::cout << R"(
 ❌ AVOID IN MCUs (Dynamic allocation):
 
   std::vector<T> (unbounded growth)
@@ -111,6 +120,7 @@ std::cout << R"(
   std::shared_ptr<T> (atomic overhead + allocation)
   std::function<> (type erasure + allocation)
 )" << std::endl;
+}
 
 } // namespace stm32_mcu
 
@@ -120,7 +130,8 @@ std::cout << R"(
 
 namespace stm32_mp {
 
-std::cout << R"(
+void print_introduction() {
+    std::cout << R"(
 ╔═══════════════════════════════════════════════════════════════╗
 ║       STL USAGE ON STM32MP (Cortex-A with MMU)               ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -150,6 +161,7 @@ std::cout << R"(
   Use STL freely as on desktop/server environments.
   Standard Linux C++ development applies.
 )" << std::endl;
+}
 
 void demonstrate_full_stl() {
     std::cout << "\n=== FULL STL ON STM32MP (with MMU) ===" << std::endl;
@@ -181,7 +193,8 @@ void demonstrate_full_stl() {
 
 namespace iec61508_sil3 {
 
-std::cout << R"(
+void print_introduction() {
+    std::cout << R"(
 ╔═══════════════════════════════════════════════════════════════╗
 ║           IEC-61508 SIL-3 C++ REQUIREMENTS                    ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -216,6 +229,7 @@ SIL-3 (Safety Integrity Level 3):
   -Werror                  (Treat warnings as errors)
   -Wall -Wextra -Wpedantic (Enable all warnings)
 )" << std::endl;
+}
 
 // ===================================================================
 // SIL-3 COMPLIANT: Error Handling Without Exceptions
@@ -374,7 +388,8 @@ void demonstrate_crtp() {
 
 namespace iso26262_asil_d {
 
-std::cout << R"(
+void print_introduction() {
+    std::cout << R"(
 ╔═══════════════════════════════════════════════════════════════╗
 ║           ISO 26262 ASIL-D (AUTOMOTIVE SAFETY)                ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -414,6 +429,7 @@ NOT Allowed:
   • Traceability: Requirements → Code → Tests
   • Certified toolchain (TÜV-certified compiler)
 )" << std::endl;
+}
 
 // ===================================================================
 // ASIL-D COMPLIANT: Safety-Critical Control System
@@ -668,17 +684,23 @@ int main() {
 )" << std::endl;
 
     // Part 1: STM32 MCU examples
+    stm32_mcu::print_introduction();
     stm32_mcu::demonstrate_safe_stl();
+    stm32_mcu::print_usage_warning();
     stm32_mcu::demonstrate_bounded_vector();
+    stm32_mcu::print_warnings();
     
     // Part 2: STM32MP examples
+    stm32_mp::print_introduction();
     stm32_mp::demonstrate_full_stl();
     
     // Part 3: IEC-61508 SIL-3 examples
+    iec61508_sil3::print_introduction();
     iec61508_sil3::demonstrate_sil3_code();
     iec61508_sil3::demonstrate_crtp();
     
     // Part 4: ISO 26262 ASIL-D examples
+    iso26262_asil_d::print_introduction();
     iso26262_asil_d::demonstrate_asil_d_code();
     
     // Part 5: Comparison and recommendations

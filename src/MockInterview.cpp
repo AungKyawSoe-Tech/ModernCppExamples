@@ -42,6 +42,7 @@
 #include <random>
 #include <chrono>
 #include <cstdio>
+#include <cstring>
 #include <stdexcept>
 
 using namespace std;
@@ -465,119 +466,43 @@ void virtual_dispatch_details() {
 // Use Case: Zero-overhead polymorphism when types are known at compile-time
 
 // CRTP Base: Animal knows about its derived type at compile time
+#include <iostream>
+
 template <typename Derived>
 class Animal {
 public:
-    // Static polymorphism entry point - calls derived implementation
     void speak() {
-        // Downcast to Derived and call its makeSound() method
         static_cast<Derived*>(this)->makeSound();
     }
-    
-    void speak_twice() {
-        speak();
-        speak();
-    }
 };
 
-// Dog "overrides" by providing makeSound() method
 class Dog : public Animal<Dog> {
-public:
-    void makeSound() { 
-        cout << "Woof!" << endl; 
-    }
+public:  // Changed to public
+    void makeSound() { std::cout << "Woof!\n"; }
 };
 
-// Cat "overrides" by providing makeSound() method
 class Cat : public Animal<Cat> {
-public:
-    void makeSound() { 
-        cout << "Meow!" << endl; 
-    }
+public:  // Changed to public
+    void makeSound() { std::cout << "Meow!\n"; }
 };
 
-// Cow provides different implementation
-class Cow : public Animal<Cow> {
-public:
-    void makeSound() { 
-        cout << "Moo!" << endl; 
-    }
-};
-
-// Generic function that works with any Animal-derived type
-// Note: Takes Animal<T>& not Animal*
 template <typename T>
 void makeAnimalSpeak(Animal<T>& animal) {
-    animal.speak();  // Correctly calls derived implementation at compile-time
+    animal.speak();
 }
 
-template <typename T>
-void makeAnimalSpeakMultiple(Animal<T>& animal, int times) {
-    cout << "Making animal speak " << times << " times: ";
-    for (int i = 0; i < times; ++i) {
-        animal.speak();
-    }
-}
-
-void crtp_mixins_demo() {
-    cout << "\n=== CRTP: COMPILE-TIME POLYMORPHISM (STATIC POLYMORPHISM) ===\n";
-    
+int crtp_mixins_demo() {
     Dog dog;
     Cat cat;
-    Cow cow;
     
-    cout << "\nDirect calls to speak() (via CRTP):\n";
-    cout << "Dog: ";
-    dog.speak();
+    makeAnimalSpeak(dog);  // Output: Woof!
+    makeAnimalSpeak(cat);  // Output: Meow!
     
-    cout << "Cat: ";
-    cat.speak();
+    // Can also call directly
+    dog.speak();  // Woof!
+    cat.speak();  // Meow!
     
-    cout << "Cow: ";
-    cow.speak();
-    
-    cout << "\nUsing generic function with CRTP:\n";
-    cout << "Dog via makeAnimalSpeak: ";
-    makeAnimalSpeak(dog);   // Output: Woof!
-    
-    cout << "Cat via makeAnimalSpeak: ";
-    makeAnimalSpeak(cat);   // Output: Meow!
-    
-    cout << "Cow via makeAnimalSpeak: ";
-    makeAnimalSpeak(cow);   // Output: Moo!
-    
-    cout << "\nBase class can build complex behavior:\n";
-    cout << "Dog speaking twice: ";
-    dog.speak_twice();
-    
-    cout << "\nUsing parametric function:\n";
-    makeAnimalSpeakMultiple(cat, 3);
-    
-    cout << "\n\nCRTP Key Points:" << endl;
-    cout << "1. Base class template parameterized by derived type: Animal<Dog>" << endl;
-    cout << "2. Base calls derived methods via static_cast<Derived*>(this)" << endl;
-    cout << "3. Derived 'overrides' by providing expected methods (makeSound)" << endl;
-    cout << "4. NO VIRTUAL FUNCTIONS - all resolved at compile-time" << endl;
-    cout << "5. Zero runtime overhead - can be fully inlined by compiler" << endl;
-    cout << "6. Type-safe: won't compile if derived doesn't provide required methods" << endl;
-    cout << "7. Cannot store in heterogeneous containers (no Animal* base pointer)" << endl;
-    
-    cout << "\nVirtual vs CRTP Comparison:" << endl;
-    cout << "Virtual:  Animal* -> vtable lookup -> Dog::makeSound() (runtime cost)" << endl;
-    cout << "CRTP:     Animal<Dog> -> Dog::makeSound() (compile-time, zero cost)" << endl;
-    cout << "Virtual:  Can store in vector<Animal*> (runtime polymorphism)" << endl;
-    cout << "CRTP:     Cannot mix types, must know type at compile-time" << endl;
-    
-    cout << "\nWhen to use CRTP:" << endl;
-    cout << "✓ Performance-critical code (no vtable overhead)" << endl;
-    cout << "✓ Types known at compile-time" << endl;
-    cout << "✓ Want static polymorphism with zero-cost abstraction" << endl;
-    cout << "✓ Embedded systems / high-frequency trading / game engines" << endl;
-    
-    cout << "\nWhen to use Virtual:" << endl;
-    cout << "✓ Need runtime polymorphism (plugin systems, dynamic loading)" << endl;
-    cout << "✓ Store different types in same container (vector<Animal*>)" << endl;
-    cout << "✓ Types not known until runtime" << endl;
+    return 0;
 }
 
 // ===================================================================
@@ -614,6 +539,15 @@ process(T value) {
     cout << "Processing float: " << value << endl;
 }
 
+/*
+SFINAE, or Substitution Failure Is Not An Error, is a core C++ compilation rule 
+where a compiler ignores an invalid function template specialization during 
+overload resolution instead of throwing an error, allowing it to try other valid 
+overloads. This powerful technique enables advanced template metaprogramming, type 
+introspection, and conditional compilation, letting developers write generic code 
+that adapts based on type properties, like checking if a type has a specific member,
+using tools like std::enable_if or if constexpr. 
+*/
 void sfinae_demo() {
     cout << "\n=== SFINAE TECHNIQUES ===\n";
     
@@ -852,30 +786,284 @@ void atomic_operations_demo() {
 // SECTION 6: PERFORMANCE & OPTIMIZATION
 // ===================================================================
 
-// ============ Q6.1: Move Semantics Performance ============
-class LargeObject {
-    vector<int> data;
+// ============ Q6.1: Move Semantics - Complete Educational Guide ============
+
+// ===== PART 1: Basic String Class with Move Semantics =====
+class MyString {
+private:
+    char* data;
+    size_t length;
     
 public:
-    LargeObject(size_t size) : data(size, 42) {
-        cout << "Constructor: " << size << " elements" << endl;
+    // Constructor
+    MyString(const char* str = "") {
+        length = strlen(str);
+        data = new char[length + 1];
+        strcpy(data, str);
+        cout << "  [Constructor] Created string: \"" << data << "\" at " << (void*)data << endl;
+    }
+    
+    // Destructor
+    ~MyString() {
+        cout << "  [Destructor] Deleting " << (void*)data;
+        if (data && length > 0) {
+            cout << " (\"" << data << "\")";
+        }
+        cout << endl;
+        delete[] data;
+    }
+    
+    // Copy constructor (EXPENSIVE - allocates new memory and copies)
+    MyString(const MyString& other) {
+        length = other.length;
+        data = new char[length + 1];
+        strcpy(data, other.data);
+        cout << "  [Copy Constructor] Copied \"" << data << "\" to new memory at " << (void*)data << endl;
+    }
+    
+    // Copy assignment operator
+    MyString& operator=(const MyString& other) {
+        cout << "  [Copy Assignment] ";
+        if (this != &other) {
+            delete[] data;  // Free old memory
+            length = other.length;
+            data = new char[length + 1];
+            strcpy(data, other.data);
+            cout << "Copied \"" << data << "\" to " << (void*)data << endl;
+        } else {
+            cout << "Self-assignment detected, no-op" << endl;
+        }
+        return *this;
+    }
+    
+    // Move constructor (CHEAP - steals resources, no allocation)
+    MyString(MyString&& other) noexcept {
+        cout << "  [Move Constructor] Stealing resources from " << (void*)other.data << endl;
+        // Steal the data
+        data = other.data;
+        length = other.length;
+        
+        // Leave other in valid but empty state
+        other.data = nullptr;
+        other.length = 0;
+        cout << "  [Move Constructor] Moved \"" << data << "\" to " << (void*)data 
+             << ", source now empty" << endl;
+    }
+    
+    // Move assignment operator
+    MyString& operator=(MyString&& other) noexcept {
+        cout << "  [Move Assignment] ";
+        if (this != &other) {
+            // Free our current resource
+            delete[] data;
+            
+            // Steal other's resources
+            data = other.data;
+            length = other.length;
+            
+            // Leave other in valid state
+            other.data = nullptr;
+            other.length = 0;
+            
+            cout << "Moved \"" << data << "\" to " << (void*)data << endl;
+        } else {
+            cout << "Self-assignment detected, no-op" << endl;
+        }
+        return *this;
+    }
+    
+    // Utility
+    const char* c_str() const { return data ? data : ""; }
+    size_t size() const { return length; }
+};
+
+void demonstrate_basic_move_semantics() {
+    cout << "\n╔═══════════════════════════════════════════════════════════════╗\n";
+    cout << "║         MOVE SEMANTICS - EDUCATIONAL DEMONSTRATION            ║\n";
+    cout << "╚═══════════════════════════════════════════════════════════════╝\n";
+    
+    cout << "\n1️⃣  COPY CONSTRUCTOR vs MOVE CONSTRUCTOR:\n";
+    cout << string(60, '-') << "\n";
+    
+    {
+        cout << "\n📋 Copy Constructor (Expensive - allocates new memory):\n";
+        MyString str1("Hello");
+        MyString str2 = str1;  // Copy constructor - str1 is lvalue
+        cout << "  Result: str1=\"" << str1.c_str() << "\", str2=\"" << str2.c_str() << "\"\n";
+    }
+    
+    {
+        cout << "\n🚀 Move Constructor (Cheap - transfers ownership):\n";
+        MyString str1("World");
+        MyString str2 = move(str1);  // Move constructor - explicitly cast to rvalue
+        cout << "  Result: str1=\"" << str1.c_str() << "\" (moved-from), str2=\"" << str2.c_str() << "\"\n";
+        cout << "  ⚠️  str1 is now in valid but unspecified state (empty)\n";
+    }
+    
+    cout << "\n2️⃣  COPY ASSIGNMENT vs MOVE ASSIGNMENT:\n";
+    cout << string(60, '-') << "\n";
+    
+    {
+        cout << "\n📋 Copy Assignment:\n";
+        MyString str1("Original");
+        MyString str2("Other");
+        cout << "Before assignment:\n";
+        str2 = str1;  // Copy assignment
+        cout << "  Result: str1=\"" << str1.c_str() << "\", str2=\"" << str2.c_str() << "\"\n";
+    }
+    
+    {
+        cout << "\n🚀 Move Assignment:\n";
+        MyString str1("Moving");
+        MyString str2("Target");
+        cout << "Before assignment:\n";
+        str2 = move(str1);  // Move assignment
+        cout << "  Result: str1=\"" << str1.c_str() << "\" (moved-from), str2=\"" << str2.c_str() << "\"\n";
+    }
+}
+
+// ===== PART 2: Understanding Rvalues and Lvalues =====
+void demonstrate_value_categories() {
+    cout << "\n3️⃣  VALUE CATEGORIES (Lvalue vs Rvalue):\n";
+    cout << string(60, '-') << "\n";
+    
+    cout << "\n📚 DEFINITIONS:\n";
+    cout << "  • Lvalue: Has a name, has an address, persists beyond expression\n";
+    cout << "            Examples: variables, dereferenced pointers, array elements\n";
+    cout << "  • Rvalue: Temporary, no name (or about to die), can be moved from\n";
+    cout << "            Examples: literals, temporary objects, function returns\n\n";
+    
+    MyString str1("Lvalue");
+    cout << "  MyString str1(\"Lvalue\");  // str1 is an LVALUE\n\n";
+    
+    cout << "  MyString str2 = str1;      // Copy (str1 is lvalue)\n";
+    MyString str2 = str1;
+    
+    cout << "\n  MyString str3 = MyString(\"Rvalue\");  // Move (temporary is rvalue)\n";
+    MyString str3 = MyString("Rvalue");
+    
+    cout << "\n  MyString str4 = move(str1);  // Move (std::move casts to rvalue)\n";
+    MyString str4 = move(str1);
+    
+    cout << "\n💡 KEY INSIGHT: std::move() doesn't move anything!\n";
+    cout << "   It just casts an lvalue to an rvalue reference (xvalue)\n";
+    cout << "   The actual move happens in the move constructor/assignment\n";
+}
+
+// ===== PART 3: Rule of Five =====
+class ResourceManager {
+private:
+    int* resource;
+    string name;
+    
+public:
+    // 1. Constructor
+    explicit ResourceManager(const string& n) : resource(new int(42)), name(n) {
+        cout << "  ✓ Constructor: " << name << " created resource at " << (void*)resource << endl;
+    }
+    
+    // 2. Destructor
+    ~ResourceManager() {
+        cout << "  ✗ Destructor: " << name << " destroying resource at " << (void*)resource << endl;
+        delete resource;
+    }
+    
+    // 3. Copy Constructor
+    ResourceManager(const ResourceManager& other) 
+        : resource(new int(*other.resource)), name(other.name + "_copy") {
+        cout << "  📋 Copy Constructor: Created " << name << " from " << other.name << endl;
+    }
+    
+    // 4. Copy Assignment
+    ResourceManager& operator=(const ResourceManager& other) {
+        if (this != &other) {
+            delete resource;
+            resource = new int(*other.resource);
+            name = other.name + "_assigned";
+            cout << "  📋 Copy Assignment: " << name << " from " << other.name << endl;
+        }
+        return *this;
+    }
+    
+    // 5. Move Constructor
+    ResourceManager(ResourceManager&& other) noexcept
+        : resource(other.resource), name(move(other.name) + "_moved") {
+        other.resource = nullptr;  // Nullify source
+        cout << "  🚀 Move Constructor: " << name << " stole resource" << endl;
+    }
+    
+    // 6. Move Assignment
+    ResourceManager& operator=(ResourceManager&& other) noexcept {
+        if (this != &other) {
+            delete resource;
+            resource = other.resource;
+            name = move(other.name) + "_move_assigned";
+            other.resource = nullptr;
+            cout << "  🚀 Move Assignment: " << name << " stole resource" << endl;
+        }
+        return *this;
+    }
+    
+    const string& getName() const { return name; }
+};
+
+void demonstrate_rule_of_five() {
+    cout << "\n4️⃣  RULE OF FIVE:\n";
+    cout << string(60, '-') << "\n";
+    cout << "If you define ANY of: destructor, copy constructor, copy assignment,\n";
+    cout << "                      move constructor, or move assignment\n";
+    cout << "You should probably define ALL FIVE (or explicitly delete them)\n\n";
+    
+    {
+        cout << "Creating original:\n";
+        ResourceManager rm1("Original");
+        
+        cout << "\nCopy constructor:\n";
+        ResourceManager rm2 = rm1;
+        
+        cout << "\nMove constructor:\n";
+        ResourceManager rm3 = move(rm1);
+        
+        cout << "\nCopy assignment:\n";
+        ResourceManager rm4("Target");
+        rm4 = rm2;
+        
+        cout << "\nMove assignment:\n";
+        ResourceManager rm5("AnotherTarget");
+        rm5 = move(rm3);
+        
+        cout << "\nAll objects going out of scope...\n";
+    }
+    cout << "Cleanup complete!\n";
+}
+
+// ===== PART 4: Performance Comparison =====
+class LargeObject {
+    vector<int> data;
+    string name;
+    
+public:
+    LargeObject(const string& n, size_t size) : data(size, 42), name(n) {
+        cout << "  Constructor: " << name << " with " << size << " elements" << endl;
     }
     
     // Copy constructor (expensive)
-    LargeObject(const LargeObject& other) : data(other.data) {
-        cout << "Copy constructor: " << data.size() << " elements" << endl;
+    LargeObject(const LargeObject& other) : data(other.data), name(other.name + "_copy") {
+        cout << "  📋 Copy Constructor: " << name << " copied " << data.size() << " elements" << endl;
     }
     
     // Move constructor (cheap)
-    LargeObject(LargeObject&& other) noexcept : data(move(other.data)) {
-        cout << "Move constructor" << endl;
+    LargeObject(LargeObject&& other) noexcept 
+        : data(move(other.data)), name(move(other.name) + "_moved") {
+        cout << "  🚀 Move Constructor: " << name << " (just pointer swap, O(1))" << endl;
     }
     
     // Copy assignment
     LargeObject& operator=(const LargeObject& other) {
         if (this != &other) {
             data = other.data;
-            cout << "Copy assignment: " << data.size() << " elements" << endl;
+            name = other.name + "_assigned";
+            cout << "  📋 Copy Assignment: " << name << " copied " << data.size() << " elements" << endl;
         }
         return *this;
     }
@@ -884,33 +1072,150 @@ public:
     LargeObject& operator=(LargeObject&& other) noexcept {
         if (this != &other) {
             data = move(other.data);
-            cout << "Move assignment" << endl;
+            name = move(other.name) + "_move_assigned";
+            cout << "  🚀 Move Assignment: " << name << " (just pointer swap, O(1))" << endl;
         }
         return *this;
     }
+    
+    const string& getName() const { return name; }
+    size_t size() const { return data.size(); }
 };
 
+void demonstrate_performance() {
+    cout << "\n5️⃣  PERFORMANCE COMPARISON:\n";
+    cout << string(60, '-') << "\n";
+    
+    cout << "\n⏱️  Copying large object:\n";
+    {
+        LargeObject obj1("Large1", 10000000);
+        auto start = chrono::high_resolution_clock::now();
+        LargeObject obj2 = obj1;  // Copy - allocates and copies 10M integers
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+        cout << "  Time taken: " << duration.count() << " µs\n";
+    }
+    
+    cout << "\n⚡ Moving large object:\n";
+    {
+        LargeObject obj1("Large2", 10000000);
+        auto start = chrono::high_resolution_clock::now();
+        LargeObject obj2 = move(obj1);  // Move - just swaps pointers
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+        cout << "  Time taken: " << duration.count() << " µs\n";
+    }
+    
+    cout << "\n💡 Move is typically 100-1000x faster for large objects!\n";
+}
+
+// ===== PART 5: Common Pitfalls =====
+void demonstrate_pitfalls() {
+    cout << "\n6️⃣  COMMON MOVE SEMANTICS PITFALLS:\n";
+    cout << string(60, '-') << "\n";
+    
+    cout << "\n❌ PITFALL 1: Moving from const objects\n";
+    cout << "  const MyString str1(\"Const\");\n";
+    cout << "  MyString str2 = move(str1);  // ❌ Calls COPY, not move!\n";
+    cout << "  Reason: Can't bind rvalue reference (T&&) to const T\n";
+    
+    cout << "\n❌ PITFALL 2: Using moved-from object\n";
+    cout << R"(
+  MyString str1("Data");
+  MyString str2 = move(str1);
+  cout << str1.c_str();  // ❌ Undefined behavior! str1 was moved from
+  
+  ✓ CORRECT: After move, only assign to or destroy the moved-from object
+)";
+    
+    cout << "\n❌ PITFALL 3: Returning local by std::move\n";
+    cout << R"(
+  MyString createString() {
+      MyString local("Value");
+      return move(local);  // ❌ BAD! Prevents RVO
+  }
+  
+  ✓ CORRECT:
+  MyString createString() {
+      MyString local("Value");
+      return local;  // Compiler uses RVO or implicit move
+  }
+)";
+    
+    cout << "\n❌ PITFALL 4: Forgetting noexcept on move operations\n";
+    cout << R"(
+  MyString(MyString&& other) noexcept { ... }  // ✓ GOOD
+  MyString(MyString&& other) { ... }           // ❌ BAD - may throw
+  
+  Reason: STL containers won't use move if it can throw
+          (they fall back to copy for strong exception guarantee)
+)";
+}
+
+// ===== PART 6: Perfect Forwarding =====
+template<typename T>
+void processValue(T&& value) {
+    cout << "  Processing: " << value.c_str() << " (type: ";
+    if (is_lvalue_reference_v<T>) {
+        cout << "lvalue reference)\n";
+    } else {
+        cout << "rvalue reference)\n";
+    }
+}
+
+template<typename T>
+void forwardingWrapper(T&& value) {
+    cout << "  Wrapper called, forwarding to processValue...\n";
+    processValue(forward<T>(value));  // Perfect forwarding
+}
+
+void demonstrate_perfect_forwarding() {
+    cout << "\n7️⃣  PERFECT FORWARDING:\n";
+    cout << string(60, '-') << "\n";
+    
+    cout << "\nUniversal references (T&&) in templates:\n";
+    cout << "  • T&& + lvalue → collapses to T&\n";
+    cout << "  • T&& + rvalue → stays T&&\n\n";
+    
+    MyString str("Value");
+    
+    cout << "Forwarding lvalue:\n";
+    forwardingWrapper(str);
+    
+    cout << "\nForwarding rvalue:\n";
+    forwardingWrapper(MyString("Temporary"));
+    
+    cout << "\n💡 std::forward preserves value category through templates\n";
+}
+
+// ===== MAIN MOVE SEMANTICS DEMO =====
 void move_semantics_performance() {
-    cout << "\n=== MOVE SEMANTICS PERFORMANCE ===\n";
+    demonstrate_basic_move_semantics();
+    demonstrate_value_categories();
+    demonstrate_rule_of_five();
+    demonstrate_performance();
+    demonstrate_pitfalls();
+    demonstrate_perfect_forwarding();
     
-    {
-        cout << "\nCopy version:" << endl;
-        LargeObject obj1(1000000);
-        LargeObject obj2 = obj1;  // Copy
-    }
+    cout << "\n╔═══════════════════════════════════════════════════════════════╗\n";
+    cout << "║                    MOVE SEMANTICS SUMMARY                     ║\n";
+    cout << "╚═══════════════════════════════════════════════════════════════╝\n";
     
-    {
-        cout << "\nMove version:" << endl;
-        LargeObject obj1(1000000);
-        LargeObject obj2 = move(obj1);  // Move
-    }
+    cout << "\n📝 KEY TAKEAWAYS:\n";
+    cout << "  1. Move semantics transfers ownership instead of copying\n";
+    cout << "  2. Use std::move() to cast lvalues to rvalues\n";
+    cout << "  3. Implement Rule of Five for resource-owning classes\n";
+    cout << "  4. Always mark move operations noexcept\n";
+    cout << "  5. Don't use std::move on return statements (prevents RVO)\n";
+    cout << "  6. Moved-from objects must be in valid but unspecified state\n";
+    cout << "  7. Use std::forward for perfect forwarding in templates\n";
+    cout << "  8. Performance gain: O(n) copy → O(1) move for large objects\n\n";
     
-    cout << "\nMove Semantics Guidelines:" << endl;
-    cout << "1. Return by value (compiler uses RVO/NRVO)" << endl;
-    cout << "2. Use std::move() for rvalues" << endl;
-    cout << "3. Mark move constructors noexcept" << endl;
-    cout << "4. Don't move from const objects" << endl;
-    cout << "5. Perfect forwarding with std::forward" << endl;
+    cout << "🎯 WHEN TO USE MOVE SEMANTICS:\n";
+    cout << "  ✓ Returning expensive objects from functions\n";
+    cout << "  ✓ Inserting into STL containers\n";
+    cout << "  ✓ Implementing resource-managing classes\n";
+    cout << "  ✓ Transferring unique ownership (e.g., unique_ptr)\n\n";
 }
 
 // ============ Q6.2: RVO and Copy Elision ============
