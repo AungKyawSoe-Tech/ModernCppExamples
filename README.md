@@ -94,11 +94,48 @@ Additional detailed guides are available in the `MarkDownDocuments/` folder:
 - [Pybind11.md](MarkDownDocuments/Pybind11.md) - Python bindings
 - [SECURITY.md](MarkDownDocuments/SECURITY.md) - Security best practices
 
+### 📖 eBook Formats
+
+Generate professional documentation in multiple formats:
+
+#### PDF Format
+```powershell
+# Windows
+.\generate_pdf.ps1
+
+# Linux/Mac
+./generate_pdf.sh
+```
+Creates **ModernCppRefresherCourse.pdf** with all documentation and source code.  
+See [PDF_GENERATION_README.md](MarkDownDocuments/PDF_GENERATION_README.md) for details.
+
+#### EPUB Format (Recommended - Cross-Platform)
+```powershell
+# Windows
+.\generate_epub.ps1
+
+# WSL/Linux
+./generate_epub.sh
+```
+Creates **ModernCppRefresherCourse.epub** - a modern, interactive ebook that works on all devices (Windows, Mac, Linux, tablets, phones). Features table of contents, syntax highlighting, search, and adjustable fonts.
+
+#### CHM Format (Windows Only - Legacy)
+```powershell
+# Windows (PowerShell)
+.\generate_chm.ps1
+
+# WSL (Bash)
+./generate_chm.sh
+```
+Creates **ModernCppRefresherCourse.chm** with Windows Help Viewer integration.  
+**Note**: Requires HTML Help Workshop installation (see [CHM_GENERATION_README.md](MarkDownDocuments/CHM_GENERATION_README.md)).  
+**Recommended**: Use EPUB format instead for better compatibility.
+
 ### 🤖 Automatic Updates
 **When you add new source files**, the documentation automatically updates:
 - ✅ **README.md** - Alphabetical listing auto-updates (see [AUTO_UPDATE_GUIDE.md](AUTO_UPDATE_GUIDE.md))
 - ⚠️ **INDEX.md** - Template generated for manual topic categorization
-- ✅ **PDF** - Automatically includes all new files
+- ✅ **PDF & EPUB & CHM** - Automatically includes all new files
 
 **See:** [AUTO_UPDATE_GUIDE.md](AUTO_UPDATE_GUIDE.md) for complete details on adding new examples.
 
